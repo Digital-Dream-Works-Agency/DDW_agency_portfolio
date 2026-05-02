@@ -6,20 +6,14 @@ import Allprojects from '../components/Allprojects';
 
 const ProjectsPage = () => {
     return (
-        <main className="relative w-full bg-bg-base text-text-main">
-            {/* Top Navigation */}
+        <main className="relative w-full bg-deep-black text-white">
             <Navbar />
-
-            {/* Inner Page Header */}
             <PageHeader
-                title="Verified Results"
+                title="Our Portfolio"
                 breadcrumb="Portfolio"
+                subtitle="150+ projects delivered across custom software, AI integration, and marketing infrastructure."
             />
-
-            {/* Main Projects Grid */}
             <Allprojects />
-
-            {/* Bottom Footer */}
             <Footer />
         </main>
     );

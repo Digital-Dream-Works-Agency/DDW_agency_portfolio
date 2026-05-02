@@ -1,8 +1,10 @@
-// src/App.jsx
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import ProjectsPage from './pages/Projectspage';
+import ServicesPage from './pages/ServicesPage';
+import CaseStudiesPage from './pages/CaseStudiesPage';
+import ContactPage from './pages/ContactPage';
 import ScrollToTop from './components/ScrollToTop';
 import LoadingScreen from './components/LoadingScreen';
 import SmoothScroll from './components/SmoothScroll';
@@ -24,15 +26,13 @@ const AppContent = () => {
       <div className="App">
         <CustomCursor />
         <LoadingScreen isLoading={loading} />
-
         {!loading && (
           <Routes>
-            <Route path="/" element={
-              <PageTransition><Home /></PageTransition>
-            } />
-            <Route path="/projects" element={
-              <PageTransition><ProjectsPage /></PageTransition>
-            } />
+            <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+            <Route path="/services" element={<PageTransition><ServicesPage /></PageTransition>} />
+            <Route path="/case-studies" element={<PageTransition><CaseStudiesPage /></PageTransition>} />
+            <Route path="/projects" element={<PageTransition><ProjectsPage /></PageTransition>} />
+            <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
           </Routes>
         )}
       </div>

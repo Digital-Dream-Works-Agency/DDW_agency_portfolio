@@ -1,9 +1,9 @@
-/* src/index.css */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@300;400;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 * {
   margin: 0;
   padding: 0;
@@ -33,23 +33,10 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
 }
 
-/* Hide default scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-/* Better control with Lenis */
-html.lenis {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto;
-}
 ::-webkit-scrollbar-track {
   background: #0a0a0a;
 }
@@ -64,7 +51,10 @@ html.lenis {
   color: var(--bg-base);
 }
 
-/* Smooth Scroll */
+html {
+  scroll-behavior: auto;
+}
+
 html.lenis {
   height: auto;
 }
@@ -85,28 +75,17 @@ html.lenis {
   pointer-events: none;
 }
 
-/* Custom Cursor Styles */
-.custom-cursor {
-  position: fixed;
-  pointer-events: none;
-  z-index: 9999;
-  mix-blend-mode: difference;
-}
-
-/* Magnetic Button Effect */
 .magnetic {
   position: relative;
   transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* Glass Effect */
 .glass {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Gradient Text */
 .gradient-text {
   background: linear-gradient(135deg, #FF570F 0%, #FDE87A 100%);
   -webkit-background-clip: text;
@@ -114,26 +93,11 @@ html.lenis {
   background-clip: text;
 }
 
-/* Performance Optimizations */
-.will-change-transform {
-  will-change: transform;
-}
-
-.will-change-opacity {
-  will-change: opacity;
-}
-
-img {
-  content-visibility: auto;
-}
-
-/* GSAP Reveal Classes */
 .gsap-reveal {
   opacity: 0;
   visibility: hidden;
 }
 
-/* Button Styles */
 .btn-primary {
   position: relative;
   padding: 1rem 2.5rem;
@@ -148,38 +112,11 @@ img {
   cursor: pointer;
 }
 
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: var(--brand-accent);
-  transition: left 0.3s ease;
-  z-index: -1;
-}
-
-.btn-primary:hover::before {
-  left: 0;
-}
-
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(255, 87, 15, 0.4);
 }
 
-/* Card Hover Effects */
-.card-hover {
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.card-hover:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 60px rgba(255, 87, 15, 0.3);
-}
-
-/* Loading Screen */
 .loading-screen {
   position: fixed;
   inset: 0;
