@@ -1,19 +1,14 @@
-// src/components/Hero.jsx - COMPLETE WITH SMOOTH SCROLL
-import { useRef, useEffect, useCallback } from 'react';
+// src/components/Hero.jsx
+import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
-import Particles from "react-tsparticles";
-import { loadSlim } from "tsparticles-slim";
-import { Link as ScrollLink } from 'react-scroll';
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
     const textRef = useRef(null);
     const imgRef = useRef(null);
     const circleRef = useRef(null);
     const satisfactionRef = useRef(null);
-
-    const particlesInit = useCallback(async engine => {
-        await loadSlim(engine);
-    }, []);
+    const navigate = useNavigate();
 
     useEffect(() => {
         gsap.set(".gsap-reveal", { autoAlpha: 0 });
@@ -53,53 +48,17 @@ const Hero = () => {
         });
     }, []);
 
+    // ✅ FIX: View Case Studies - Navigate to page
+    const handleViewCaseStudies = () => {
+        navigate('/case-studies');
+        setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
+    };
+
     return (
         <section className="relative w-full min-h-screen flex items-center justify-center pt-24 pb-8 px-6 overflow-hidden bg-deep-black">
             
-            {/* Particles Background */}
-            <Particles
-                id="hero-particles"
-                init={particlesInit}
-                className="absolute inset-0 z-0 pointer-events-none"
-                options={{
-                    fullScreen: { enable: false },
-                    background: { color: { value: "transparent" } },
-                    fpsLimit: 60,
-                    interactivity: {
-                        events: {
-                            onHover: { enable: true, mode: "bubble" },
-                            resize: true,
-                        },
-                        modes: {
-                            bubble: { distance: 250, duration: 2, size: 4, opacity: 0.8 },
-                        },
-                    },
-                    particles: {
-                        color: { value: ["#FF570F", "#FDE87A"] },
-                        links: {
-                            color: "#FF570F",
-                            distance: 150,
-                            enable: true,
-                            opacity: 0.08,
-                            width: 1,
-                        },
-                        move: {
-                            direction: "none",
-                            enable: true,
-                            outModes: { default: "bounce" },
-                            random: true,
-                            speed: 0.5,
-                            straight: false,
-                        },
-                        number: { density: { enable: true, area: 1000 }, value: 40 },
-                        opacity: { value: 0.3 },
-                        shape: { type: "circle" },
-                        size: { value: { min: 1, max: 2 } },
-                    },
-                    detectRetina: true,
-                }}
-            />
-
             {/* Background Gradients */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-vibrant/10 blur-[120px] rounded-full -z-10"></div>
             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cream/5 blur-[100px] rounded-full -z-10"></div>
@@ -132,19 +91,13 @@ const Hero = () => {
                             </svg>
                         </a>
 
-                        {/* UPDATED: Smooth Scroll Button */}
-                        <ScrollLink
-                            to="case-studies"
-                            spy={true}
-                            smooth={true}
-                            offset={-100}
-                            duration={800}
-className="magnetic px-8 py-3 border-2 border-orange-vibrant text-pure-white 
-font-bold text-xs uppercase tracking-wider 
-hover:bg-orange-vibrant hover:text-deep-black 
-transition-all duration-300"                        >
+                        {/* ✅ FIXED: Now navigates to Case Studies page */}
+                        <button
+                            onClick={handleViewCaseStudies}
+                            className="magnetic px-8 py-3 border-2 border-orange-vibrant text-pure-white font-bold text-xs uppercase tracking-wider hover:bg-orange-vibrant hover:text-deep-black transition-all duration-300 inline-flex items-center justify-center gap-2"
+                        >
                             View Case Studies
-                        </ScrollLink>
+                        </button>
                     </div>
                 </div>
 
@@ -152,40 +105,35 @@ transition-all duration-300"                        >
                 <div ref={imgRef} className="flex-1 relative gsap-reveal">
                     <div className="relative w-[280px] h-[280px] md:w-[400px] md:h-[400px] lg:w-[450px] lg:h-[450px] mx-auto">
 
-                        {/* Main Circular Image */}
                         <div className="absolute inset-0 rounded-full overflow-hidden border-[10px] border-white/5 z-20 shadow-2xl">
                             <img
-                                src="https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1000"
+                                src="https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=800"
                                 alt="Modern Agency Team"
                                 className="w-full h-full object-cover"
                                 loading="eager"
                             />
                         </div>
 
-                        {/* Rotating Border */}
                         <div ref={circleRef} className="absolute -inset-3 border border-dashed border-orange-vibrant/40 rounded-full z-10"></div>
 
-                        {/* Small Floating Image 1 */}
                         <div className="absolute -top-3 -right-3 w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden border-4 border-deep-black z-30 shadow-2xl hidden md:block">
                             <img
                                 src="https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=400"
                                 alt="Business Meeting"
                                 className="w-full h-full object-cover"
-                                loading="eager"
+                                loading="lazy"
                             />
                         </div>
 
-                        {/* Small Floating Image 2 */}
                         <div className="absolute -bottom-4 -left-8 w-32 h-32 md:w-44 md:h-40 rounded-2xl overflow-hidden border-4 border-deep-black z-30 shadow-2xl hidden md:block">
                             <img
                                 src="https://images.pexels.com/photos/3182762/pexels-photo-3182762.jpeg?auto=compress&cs=tinysrgb&w=400"
                                 alt="Creative Designer"
                                 className="w-full h-full object-cover"
-                                loading="eager"
+                                loading="lazy"
                             />
                         </div>
 
-                        {/* Success Badge */}
                         <div className="absolute bottom-8 -right-10 bg-orange-vibrant p-4 md:p-5 rounded-full z-40 shadow-xl flex flex-col items-center justify-center text-deep-black leading-tight">
                             <span ref={satisfactionRef} className="text-xl md:text-2xl font-black">0%</span>
                             <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-tighter text-center">Satisfaction</span>

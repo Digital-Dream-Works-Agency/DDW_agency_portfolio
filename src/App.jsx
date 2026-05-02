@@ -1,3 +1,4 @@
+// src/App.jsx - ADD ABOUT PAGE ROUTE
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
@@ -5,6 +6,7 @@ import ProjectsPage from './pages/Projectspage';
 import ServicesPage from './pages/ServicesPage';
 import CaseStudiesPage from './pages/CaseStudiesPage';
 import ContactPage from './pages/ContactPage';
+import AboutPage from './pages/AboutPage'; // ✅ NEW IMPORT
 import ScrollToTop from './components/ScrollToTop';
 import LoadingScreen from './components/LoadingScreen';
 import SmoothScroll from './components/SmoothScroll';
@@ -17,7 +19,7 @@ const AppContent = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 3000);
+    }, 2000); // ✅ REDUCED from 3000ms
     return () => clearTimeout(timeout);
   }, []);
 
@@ -32,6 +34,7 @@ const AppContent = () => {
             <Route path="/services" element={<PageTransition><ServicesPage /></PageTransition>} />
             <Route path="/case-studies" element={<PageTransition><CaseStudiesPage /></PageTransition>} />
             <Route path="/projects" element={<PageTransition><ProjectsPage /></PageTransition>} />
+            <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} /> {/* ✅ NEW ROUTE */}
             <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
           </Routes>
         )}
@@ -39,7 +42,7 @@ const AppContent = () => {
     </SmoothScroll>
   );
 };
-
+ 
 function App() {
   return (
     <Router>

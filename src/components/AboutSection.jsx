@@ -1,32 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+// src/components/AboutSection.jsx - PROFESSIONAL CLEAN VERSION
+import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 gsap.registerPlugin(ScrollTrigger);
-
-const values = [
-    {
-        number: '01',
-        title: 'No Bullshit Engineering',
-        desc: 'We build what you need, not what sounds impressive. Every technical decision is justified by business outcomes.',
-    },
-    {
-        number: '02',
-        title: 'Skin in the Game',
-        desc: 'We tie our success to yours. If your system fails, we failed. That accountability shapes every line of code we write.',
-    },
-    {
-        number: '03',
-        title: 'Speed Without Shortcuts',
-        desc: 'We move fast because we have done this before. Not because we skip tests, documentation, or architecture.',
-    },
-    {
-        number: '04',
-        title: 'Radical Transparency',
-        desc: 'You know exactly what we are building, why, and when it ships. No surprises. No excuses.',
-    },
-];
 
 const AboutSection = () => {
     const sectionRef = useRef(null);
@@ -34,8 +13,8 @@ const AboutSection = () => {
     useEffect(() => {
         const ctx = gsap.context(() => {
             gsap.fromTo(
-                '.about-fade',
-                { y: 50, opacity: 0 },
+                '.about-reveal',
+                { y: 60, opacity: 0 },
                 {
                     y: 0,
                     opacity: 1,
@@ -56,135 +35,114 @@ const AboutSection = () => {
         <section
             id="about"
             ref={sectionRef}
-            className="relative py-32 bg-deep-black text-white overflow-hidden"
+            className="relative py-24 md:py-32 bg-deep-black overflow-hidden"
         >
             {/* Background */}
-            <div className="absolute inset-0 z-0 pointer-events-none">
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-orange-vibrant/5 blur-[150px] rounded-full" />
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cream/3 blur-[120px] rounded-full" />
+            <div className="absolute inset-0 opacity-20 pointer-events-none">
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-orange-vibrant/30 rounded-full blur-[150px]" />
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cream/20 rounded-full blur-[140px]" />
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto px-6">
 
-                {/* Top section */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-28">
+                {/* Grid Container */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 
-                    {/* Left image stack */}
-                    <div className="about-fade relative hidden lg:block">
-                        <div className="relative h-[580px]">
-                            {/* Main large image */}
-                            <div className="absolute inset-0 rounded-2xl overflow-hidden border border-orange-vibrant/20 shadow-2xl">
+                    {/* LEFT: Image Column - 5 cols */}
+                    <div className="about-reveal lg:col-span-5">
+                        <div className="relative w-full max-w-md mx-auto lg:mx-0">
+                            
+                            {/* Main Image Container */}
+                            <div className="relative aspect-[3/4] rounded-3xl overflow-hidden border-2 border-orange-vibrant/20 shadow-2xl">
                                 <img
-                                    src="https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=800"
-                                    alt="Team"
+                                    src="https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=1000"
+                                    alt="DDW Agency Team"
                                     className="w-full h-full object-cover"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-deep-black/60 to-transparent" />
+                                {/* Gradient Overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-deep-black/70 via-transparent to-transparent" />
                             </div>
 
-                            {/* Overlapping smaller image */}
-                            <div className="absolute -bottom-8 -right-8 w-56 h-64 rounded-2xl overflow-hidden border-4 border-deep-black shadow-2xl z-10">
-                                <img
-                                    src="https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=400"
-                                    alt="Discussion"
-                                    className="w-full h-full object-cover"
-                                />
+                            {/* Floating Badge - Top Left */}
+                            <div className="absolute -top-6 -left-6 bg-orange-vibrant rounded-2xl p-5 shadow-2xl shadow-orange-vibrant/50 z-10">
+                                <div className="text-4xl font-black text-deep-black leading-none">10+</div>
+                                <div className="text-[10px] font-bold uppercase tracking-wider text-deep-black/70 mt-1">Years<br/>Experience</div>
                             </div>
 
-                            {/* Experience badge */}
-                            <div className="absolute top-8 -left-8 bg-orange-vibrant rounded-2xl p-6 z-10 shadow-xl shadow-orange-vibrant/40">
-                                <div className="text-5xl font-black text-deep-black leading-none">10</div>
-                                <div className="text-xs font-black uppercase tracking-widest text-deep-black/70 mt-1">Years<br />Experience</div>
+                            {/* Floating Stat - Bottom Right */}
+                            <div className="absolute -bottom-6 -right-6 bg-bg-surface/95 backdrop-blur-sm border-2 border-orange-vibrant/30 rounded-2xl p-5 shadow-2xl z-10">
+                                <div className="text-3xl font-black gradient-text leading-none">150+</div>
+                                <div className="text-[9px] text-text-muted uppercase tracking-wider mt-2">Projects</div>
                             </div>
 
-                            {/* Projects badge */}
-                            <div className="absolute bottom-20 -left-6 bg-bg-surface border border-orange-vibrant/30 rounded-xl p-4 z-20 shadow-xl">
-                                <div className="text-2xl font-black text-pure-white">150+</div>
-                                <div className="text-[10px] text-text-muted uppercase tracking-widest">Completed Projects</div>
-                            </div>
                         </div>
                     </div>
 
-                    {/* Right content */}
-                    <div>
-                        <div className="about-fade inline-block mb-6">
-                            <span className="px-5 py-2 border border-orange-vibrant/30 bg-orange-vibrant/5 text-orange-vibrant text-xs font-bold uppercase tracking-[0.25em]">
+                    {/* RIGHT: Content Column - 7 cols */}
+                    <div className="about-reveal lg:col-span-7 space-y-6">
+                        
+                        {/* Badge */}
+                        <div className="inline-block">
+                            <span className="px-5 py-2 border-2 border-orange-vibrant/30 bg-orange-vibrant/5 text-orange-vibrant text-xs font-bold uppercase tracking-[0.2em] rounded-full">
                                 Who We Are
                             </span>
                         </div>
 
-                        <h2 className="about-fade text-5xl md:text-6xl font-heading font-black leading-[1.05] mb-8 text-pure-white">
-                            We Are Not An Agency.<br />
-                            <span className="gradient-text">We Are A Partner.</span>
+                        {/* Heading */}
+                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-black leading-[1.1] text-pure-white">
+                            Built By Engineers.<br />
+                            <span className="gradient-text">Not Marketers.</span>
                         </h2>
 
-                        <div className="about-fade space-y-5 text-pure-white/70 leading-relaxed mb-10">
-                            <p>
-                                DDW Agency was built by engineers and growth operators who were frustrated with agencies that overpromise and underdeliver. So we built the firm we always wanted to hire.
-                            </p>
-                            <p>
-                                We operate as an embedded technical partner — not a vendor. We sit inside your business, understand your constraints, and build systems that actually move the needle. Our clients don't come to us for websites. They come to us when the stakes are high.
-                            </p>
-                        </div>
+                        {/* Description */}
+                        <p className="text-base md:text-lg text-pure-white/70 leading-relaxed max-w-2xl">
+                            We don't do cookie-cutter solutions. Every system we build is architected for your specific business constraints — because we've been in your seat.
+                        </p>
 
-                        <div className="about-fade grid grid-cols-2 gap-4 mb-10">
+                        {/* Stats Grid - 2x2 */}
+                        <div className="grid grid-cols-2 gap-4 pt-4">
                             {[
-                                { value: '$50M+', label: 'Revenue Generated for Clients' },
-                                { value: '600%', label: 'Peak ROAS Achieved' },
-                                { value: '99.9%', label: 'System Uptime SLA' },
-                                { value: '24hr', label: 'Average Response Time' },
-                            ].map((stat) => (
-                                <div
-                                    key={stat.label}
-                                    className="p-5 rounded-xl border border-orange-vibrant/15 bg-bg-surface/50"
+                                { value: '$50M+', label: 'Revenue Generated' },
+                                { value: '600%', label: 'Peak ROAS' },
+                                { value: '99.9%', label: 'System Uptime' },
+                                { value: '24hr', label: 'Response Time' },
+                            ].map((stat, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: i * 0.1 }}
+                                    className="p-5 rounded-xl border border-orange-vibrant/10 bg-deep-black/30 hover:border-orange-vibrant/30 transition-all duration-300"
                                 >
                                     <div className="text-2xl font-black gradient-text mb-1">{stat.value}</div>
-                                    <div className="text-xs text-text-muted leading-snug">{stat.label}</div>
-                                </div>
+                                    <div className="text-[10px] text-text-muted uppercase tracking-wider leading-tight">{stat.label}</div>
+                                </motion.div>
                             ))}
                         </div>
 
-                        <div className="about-fade">
+                        {/* CTAs */}
+                        <div className="flex flex-col sm:flex-row gap-4 pt-6">
                             <Link
-                                to="/contact"
-                                className="magnetic inline-flex items-center gap-3 px-8 py-4 bg-orange-vibrant text-deep-black font-bold text-xs uppercase tracking-wider hover:bg-cream transition-all duration-300 shadow-lg shadow-orange-vibrant/30 group"
+                                to="/about"
+                                className="magnetic group inline-flex items-center justify-center gap-2 px-8 py-4 bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-wider hover:bg-cream transition-all duration-300 shadow-lg shadow-orange-vibrant/30"
                             >
-                                Work With Us
+                                Learn Our Story
                                 <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                                     <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
                             </Link>
-                        </div>
-                    </div>
-                </div>
 
-                {/* Values grid */}
-                <div className="about-fade border-t border-orange-vibrant/10 pt-20">
-                    <div className="text-center mb-14">
-                        <h3 className="text-3xl md:text-4xl font-heading font-black text-pure-white mb-3">
-                            How We <span className="gradient-text">Operate</span>
-                        </h3>
-                        <p className="text-text-muted max-w-xl mx-auto text-sm">
-                            Four principles that govern every project, every client, every line of code.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {values.map((v) => (
-                            <div
-                                key={v.number}
-                                className="about-fade group p-7 rounded-2xl border border-orange-vibrant/10 hover:border-orange-vibrant/40 bg-bg-surface/50 transition-all duration-500 hover:-translate-y-2"
+                            <Link
+                                to="/contact"
+                                className="magnetic group inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-orange-vibrant text-pure-white font-bold text-sm uppercase tracking-wider hover:bg-orange-vibrant hover:text-deep-black transition-all duration-300"
                             >
-                                <div className="text-4xl font-black text-orange-vibrant/20 group-hover:text-orange-vibrant/40 transition-colors duration-500 mb-4">
-                                    {v.number}
-                                </div>
-                                <h4 className="text-lg font-heading font-bold text-pure-white mb-3 group-hover:text-orange-vibrant transition-colors duration-300">
-                                    {v.title}
-                                </h4>
-                                <p className="text-sm text-text-muted leading-relaxed">{v.desc}</p>
-                            </div>
-                        ))}
+                                Work With Us
+                            </Link>
+                        </div>
+
                     </div>
+
                 </div>
 
             </div>
