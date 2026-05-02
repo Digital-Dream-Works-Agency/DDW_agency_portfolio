@@ -1,22 +1,46 @@
+// src/components/Footer.jsx
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const Footer = () => {
+    const currentYear = new Date().getFullYear();
+
     return (
-        <footer className="bg-bg-base border-t border-white/5 pt-24 pb-12">
-            <div className="max-w-7xl mx-auto px-6">
+        <footer className="bg-deep-black border-t border-orange-vibrant/10 pt-24 pb-12 relative overflow-hidden">
+            
+            {/* Background Decoration */}
+            <div className="absolute inset-0 opacity-5">
+                <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-orange-vibrant rounded-full blur-3xl" />
+                <div className="absolute top-0 right-1/4 w-96 h-96 bg-cream rounded-full blur-3xl" />
+            </div>
+
+            <div className="relative z-10 max-w-7xl mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
 
                     {/* Brand Section */}
                     <div className="col-span-1 lg:col-span-1">
-                        <div className="mb-6 flex items-center gap-2">
-                            <img src="/logo.jpeg" alt="DDW Agency Logo" className="h-12 w-auto rounded-xl object-contain" />
-                            <span className="text-white font-bold tracking-tight text-xl">DDW Agency</span>
-                        </div>
+                        <motion.div 
+                            className="mb-6 flex items-center gap-3"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                        >
+                            <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-orange-vibrant/30">
+                                <img src="/logo.jpeg" alt="DDW Agency Logo" className="w-full h-full object-contain" />
+                            </div>
+                            <div>
+                                <span className="text-white font-heading font-bold tracking-tight text-2xl block leading-none">
+                                    DDW <span className="gradient-text">Agency</span>
+                                </span>
+                                <span className="text-text-muted text-xs uppercase tracking-wider">Enterprise Solutions</span>
+                            </div>
+                        </motion.div>
+                        
                         <p className="text-text-muted text-sm leading-relaxed mb-8">
                             High-margin technical consulting and production-ready software systems for enterprise brands.
                         </p>
+                        
                         <div className="flex gap-4">
-                            {/* Social Icons */}
                             {[
                                 {
                                     label: 'LinkedIn',
@@ -42,10 +66,10 @@ const Footer = () => {
                                     href={social.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-brand-primary hover:border-brand-primary transition-all cursor-pointer group"
+                                    className="magnetic w-12 h-12 rounded-full border-2 border-orange-vibrant/20 flex items-center justify-center hover:bg-orange-vibrant hover:border-orange-vibrant transition-all group"
                                     aria-label={social.label}
                                 >
-                                    <span className="text-white group-hover:text-bg-base transition-colors">
+                                    <span className="text-orange-vibrant group-hover:text-deep-black transition-colors">
                                         {social.icon}
                                     </span>
                                 </a>
@@ -53,42 +77,49 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* Links Sections */}
+                    {/* Services */}
                     <div>
-                        <h4 className="text-lg font-bold mb-8">Our Focus</h4>
+                        <h4 className="text-lg font-heading font-bold mb-8 text-pure-white">Our Focus</h4>
                         <ul className="space-y-4 text-sm text-text-muted">
-                            <li className="hover:text-brand-primary cursor-pointer transition">Custom Software</li>
-                            <li className="hover:text-brand-primary cursor-pointer transition">AI Integration</li>
-                            <li className="hover:text-brand-primary cursor-pointer transition">Marketing Tech</li>
-                            <li className="hover:text-brand-primary cursor-pointer transition">Strategic Advisory</li>
+                            <li className="hover:text-orange-vibrant cursor-pointer transition-colors hover:translate-x-1 transform duration-300">Custom Software</li>
+                            <li className="hover:text-orange-vibrant cursor-pointer transition-colors hover:translate-x-1 transform duration-300">AI Integration</li>
+                            <li className="hover:text-orange-vibrant cursor-pointer transition-colors hover:translate-x-1 transform duration-300">Marketing Tech</li>
+                            <li className="hover:text-orange-vibrant cursor-pointer transition-colors hover:translate-x-1 transform duration-300">Strategic Advisory</li>
                         </ul>
                     </div>
 
+                    {/* Quick Links */}
                     <div>
-                        <h4 className="text-lg font-bold mb-8">Quick Links</h4>
+                        <h4 className="text-lg font-heading font-bold mb-8 text-pure-white">Quick Links</h4>
                         <ul className="space-y-4 text-sm text-text-muted">
-                            <li className="hover:text-brand-primary cursor-pointer transition">
+                            <li className="hover:text-orange-vibrant cursor-pointer transition-colors hover:translate-x-1 transform duration-300">
                                 <Link to="/projects">Portfolio</Link>
                             </li>
-                            <li className="hover:text-brand-primary cursor-pointer transition">Our Approach</li>
-                            <li className="hover:text-brand-primary cursor-pointer transition">
-                                <a href="https://ddwstudio.com" target="_blank" rel="noopener noreferrer" className="text-brand-primary font-bold">Visit DDW Studio</a>
+                            <li className="hover:text-orange-vibrant cursor-pointer transition-colors hover:translate-x-1 transform duration-300">Our Approach</li>
+                            <li>
+                                <a href="https://ddwstudio.com" target="_blank" rel="noopener noreferrer" className="text-orange-vibrant font-bold hover:text-cream transition-colors">
+                                    Visit DDW Studio →
+                                </a>
                             </li>
-                            <li className="hover:text-brand-primary cursor-pointer transition">Book a Call</li>
+                            <li className="hover:text-orange-vibrant cursor-pointer transition-colors hover:translate-x-1 transform duration-300">Book a Call</li>
                         </ul>
                     </div>
 
-                    {/* Office Section */}
+                    {/* Office */}
                     <div>
-                        <h4 className="text-lg font-bold mb-8">Offices</h4>
+                        <h4 className="text-lg font-heading font-bold mb-8 text-pure-white">Offices</h4>
                         <ul className="space-y-6 text-sm text-text-muted">
-                            <li className="flex items-start gap-3">
-                                <div className="w-5 h-5 rounded-full border border-brand-primary/30 flex items-center justify-center mt-0.5 text-[8px] text-brand-primary font-bold">IT</div>
-                                <span>Rome, <br />Italy</span>
+                            <li className="flex items-start gap-3 group">
+                                <div className="w-8 h-8 rounded-full border-2 border-orange-vibrant/30 flex items-center justify-center text-[10px] text-orange-vibrant font-bold mt-0.5 group-hover:bg-orange-vibrant group-hover:text-deep-black transition-all">
+                                    IT
+                                </div>
+                                <span className="group-hover:text-orange-vibrant transition-colors">Rome, <br />Italy</span>
                             </li>
-                            <li className="flex items-start gap-3">
-                                <div className="w-5 h-5 rounded-full border border-brand-primary/30 flex items-center justify-center mt-0.5 text-[8px] text-brand-primary font-bold">US</div>
-                                <span>Florida, <br />USA</span>
+                            <li className="flex items-start gap-3 group">
+                                <div className="w-8 h-8 rounded-full border-2 border-orange-vibrant/30 flex items-center justify-center text-[10px] text-orange-vibrant font-bold mt-0.5 group-hover:bg-orange-vibrant group-hover:text-deep-black transition-all">
+                                    US
+                                </div>
+                                <span className="group-hover:text-orange-vibrant transition-colors">Florida, <br />USA</span>
                             </li>
                         </ul>
                     </div>
@@ -96,13 +127,13 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Footer */}
-                <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="pt-12 border-t border-orange-vibrant/10 flex flex-col md:flex-row justify-between items-center gap-6">
                     <p className="text-text-muted text-sm">
-                        © 2024 <span className="text-white font-bold tracking-tight text-brand-primary">DDW Agency</span>. All rights reserved.
+                        © {currentYear} <span className="text-orange-vibrant font-bold">DDW Agency</span>. All rights reserved.
                     </p>
                     <div className="flex gap-8 text-sm text-text-muted">
-                        <span className="hover:text-white cursor-pointer">Privacy Policy</span>
-                        <span className="hover:text-white cursor-pointer">Terms & Conditions</span>
+                        <span className="hover:text-orange-vibrant cursor-pointer transition-colors">Privacy Policy</span>
+                        <span className="hover:text-orange-vibrant cursor-pointer transition-colors">Terms & Conditions</span>
                     </div>
                 </div>
 

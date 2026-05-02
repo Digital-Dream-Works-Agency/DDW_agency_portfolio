@@ -1,3 +1,4 @@
+// src/components/Collaborate.jsx
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -9,19 +10,15 @@ const Collaborate = () => {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            // Background slow scale in
             gsap.from(".collab-bg", {
                 scale: 1.2,
                 duration: 2,
                 scrollTrigger: {
                     trigger: sectionRef.current,
                     start: "top 80%",
-                    toggleActions: "play none none none",
-                    fastScrollEnd: true,
                 }
             });
 
-            // Text from left
             gsap.from(".collab-text", {
                 x: -100,
                 opacity: 0,
@@ -31,8 +28,6 @@ const Collaborate = () => {
                 scrollTrigger: {
                     trigger: sectionRef.current,
                     start: "top 80%",
-                    toggleActions: "play none none none",
-                    fastScrollEnd: true,
                 }
             });
         }, sectionRef);
@@ -40,46 +35,44 @@ const Collaborate = () => {
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative py-32 w-full overflow-hidden bg-bg-base border-y border-border-subtle">
+        <section ref={sectionRef} className="relative py-24 w-full overflow-hidden bg-deep-black border-y border-orange-vibrant/20">
 
-            {/* Background Image & Gradient Overlay */}
+            {/* Background Image & Dark Overlay - IMPROVED CONTRAST */}
             <div className="absolute inset-0 z-0">
                 <img
                     src="https://images.pexels.com/photos/3182826/pexels-photo-3182826.jpeg"
                     alt="Collaboration"
                     className="collab-bg w-full h-full object-cover object-right"
                 />
+                {/* Stronger Dark Gradient for Better Text Visibility */}
+                <div className="absolute inset-0 bg-gradient-to-r from-deep-black via-deep-black/95 to-deep-black/70"></div>
             </div>
-            {/* Dark Gradient: Left side solid dark, right side faded */}
-            <div className="absolute inset-0 z-10 bg-gradient-to-r from-bg-base via-bg-base/90 to-bg-base/40 md:to-transparent"></div>
 
             <div className="max-w-[1440px] mx-auto px-6 relative z-20">
-                <div className="max-w-2xl">
+                <div className="max-w-3xl">
 
-                    {/* Badge / Label */}
-                    <div className="collab-text inline-flex items-center gap-3 px-5 py-2 border border-brand-primary/30 mb-8 backdrop-blur-sm">
-                        <span className="w-1.5 h-1.5 rounded-full bg-brand-primary shadow-[0_0_8px_#14cf93]"></span>
-                        <span className="text-text-muted text-[11px] font-bold tracking-[0.2em] uppercase">
+                    {/* Badge - BETTER VISIBILITY */}
+                    <div className="collab-text inline-flex items-center gap-3 px-6 py-3 border-2 border-orange-vibrant/50 mb-10 backdrop-blur-sm bg-orange-vibrant/10 shadow-lg shadow-orange-vibrant/20">
+                        <span className="w-2 h-2 rounded-full bg-orange-vibrant shadow-lg shadow-orange-vibrant/80"></span>
+                        <span className="text-orange-vibrant text-xs font-bold tracking-[0.3em] uppercase">
                             Let's Collaborate
                         </span>
-                        <span className="w-1.5 h-1.5 rounded-full bg-brand-primary shadow-[0_0_8px_#14cf93]"></span>
+                        <span className="w-2 h-2 rounded-full bg-orange-vibrant shadow-lg shadow-orange-vibrant/80"></span>
                     </div>
 
-                    {/* Heading with Outline Text Effect */}
-                    <h2 className="collab-text text-5xl md:text-7xl lg:text-[80px] font-bold leading-[1.1] mb-12 tracking-tight text-white">
+                    {/* Heading - HIGH CONTRAST */}
+                    <h2 className="collab-text text-6xl md:text-7xl lg:text-8xl font-heading font-black leading-[1.05] mb-16 tracking-tight text-pure-white drop-shadow-2xl">
                         Ready to <br />
-                        <span className="text-transparent [-webkit-text-stroke:2px_#a1a1aa] hover:[-webkit-text-stroke:2px_#14cf93] transition-colors duration-500">
-                            work with us?
-                        </span>
+                        <span className="gradient-text text-shadow">work with us?</span>
                     </h2>
 
-                    {/* Sharp CTA Button */}
+                    {/* CTA Button - ENHANCED */}
                     <div className="collab-text">
                         <a
                             href="https://calendly.com/digi-dreamworks/onboarding-call"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-block bg-brand-primary text-bg-base font-bold text-sm uppercase tracking-wider px-10 py-5 hover:bg-white hover:text-bg-base transition-colors duration-300"
+                            className="magnetic inline-block bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-wider px-12 py-6 hover:bg-cream transition-all duration-300 shadow-2xl shadow-orange-vibrant/50 hover:shadow-cream/50"
                         >
                             Book a call
                         </a>

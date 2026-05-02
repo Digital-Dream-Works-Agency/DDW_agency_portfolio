@@ -1,4 +1,4 @@
-// src/components/SolutionsData.jsx
+// src/components/Solutions.jsx
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -121,12 +121,12 @@ const Solutions = () => {
     }, []);
 
     return (
-        <section id="solutions" className="py-32 bg-deep-black relative overflow-hidden">
+        <section id="solutions" className="py-20 bg-deep-black relative overflow-hidden">
             
             {/* Background Mesh */}
-            <div className="absolute inset-0 opacity-20 pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-vibrant/30 rounded-full blur-3xl animate-float" />
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cream/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+            <div className="absolute inset-0 opacity-20">
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-vibrant/20 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cream/20 rounded-full blur-3xl" />
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto px-6" ref={gridRef}>
@@ -139,7 +139,7 @@ const Solutions = () => {
                         viewport={{ once: true }}
                         className="inline-block mb-6"
                     >
-                        <span className="px-6 py-2 border-2 border-orange-vibrant/30 text-orange-vibrant text-xs font-bold uppercase tracking-widest shadow-lg shadow-orange-vibrant/20">
+                        <span className="px-4 py-2 border border-orange-vibrant/30 text-orange-vibrant text-xs font-bold uppercase tracking-wider">
                             Enterprise Solutions
                         </span>
                     </motion.div>
@@ -150,7 +150,7 @@ const Solutions = () => {
                         <span className="gradient-text">Modern Brands</span>
                     </h2>
 
-                    <p className="text-xl text-text-muted max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-xl text-text-muted max-w-2xl mx-auto">
                         Empowering your digital journey with state-of-the-art technology services tailored for growth and innovation.
                     </p>
                 </div>
@@ -160,7 +160,7 @@ const Solutions = () => {
                     {solutionsData.map((solution, index) => (
                         <motion.div
                             key={index}
-                            className="solution-card magnetic group relative h-[500px] bg-bg-surface rounded-2xl overflow-hidden border border-white/5 hover:border-orange-vibrant/50 transition-all duration-500 cursor-pointer"
+                            className="solution-card group relative h-[500px] bg-bg-surface rounded-2xl overflow-hidden border border-white/5 hover:border-orange-vibrant/30 transition-all duration-500 cursor-pointer"
                             whileHover={{ y: -10 }}
                         >
                             {/* Background Image */}
@@ -178,17 +178,17 @@ const Solutions = () => {
                                 
                                 {/* Top: Icon & Number */}
                                 <div className="flex justify-between items-start">
-                                    <div className={`p-4 rounded-xl bg-gradient-to-br ${solution.color} text-deep-black group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg`}>
+                                    <div className={`p-4 rounded-xl bg-gradient-to-br ${solution.color} text-deep-black group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
                                         {solution.icon}
                                     </div>
-                                    <span className="text-6xl font-black text-white/5 group-hover:text-orange-vibrant/10 transition-colors duration-500">
+                                    <span className="text-6xl font-black text-white/5 group-hover:text-orange-vibrant/10 transition-colors">
                                         0{index + 1}
                                     </span>
                                 </div>
 
                                 {/* Bottom: Title, Desc, Features */}
                                 <div className="space-y-4">
-                                    <h3 className="text-2xl font-heading font-bold text-pure-white group-hover:text-orange-vibrant transition-colors duration-300">
+                                    <h3 className="text-2xl font-heading font-bold text-pure-white group-hover:text-orange-vibrant transition-colors">
                                         {solution.title}
                                     </h3>
 
@@ -197,10 +197,10 @@ const Solutions = () => {
                                     </p>
 
                                     {/* Features */}
-                                    <ul className="space-y-2 opacity-0 max-h-0 group-hover:opacity-100 group-hover:max-h-40 transition-all duration-500 overflow-hidden">
+                                    <ul className="space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                                         {solution.features.map((feature, i) => (
                                             <li key={i} className="flex items-center gap-2 text-xs text-pure-white/80">
-                                                <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${solution.color}`} />
+                                                <div className={`w-1 h-1 rounded-full bg-gradient-to-r ${solution.color}`} />
                                                 {feature}
                                             </li>
                                         ))}
@@ -209,7 +209,7 @@ const Solutions = () => {
                             </div>
 
                             {/* Hover Arrow */}
-                            <div className="absolute bottom-8 right-8 w-12 h-12 rounded-full bg-orange-vibrant text-deep-black flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 z-20 shadow-lg shadow-orange-vibrant/50">
+                            <div className="absolute bottom-8 right-8 w-12 h-12 rounded-full bg-orange-vibrant text-deep-black flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 z-20">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                     <path d="M7 17L17 7M17 7H7M17 7V17" />
                                 </svg>

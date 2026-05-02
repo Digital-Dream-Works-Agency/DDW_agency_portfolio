@@ -1,3 +1,4 @@
+// src/pages/Home.jsx
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
@@ -9,10 +10,11 @@ import Collaborate from '../components/Collaborate';
 import Footer from '../components/Footer';
 import Stats from '../components/Stats';
 import HomePortfolio from '../components/Homepage_projects';
+import CaseStudies from '../components/CaseStudies'; // NEW IMPORT
 
 const Home = () => {
     return (
-        <main className="relative w-full">
+        <main className="relative w-full bg-deep-black">
             <Navbar />
             <Hero />
             <Stats />
@@ -20,6 +22,7 @@ const Home = () => {
             <Solutions />
             <AboutSection />
             <HomePortfolio />
+            <CaseStudies /> {/* NEW SECTION */}
             <Testimonials />
             <Collaborate />
             <Footer />

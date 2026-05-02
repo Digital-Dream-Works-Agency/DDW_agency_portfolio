@@ -1,24 +1,21 @@
+// src/components/SmoothScroll.jsx
 import { useEffect } from 'react';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+gsap.registerPlugin(ScrollTrigger);
+
 const SmoothScroll = ({ children }) => {
     useEffect(() => {
-        // Initialize Lenis
         const lenis = new Lenis({
             duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/brs54l4ba6
-            orientation: 'vertical',
-            gestureOrientation: 'vertical',
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             smoothWheel: true,
-            wheelMultiplier: 1,
             smoothTouch: false,
-            touchMultiplier: 2,
-            infinite: false,
         });
 
-        // Synchronize Lenis with ScrollTrigger
+        // Sync Lenis with GSAP ScrollTrigger
         lenis.on('scroll', ScrollTrigger.update);
 
         gsap.ticker.add((time) => {
