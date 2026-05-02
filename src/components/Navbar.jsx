@@ -1,22 +1,101 @@
-// src/components/Navbar.jsx - FINAL CLEAN VERSION
-import { useState, useEffect } from 'react';
+// src/components/Navbar.jsx - FULLY UPGRADED
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { gsap } from 'gsap';
 
-const Navbar = () => {
-    const [scrolled, setScrolled] = useState(false);
-    const [mobileOpen, setMobileOpen] = useState(false);
-    const location = useLocation();
+// ─── Magnetic Hook ─────────────────────────────────────────────────────────────
+const useMagnetic = (ref, strength = 0.3) => {
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const onMove = (e) => {
+            const rect = el.getBoundingClientRect();
+            gsap.to(el, {
+                x: (e.clientX - rect.left - rect.width / 2) * strength,
+                y: (e.clientY - rect.top - rect.height / 2) * strength,
+                duration: 0.4, ease: 'power2.out',
+            });
+        };
+        const onLeave = () => gsap.to(el, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.3)' });
+        el.addEventListener('mousemove', onMove);
+        el.addEventListener('mouseleave', onLeave);
+        return () => { el.removeEventListener('mousemove', onMove); el.removeEventListener('mouseleave', onLeave); };
+    }, [strength]);
+};
+
+// ─── Scroll Progress Bar ───────────────────────────────────────────────────────
+const ScrollProgressBar = () => {
+    const [progress, setProgress] = useState(0);
 
     useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 50);
+        const handleScroll = () => {
+            const total = document.body.scrollHeight - window.innerHeight;
+            setProgress(total > 0 ? (window.scrollY / total) * 100 : 0);
+        };
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    return (
+        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white/5">
+            <motion.div
+                className="h-full origin-left"
+                style={{
+                    width: `${progress}%`,
+                    background: 'linear-gradient(90deg, #FF570F, #FDE87A)',
+                }}
+                transition={{ duration: 0.1 }}
+            />
+        </div>
+    );
+};
+
+// ─── Magnetic CTA Button ───────────────────────────────────────────────────────
+// ─── Magnetic CTA Button ───────────────────────────────────────────────────────
+const MagneticCTA = () => {
+    const ref = useRef(null);
+    useMagnetic(ref, 0.25);
+
+    return (
+        <a // <--- Ye opening tag yahan hona chahiye
+            ref={ref}
+            href="https://calendly.com/digi-dreamworks/onboarding-call"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden lg:inline-flex relative items-center gap-2 px-8 py-3 bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-wider overflow-hidden group transition-colors duration-300 shadow-lg shadow-orange-vibrant/30"
+        >
+            {/* Shine sweep */}
+            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+            {/* Fill on hover */}
+            <span className="absolute inset-0 bg-cream scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" />
+            <span className="relative z-10 flex items-center gap-2">
+                Book a Call
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+            </span>
+        </a>
+    );
+};
+
+// ─── Main Navbar ───────────────────────────────────────────────────────────────
+const Navbar = () => {
+    const [scrolled, setScrolled] = useState(false);
+    const [scrollY, setScrollY] = useState(0);
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const location = useLocation();
+
     useEffect(() => {
-        setMobileOpen(false);
-    }, [location]);
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 50);
+            setScrollY(window.scrollY);
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    useEffect(() => { setMobileOpen(false); }, [location]);
 
     const handleHomeClick = (e) => {
         if (location.pathname === '/') {
@@ -39,36 +118,57 @@ const Navbar = () => {
         return location.pathname.startsWith(path);
     };
 
+    // Shrink values based on scroll
+    const logoSize = scrolled ? 'w-9 h-9' : 'w-12 h-12';
+    const logoTextSize = scrolled ? 'text-lg' : 'text-xl';
+    const navPy = scrolled ? 'py-3' : 'py-6';
+
     return (
         <>
             <motion.nav
                 initial={{ y: -100 }}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.8, ease: [0.6, 0.01, 0.05, 0.95] }}
-                className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 ${
+                className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 ${navPy} ${
                     scrolled
-                        ? 'bg-deep-black/95 backdrop-blur-xl border-b border-orange-vibrant/20 py-4 shadow-2xl'
-                        : 'bg-transparent py-6'
+                        ? 'bg-deep-black/95 backdrop-blur-2xl border-b border-orange-vibrant/20 shadow-2xl shadow-black/50'
+                        : 'bg-transparent'
                 }`}
             >
                 <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
 
-                    <Link 
-                        to="/" 
+                    {/* Logo — shrinks on scroll */}
+                    <Link
+                        to="/"
                         onClick={handleHomeClick}
                         className="flex items-center gap-3 group z-[110]"
                     >
-                        <div className="relative w-12 h-12 rounded-xl overflow-hidden border-2 border-orange-vibrant/30 group-hover:border-orange-vibrant transition-all duration-300 shadow-lg group-hover:shadow-orange-vibrant/50">
-                            <img src="/logo.jpeg" alt="DDW Agency" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <div className={`relative ${logoSize} rounded-xl overflow-hidden border-2 border-orange-vibrant/30 group-hover:border-orange-vibrant transition-all duration-500 shadow-lg group-hover:shadow-orange-vibrant/40`}>
+                            <img
+                                src="/logo.jpeg"
+                                alt="DDW Agency"
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
                         </div>
                         <div className="hidden sm:flex flex-col">
-                            <span className="text-xl font-heading font-bold tracking-tight leading-none">
-                                DDW <span className="gradient-text">Agency</span>
+                            <span className={`${logoTextSize} font-heading font-bold tracking-tight leading-none transition-all duration-500`}>
+                                DDW{' '}
+                                <span style={{
+                                    background: 'linear-gradient(135deg, #FF570F 0%, #FDE87A 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                    backgroundClip: 'text',
+                                }}>
+                                    Agency
+                                </span>
                             </span>
-                            <span className="text-[8px] text-text-muted uppercase tracking-wider">Enterprise Solutions</span>
+                            <span className={`text-[8px] text-text-muted uppercase tracking-wider transition-all duration-500 ${scrolled ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
+                                Enterprise Solutions
+                            </span>
                         </div>
                     </Link>
 
+                    {/* Nav Links */}
                     <ul className="hidden lg:flex items-center gap-8">
                         {navLinks.map((link) => (
                             <li key={link.name}>
@@ -88,18 +188,10 @@ const Navbar = () => {
                         ))}
                     </ul>
 
-                    <a
-                        href="https://calendly.com/digi-dreamworks/onboarding-call"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hidden lg:flex magnetic items-center gap-2 px-8 py-3 bg-orange-vibrant text-deep-black font-bold text-xs uppercase tracking-wider hover:bg-cream transition-all duration-300 shadow-lg shadow-orange-vibrant/30 group"
-                    >
-                        Book a Call
-                        <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                            <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                    </a>
+                    {/* Magnetic CTA */}
+                    <MagneticCTA />
 
+                    {/* Mobile Hamburger */}
                     <button
                         onClick={() => setMobileOpen(!mobileOpen)}
                         className="lg:hidden relative z-[110] w-10 h-10 flex flex-col justify-center items-center gap-1.5"
@@ -110,8 +202,12 @@ const Navbar = () => {
                         <span className={`w-7 h-0.5 bg-orange-vibrant transition-all duration-300 ${mobileOpen ? '-rotate-45 -translate-y-2' : ''}`} />
                     </button>
                 </div>
+
+                {/* Scroll Progress Bar — sirf scrolled state mein dikhta hai */}
+                {scrolled && <ScrollProgressBar />}
             </motion.nav>
 
+            {/* Mobile Menu */}
             <AnimatePresence>
                 {mobileOpen && (
                     <>
@@ -145,7 +241,9 @@ const Navbar = () => {
                                                     if (link.path === '/') handleHomeClick(e);
                                                     setMobileOpen(false);
                                                 }}
-                                                className="block text-3xl font-heading font-bold text-pure-white hover:text-orange-vibrant transition-colors py-2"
+                                                className={`block text-3xl font-heading font-bold transition-colors py-2 ${
+                                                    isActive(link.path) ? 'text-orange-vibrant' : 'text-pure-white hover:text-orange-vibrant'
+                                                }`}
                                             >
                                                 {link.name}
                                             </Link>
@@ -153,6 +251,7 @@ const Navbar = () => {
                                         </motion.li>
                                     ))}
                                 </ul>
+
                                 <motion.a
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -162,8 +261,14 @@ const Navbar = () => {
                                     rel="noopener noreferrer"
                                     className="block w-full text-center px-8 py-4 bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-wider hover:bg-cream transition-all shadow-lg"
                                 >
-                                    Book a Call
+                                    Book a Call →
                                 </motion.a>
+
+                                {/* Mobile footer info */}
+                                <div className="mt-12 pt-8 border-t border-white/5">
+                                    <p className="text-text-muted text-xs uppercase tracking-widest mb-2">Offices</p>
+                                    <p className="text-pure-white/60 text-sm">Rome, Italy • Florida, USA</p>
+                                </div>
                             </div>
                         </motion.div>
                     </>

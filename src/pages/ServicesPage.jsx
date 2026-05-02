@@ -1,10 +1,18 @@
-import React from 'react';
+// src/pages/ServicesPage.jsx - ULTRA ADVANCED VERSION
+import { useEffect, useRef, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import PageHeader from '../components/PageHeader';
-import { motion } from 'framer-motion';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ParallaxProvider, Parallax } from 'react-scroll-parallax';
+import Tilt from 'react-parallax-tilt';
+import SplitType from 'split-type';
 import { Link } from 'react-router-dom';
 
+gsap.registerPlugin(ScrollTrigger);
+
+// ─── Services Data ──────────────────────────────────────────────────────────────
 const servicesData = [
     {
         number: '01',
@@ -22,6 +30,7 @@ const servicesData = [
         timeline: '6–16 weeks',
         color: 'from-orange-vibrant to-orange-soft',
         img: 'https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg?auto=compress&cs=tinysrgb&w=800',
+        icon: '💻',
     },
     {
         number: '02',
@@ -39,6 +48,7 @@ const servicesData = [
         timeline: '4–10 weeks',
         color: 'from-cream to-orange-vibrant',
         img: 'https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=800',
+        icon: '🤖',
     },
     {
         number: '03',
@@ -56,6 +66,7 @@ const servicesData = [
         timeline: '3–8 weeks',
         color: 'from-orange-soft to-maroon-dark',
         img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800',
+        icon: '☁️',
     },
     {
         number: '04',
@@ -73,6 +84,7 @@ const servicesData = [
         timeline: '1–4 weeks',
         color: 'from-orange-vibrant to-cream',
         img: 'https://images.pexels.com/photos/3182811/pexels-photo-3182811.jpeg?auto=compress&cs=tinysrgb&w=800',
+        icon: '📊',
     },
     {
         number: '05',
@@ -90,6 +102,7 @@ const servicesData = [
         timeline: '4–8 weeks',
         color: 'from-cream to-orange-soft',
         img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800',
+        icon: '📈',
     },
     {
         number: '06',
@@ -107,92 +120,331 @@ const servicesData = [
         timeline: 'Ongoing monthly retainer',
         color: 'from-orange-vibrant to-maroon-dark',
         img: 'https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=800',
+        icon: '🔍',
     },
 ];
 
-const ServicesPage = () => {
+// ─── Magnetic Effect Hook ──────────────────────────────────────────────────────
+const useMagneticEffect = (ref, strength = 0.2) => {
+    useEffect(() => {
+        const element = ref.current;
+        if (!element) return;
+
+        const handleMouseMove = (e) => {
+            const rect = element.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+
+            gsap.to(element, {
+                x: x * strength,
+                y: y * strength,
+                duration: 0.4,
+                ease: 'power2.out',
+            });
+        };
+
+        const handleMouseLeave = () => {
+            gsap.to(element, {
+                x: 0,
+                y: 0,
+                duration: 0.6,
+                ease: 'elastic.out(1, 0.3)',
+            });
+        };
+
+        element.addEventListener('mousemove', handleMouseMove);
+        element.addEventListener('mouseleave', handleMouseLeave);
+
+        return () => {
+            element.removeEventListener('mousemove', handleMouseMove);
+            element.removeEventListener('mouseleave', handleMouseLeave);
+        };
+    }, [strength]);
+};
+
+// ─── Service Card Component ────────────────────────────────────────────────────
+const ServiceCard = ({ service, index }) => {
+    const cardRef = useRef(null);
+    const btnRef = useRef(null);
+    useMagneticEffect(btnRef, 0.3);
+
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            gsap.from(cardRef.current, {
+                opacity: 0,
+                y: 60,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: cardRef.current,
+                    start: 'top 85%',
+                    once: true,
+                },
+            });
+        }, cardRef);
+
+        return () => ctx.revert();
+    }, []);
+
     return (
-        <main className="relative w-full bg-deep-black">
-            <Navbar />
-<PageHeader
-    title="Our Services"
-    breadcrumb="Services"
-    subtitle="Enterprise-grade solutions built for businesses that cannot afford to fail."
-/>
-            <section className="py-20 bg-deep-black">
-                <div className="max-w-7xl mx-auto px-6">
+        <div ref={cardRef}>
+            <Tilt
+                tiltMaxAngleX={5}
+                tiltMaxAngleY={5}
+                scale={1.01}
+                transitionSpeed={2000}
+                glareEnable={true}
+                glareMaxOpacity={0.1}
+                glareColor="#FF570F"
+            >
+                <div className="group grid grid-cols-1 lg:grid-cols-12 gap-0 rounded-3xl overflow-hidden border-2 border-orange-vibrant/10 hover:border-orange-vibrant/50 transition-all duration-500 bg-gradient-to-br from-[#151a1d] to-[#0d1012] shadow-2xl hover:shadow-orange-vibrant/20">
+                    {/* Image Column */}
+                    <div className="lg:col-span-4 overflow-hidden relative h-64 lg:h-auto">
+                        <img
+                            src={service.img}
+                            alt={service.title}
+                            className="w-full h-full object-cover opacity-30 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700 grayscale group-hover:grayscale-0"
+                            loading="lazy"
+                        />
+                        {/* Gradient overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#0d1012]/50 to-[#0d1012] lg:bg-gradient-to-r lg:from-transparent lg:via-[#0d1012]/80 lg:to-[#0d1012]" />
+                        
+                        {/* Animated gradient */}
+                        <div className={`absolute inset-0 bg-gradient-to-br ${service.color.replace('to-', 'to-').replace('from-', 'from-')} opacity-0 group-hover:opacity-20 transition-opacity duration-700 mix-blend-overlay`} />
 
-                    <div className="space-y-8">
-                        {servicesData.map((service, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 40 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.7, delay: index * 0.05 }}
-                                className="group grid grid-cols-1 lg:grid-cols-12 gap-0 rounded-2xl overflow-hidden border border-orange-vibrant/10 hover:border-orange-vibrant/40 transition-all duration-500 bg-bg-surface"
-                            >
-                                {/* Image col */}
-                                <div className="lg:col-span-3 overflow-hidden relative h-48 lg:h-auto">
-                                    <img
-                                        src={service.img}
-                                        alt={service.title}
-                                        className="w-full h-full object-cover opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-700 grayscale group-hover:grayscale-0"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-bg-surface hidden lg:block" />
-                                    <div className="absolute top-6 left-6">
-                                        <span className="text-5xl font-black text-orange-vibrant/20 group-hover:text-orange-vibrant/40 transition-colors duration-500">
-                                            {service.number}
-                                        </span>
-                                    </div>
-                                </div>
+                        {/* Number Badge */}
+                        <div className="absolute top-6 left-6">
+                            <div className="relative">
+                                <span className="text-6xl md:text-7xl font-black text-orange-vibrant/20 group-hover:text-orange-vibrant/40 transition-colors duration-500">
+                                    {service.number}
+                                </span>
+                                {/* Icon */}
+                                <span className="absolute -top-2 -right-2 text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform group-hover:rotate-12">
+                                    {service.icon}
+                                </span>
+                            </div>
+                        </div>
 
-                                {/* Content col */}
-                                <div className="lg:col-span-6 p-8 lg:p-10">
-                                    <div className={`inline-block w-10 h-1 bg-gradient-to-r ${service.color} rounded-full mb-4`} />
-                                    <h3 className="text-2xl md:text-3xl font-heading font-black text-pure-white mb-2 group-hover:text-orange-vibrant transition-colors duration-300">
-                                        {service.title}
-                                    </h3>
-                                    <p className="text-orange-vibrant text-sm font-bold mb-4 italic">{service.tagline}</p>
-                                    <p className="text-text-muted text-sm leading-relaxed mb-6">{service.desc}</p>
-                                    <ul className="space-y-2">
-                                        {service.features.map((f, i) => (
-                                            <li key={i} className="flex items-center gap-3 text-sm text-pure-white/70">
-                                                <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${service.color} flex-shrink-0`} />
-                                                {f}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-
-                                {/* Meta col */}
-                                <div className="lg:col-span-3 p-8 lg:p-10 border-t lg:border-t-0 lg:border-l border-orange-vibrant/10 flex flex-col justify-between">
-                                    <div className="space-y-6">
-                                        <div>
-                                            <div className="text-[10px] text-orange-vibrant font-bold uppercase tracking-widest mb-1">Deliverable</div>
-                                            <div className="text-sm text-pure-white/80">{service.deliverable}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-[10px] text-orange-vibrant font-bold uppercase tracking-widest mb-1">Timeline</div>
-                                            <div className="text-sm text-pure-white/80">{service.timeline}</div>
-                                        </div>
-                                    </div>
-                                    <Link
-                                        to="/contact"
-                                        className="mt-8 w-full text-center px-6 py-3 bg-orange-vibrant text-deep-black font-bold text-xs uppercase tracking-wider hover:bg-cream transition-all duration-300 block"
-                                    >
-                                        Get a Quote
-                                    </Link>
-                                </div>
-                            </motion.div>
-                        ))}
+                        {/* Glowing orb */}
+                        <div className="absolute bottom-0 right-0 w-40 h-40 bg-orange-vibrant/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                     </div>
-                </div>
-            </section>
 
-            <Footer />
-        </main>
+                    {/* Content Column */}
+                    <div className="lg:col-span-5 p-8 lg:p-10 relative">
+                        {/* Color bar */}
+                        <div className={`inline-block w-16 h-1.5 bg-gradient-to-r ${service.color} rounded-full mb-6 group-hover:w-24 transition-all duration-500`} />
+
+                        {/* Title */}
+                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-heading font-black text-pure-white mb-3 group-hover:text-orange-vibrant transition-colors duration-300 leading-tight">
+                            {service.title}
+                        </h3>
+
+                        {/* Tagline */}
+                        <p className="text-orange-vibrant text-sm md:text-base font-bold mb-6 italic opacity-80 group-hover:opacity-100 transition-opacity">
+                            {service.tagline}
+                        </p>
+
+                        {/* Description */}
+                        <p className="text-text-muted text-sm md:text-base leading-relaxed mb-8 group-hover:text-pure-white/70 transition-colors">
+                            {service.desc}
+                        </p>
+
+                        {/* Features List */}
+                        <ul className="space-y-3">
+                            {service.features.map((feature, i) => (
+                                <li
+                                    key={i}
+                                    className="flex items-start gap-3 text-sm text-pure-white/70 group-hover:text-pure-white/90 transition-colors duration-300"
+                                    style={{ transitionDelay: `${i * 50}ms` }}
+                                >
+                                    <div className={`mt-1.5 w-2 h-2 rounded-full bg-gradient-to-r ${service.color} flex-shrink-0 group-hover:scale-125 transition-transform duration-300`} />
+                                    <span>{feature}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Meta Column */}
+                    <div className="lg:col-span-3 p-8 lg:p-10 border-t-2 lg:border-t-0 lg:border-l-2 border-orange-vibrant/10 group-hover:border-orange-vibrant/30 transition-colors duration-500 flex flex-col justify-between relative overflow-hidden">
+                        {/* Background glow */}
+                        <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-5 transition-opacity duration-700`} />
+
+                        <div className="relative z-10 space-y-8">
+                            {/* Deliverable */}
+                            <div>
+                                <div className="text-[10px] text-orange-vibrant font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
+                                    <div className={`w-1 h-1 rounded-full bg-gradient-to-r ${service.color}`} />
+                                    Deliverable
+                                </div>
+                                <div className="text-sm text-pure-white/90 leading-relaxed">
+                                    {service.deliverable}
+                                </div>
+                            </div>
+
+                            {/* Timeline */}
+                            <div>
+                                <div className="text-[10px] text-orange-vibrant font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
+                                    <div className={`w-1 h-1 rounded-full bg-gradient-to-r ${service.color}`} />
+                                    Timeline
+                                </div>
+                                <div className="text-sm text-pure-white/90 font-bold">
+                                    {service.timeline}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* CTA Button */}
+                        <Link
+                            ref={btnRef}
+                            to="/contact"
+                            className="relative mt-8 w-full text-center px-6 py-4 bg-orange-vibrant text-deep-black font-bold text-xs uppercase tracking-wider hover:bg-cream transition-all duration-300 block overflow-hidden group/btn shadow-lg shadow-orange-vibrant/40"
+                        >
+                            {/* Shine effect */}
+                            <span className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                            
+                            {/* Text */}
+                            <span className="relative z-10 flex items-center justify-center gap-2">
+                                Get a Quote
+                                <svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                    <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                </svg>
+                            </span>
+                        </Link>
+                    </div>
+
+                    {/* Progress bar at bottom */}
+                    <div className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-orange-vibrant to-cream w-0 group-hover:w-full transition-all duration-1000 ease-out" />
+                </div>
+            </Tilt>
+        </div>
     );
 };
 
-export default ServicesPage;    
+// ─── Main Component ────────────────────────────────────────────────────────────
+const ServicesPage = () => {
+    const [textSplit, setTextSplit] = useState(null);
+
+    // Text Reveal Animation for Header
+    useEffect(() => {
+        const heading = document.querySelector('.services-intro-heading');
+        if (heading && !textSplit) {
+            const split = new SplitType(heading, { types: 'words' });
+            setTextSplit(split);
+
+            gsap.from(split.words, {
+                opacity: 0,
+                y: 50,
+                rotationX: -45,
+                transformOrigin: 'top center',
+                stagger: 0.06,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: heading,
+                    start: 'top 80%',
+                    once: true,
+                },
+            });
+        }
+
+        return () => {
+            if (textSplit) textSplit.revert();
+        };
+    }, [textSplit]);
+
+    return (
+        <ParallaxProvider>
+            <main className="relative w-full bg-deep-black">
+                <Navbar />
+                <PageHeader
+                    title="Our Services"
+                    breadcrumb="Services"
+                    subtitle="Enterprise-grade solutions built for businesses that cannot afford to fail."
+                />
+
+                {/* Intro Section */}
+                <section className="relative py-20 bg-deep-black overflow-hidden">
+                    {/* Animated Grid Background */}
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.02)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
+
+                    {/* Background Glows */}
+                    <Parallax speed={-10}>
+                        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-orange-vibrant/10 blur-[150px] rounded-full animate-pulse" />
+                    </Parallax>
+
+                    <Parallax speed={8}>
+                        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-cream/5 blur-[120px] rounded-full" />
+                    </Parallax>
+
+                    <div className="relative z-10 max-w-4xl mx-auto px-6 text-center mb-20">
+                        <span className="inline-block px-6 py-2.5 border-2 border-orange-vibrant/40 bg-orange-vibrant/10 text-orange-vibrant text-xs font-bold uppercase tracking-[0.25em] rounded-full mb-8 backdrop-blur-sm">
+                            <span className="inline-block w-2 h-2 bg-orange-vibrant rounded-full mr-2 animate-pulse" />
+                            What We Do
+                        </span>
+
+                        <h2 className="services-intro-heading text-4xl md:text-5xl lg:text-6xl font-heading font-black text-pure-white mb-6 leading-tight perspective-1000">
+                            Solutions That Scale{' '}
+                            <span
+                                style={{
+                                    background: 'linear-gradient(135deg, #FF570F 0%, #FDE87A 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                    backgroundClip: 'text',
+                                    display: 'inline-block',
+                                }}
+                            >
+                                With Your Business
+                            </span>
+                        </h2>
+
+                        <p className="text-lg md:text-xl text-text-muted leading-relaxed">
+                            From technical strategy to full-stack execution, we build systems that drive measurable growth.
+                        </p>
+                    </div>
+                </section>
+
+                {/* Services List */}
+                <section className="py-20 bg-deep-black">
+                    <div className="max-w-[1600px] mx-auto px-6">
+                        <div className="space-y-12">
+                            {servicesData.map((service, index) => (
+                                <ServiceCard key={index} service={service} index={index} />
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* CTA Section */}
+                <section className="py-24 bg-gradient-to-b from-deep-black to-[#0d1012]">
+                    <div className="max-w-4xl mx-auto px-6 text-center">
+                        <h3 className="text-4xl md:text-5xl font-heading font-black text-pure-white mb-6">
+                            Not Sure Where to Start?
+                        </h3>
+                        <p className="text-lg text-text-muted mb-10">
+                            Book a free 30-minute consultation to discuss your technical challenges.
+                        </p>
+                        <Link
+                            to="/contact"
+                            className="inline-flex items-center gap-3 px-10 py-5 bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-wider hover:bg-cream transition-all duration-300 shadow-lg shadow-orange-vibrant/40 group"
+                        >
+                            Schedule Consultation
+                            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                        </Link>
+                    </div>
+                </section>
+
+                <Footer />
+
+                <style jsx>{`
+                    .perspective-1000 {
+                        perspective: 1000px;
+                    }
+                `}</style>
+            </main>
+        </ParallaxProvider>
+    );
+};
+
+export default ServicesPage;

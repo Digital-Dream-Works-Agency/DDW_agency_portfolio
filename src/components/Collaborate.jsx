@@ -1,86 +1,308 @@
 // src/components/Collaborate.jsx
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ParallaxProvider, Parallax } from 'react-scroll-parallax';
+import Tilt from 'react-parallax-tilt';
+import SplitType from 'split-type';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// ─── Magnetic Hook ─────────────────────────────────────────────────────────────
+const useMagneticEffect = (ref, strength = 0.3) => {
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const onMove = (e) => {
+            const rect = el.getBoundingClientRect();
+            const x = (e.clientX - rect.left - rect.width / 2) * strength;
+            const y = (e.clientY - rect.top - rect.height / 2) * strength;
+            gsap.to(el, { x, y, duration: 0.4, ease: 'power2.out' });
+        };
+        const onLeave = () => gsap.to(el, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.3)' });
+        el.addEventListener('mousemove', onMove);
+        el.addEventListener('mouseleave', onLeave);
+        return () => { el.removeEventListener('mousemove', onMove); el.removeEventListener('mouseleave', onLeave); };
+    }, [strength]);
+};
+
+// ─── Magnetic Button ───────────────────────────────────────────────────────────
+// ─── Magnetic Button ───────────────────────────────────────────────────────────
+const MagneticButton = ({ href, children }) => {
+    const ref = useRef(null);
+    useMagneticEffect(ref, 0.25);
+    
+    return (
+        <a // <--- Yahan tag ko bracket se start karein
+            ref={ref}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="relative group inline-flex items-center gap-3 bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-widest px-12 py-6 overflow-hidden shadow-2xl shadow-orange-vibrant/40 hover:shadow-cream/30 transition-shadow duration-500"
+        >
+            {/* Shine sweep */}
+            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+            {/* Hover fill */}
+            <span className="absolute inset-0 bg-cream scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" />
+            <span className="relative z-10 flex items-center gap-3">
+                {children}
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+            </span>
+        </a>
+    );
+};
+// ─── Floating Stat Pill ────────────────────────────────────────────────────────
+const StatPill = ({ value, label, delay }) => {
+    const pillRef = useRef(null);
+    useEffect(() => {
+        gsap.to(pillRef.current, {
+            y: -10,
+            duration: 2 + delay,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            delay,
+        });
+    }, [delay]);
+
+    return (
+        <div
+            ref={pillRef}
+            className="absolute bg-deep-black/80 backdrop-blur-md border border-orange-vibrant/30 rounded-2xl px-5 py-3 shadow-2xl shadow-orange-vibrant/10"
+        >
+            <div className="text-xl font-black text-orange-vibrant">{value}</div>
+            <div className="text-xs text-pure-white/50 uppercase tracking-wider">{label}</div>
+        </div>
+    );
+};
+
+// ─── Main Component ────────────────────────────────────────────────────────────
 const Collaborate = () => {
     const sectionRef = useRef(null);
+    const headingRef = useRef(null);
+    const badgeRef = useRef(null);
+    const ctaRef = useRef(null);
+    const statsRef = useRef(null);
 
+    // ── SplitType text reveal ──
+    useEffect(() => {
+        if (!headingRef.current) return;
+
+        const split = new SplitType(headingRef.current, { types: 'words' });
+
+        gsap.from(split.words, {
+            opacity: 0,
+            y: 60,
+            rotationX: -40,
+            transformOrigin: 'top center',
+            stagger: 0.08,
+            duration: 1,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: headingRef.current,
+                start: 'top 80%',
+            },
+        });
+
+        return () => split.revert();
+    }, []);
+
+    // ── Other animations ──
     useEffect(() => {
         const ctx = gsap.context(() => {
-            gsap.from(".collab-bg", {
-                scale: 1.2,
-                duration: 2,
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: "top 80%",
-                }
+
+            // Badge slide in
+            gsap.from(badgeRef.current, {
+                opacity: 0,
+                x: -40,
+                duration: 0.8,
+                ease: 'power3.out',
+                scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' },
             });
 
-            gsap.from(".collab-text", {
-                x: -100,
+            // CTA button pop in
+            gsap.from(ctaRef.current, {
                 opacity: 0,
-                duration: 1.2,
-                stagger: 0.2,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: "top 80%",
-                }
+                y: 30,
+                scale: 0.95,
+                duration: 0.8,
+                delay: 0.5,
+                ease: 'back.out(1.7)',
+                scrollTrigger: { trigger: sectionRef.current, start: 'top 75%' },
             });
+
+            // Stats stagger in
+            gsap.from('.collab-stat', {
+                opacity: 0,
+                scale: 0.8,
+                stagger: 0.15,
+                duration: 0.7,
+                ease: 'back.out(1.5)',
+                scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' },
+            });
+
+            // Background image parallax scale
+            gsap.fromTo('.collab-bg-img', 
+                { scale: 1.15 },
+                {
+                    scale: 1,
+                    duration: 2,
+                    ease: 'power2.out',
+                    scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' },
+                }
+            );
+
         }, sectionRef);
+
         return () => ctx.revert();
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative py-24 w-full overflow-hidden bg-deep-black border-y border-orange-vibrant/20">
+        <ParallaxProvider>
+            <section
+                ref={sectionRef}
+                className="relative py-32 w-full overflow-hidden bg-deep-black border-y border-orange-vibrant/20"
+            >
+                {/* ── Background Image with Parallax ── */}
+                <Parallax speed={-10} className="absolute inset-0 z-0">
+                    <div className="absolute inset-0">
+                        <img
+                            src="https://images.pexels.com/photos/3182826/pexels-photo-3182826.jpeg"
+                            alt="Collaboration"
+                            className="collab-bg-img w-full h-full object-cover object-right"
+                        />
+                        {/* Multi-layer gradient for depth */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-deep-black via-deep-black/92 to-deep-black/50" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-deep-black/60 via-transparent to-transparent" />
+                    </div>
+                </Parallax>
 
-            {/* Background Image & Dark Overlay - IMPROVED CONTRAST */}
-            <div className="absolute inset-0 z-0">
-                <img
-                    src="https://images.pexels.com/photos/3182826/pexels-photo-3182826.jpeg"
-                    alt="Collaboration"
-                    className="collab-bg w-full h-full object-cover object-right"
+                {/* ── Animated grid overlay ── */}
+                <div
+                    className="absolute inset-0 z-0 pointer-events-none opacity-30"
+                    style={{
+                        backgroundImage: 'linear-gradient(rgba(255,87,15,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,87,15,0.04) 1px, transparent 1px)',
+                        backgroundSize: '50px 50px',
+                        maskImage: 'linear-gradient(to right, black 40%, transparent 100%)',
+                    }}
                 />
-                {/* Stronger Dark Gradient for Better Text Visibility */}
-                <div className="absolute inset-0 bg-gradient-to-r from-deep-black via-deep-black/95 to-deep-black/70"></div>
-            </div>
 
-            <div className="max-w-[1440px] mx-auto px-6 relative z-20">
-                <div className="max-w-3xl">
+                {/* ── Background glow blobs ── */}
+                <Parallax speed={8}>
+                    <div className="absolute top-0 left-0 w-96 h-96 bg-orange-vibrant/8 blur-[120px] rounded-full pointer-events-none" />
+                </Parallax>
 
-                    {/* Badge - BETTER VISIBILITY */}
-                    <div className="collab-text inline-flex items-center gap-3 px-6 py-3 border-2 border-orange-vibrant/50 mb-10 backdrop-blur-sm bg-orange-vibrant/10 shadow-lg shadow-orange-vibrant/20">
-                        <span className="w-2 h-2 rounded-full bg-orange-vibrant shadow-lg shadow-orange-vibrant/80"></span>
-                        <span className="text-orange-vibrant text-xs font-bold tracking-[0.3em] uppercase">
-                            Let's Collaborate
-                        </span>
-                        <span className="w-2 h-2 rounded-full bg-orange-vibrant shadow-lg shadow-orange-vibrant/80"></span>
+                <div className="max-w-7xl mx-auto px-6 relative z-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+                        {/* ── LEFT: Main Content ── */}
+                        <div>
+                            {/* Badge */}
+                            <div
+                                ref={badgeRef}
+                                className="inline-flex items-center gap-3 px-6 py-3 border border-orange-vibrant/40 mb-10 backdrop-blur-sm bg-orange-vibrant/8 shadow-lg shadow-orange-vibrant/15"
+                            >
+                                <span className="w-2 h-2 rounded-full bg-orange-vibrant animate-pulse shadow-lg shadow-orange-vibrant/80" />
+                                <span className="text-orange-vibrant text-xs font-bold tracking-[0.3em] uppercase">
+                                    Let's Collaborate
+                                </span>
+                                <span className="w-2 h-2 rounded-full bg-orange-vibrant animate-pulse shadow-lg shadow-orange-vibrant/80" />
+                            </div>
+
+                            {/* Heading — SplitType target */}
+                            <h2
+                                ref={headingRef}
+                                className="text-5xl md:text-6xl lg:text-7xl font-heading font-black leading-[1.05] mb-6 tracking-tight text-pure-white perspective-1000"
+                            >
+                                Ready to <br />
+                                {/* Gradient span separate so SplitType doesn't break it */}
+                            </h2>
+                            <h2
+                                className="text-5xl md:text-6xl lg:text-7xl font-heading font-black leading-[1.05] mb-12 tracking-tight"
+                                style={{
+                                    background: 'linear-gradient(135deg, #FF570F 0%, #FDE87A 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                    backgroundClip: 'text',
+                                    display: 'block',
+                                }}
+                            >
+                                work with us?
+                            </h2>
+
+                            {/* Supporting text */}
+                            <p className="text-pure-white/60 text-lg leading-relaxed mb-10 max-w-md">
+                                From strategy to execution — we build systems that drive measurable growth. One call is all it takes.
+                            </p>
+
+                            {/* CTA */}
+                            <div ref={ctaRef}>
+                                <MagneticButton href="https://calendly.com/digi-dreamworks/onboarding-call">
+                                    Book a Strategy Call
+                                </MagneticButton>
+                            </div>
+                        </div>
+
+                        {/* ── RIGHT: 3D Tilt Card + Floating Stats ── */}
+                        <div ref={statsRef} className="hidden lg:block relative h-80">
+
+                            <Tilt
+                                tiltMaxAngleX={8}
+                                tiltMaxAngleY={8}
+                                scale={1.02}
+                                transitionSpeed={2000}
+                                glareEnable={true}
+                                glareMaxOpacity={0.1}
+                                glareColor="#FF570F"
+                                className="absolute inset-0"
+                            >
+                                <div
+                                    className="w-full h-full rounded-3xl border border-orange-vibrant/15 backdrop-blur-sm flex items-center justify-center relative overflow-hidden"
+                                    style={{ background: 'linear-gradient(135deg, rgba(255,87,15,0.05) 0%, rgba(10,10,10,0.8) 100%)' }}
+                                >
+                                    {/* Inner glow */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/5 to-transparent rounded-3xl" />
+
+                                    {/* Center text */}
+                                    <div className="text-center relative z-10">
+                                        <div
+                                            className="text-6xl font-black mb-2"
+                                            style={{
+                                                background: 'linear-gradient(135deg, #FF570F 0%, #FDE87A 100%)',
+                                                WebkitBackgroundClip: 'text',
+                                                WebkitTextFillColor: 'transparent',
+                                                backgroundClip: 'text',
+                                            }}
+                                        >
+                                            100%
+                                        </div>
+                                        <div className="text-pure-white/40 text-xs uppercase tracking-widest">Client Satisfaction</div>
+                                    </div>
+                                </div>
+                            </Tilt>
+
+                            {/* Floating stat pills */}
+                            <div className="collab-stat absolute -top-6 -left-6 z-20">
+                                <StatPill value="600%" label="Peak ROAS" delay={0} />
+                            </div>
+                            <div className="collab-stat absolute -bottom-6 -right-6 z-20">
+                                <StatPill value="418K" label="Purchases" delay={0.4} />
+                            </div>
+                            <div className="collab-stat absolute top-1/2 -right-10 z-20">
+                                <StatPill value="$0.09" label="CPC Achieved" delay={0.8} />
+                            </div>
+                        </div>
+
                     </div>
-
-                    {/* Heading - HIGH CONTRAST */}
-                    <h2 className="collab-text text-6xl md:text-7xl lg:text-8xl font-heading font-black leading-[1.05] mb-16 tracking-tight text-pure-white drop-shadow-2xl">
-                        Ready to <br />
-                        <span className="gradient-text text-shadow">work with us?</span>
-                    </h2>
-
-                    {/* CTA Button - ENHANCED */}
-                    <div className="collab-text">
-                        <a
-                            href="https://calendly.com/digi-dreamworks/onboarding-call"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="magnetic inline-block bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-wider px-12 py-6 hover:bg-cream transition-all duration-300 shadow-2xl shadow-orange-vibrant/50 hover:shadow-cream/50"
-                        >
-                            Book a call
-                        </a>
-                    </div>
-
                 </div>
-            </div>
-        </section>
+
+                <style jsx>{`
+                    .perspective-1000 { perspective: 1000px; }
+                `}</style>
+            </section>
+        </ParallaxProvider>
     );
 };
 
