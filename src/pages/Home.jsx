@@ -1,5 +1,6 @@
 // src/pages/Home.jsx - COMPLETE WITH PROJECTS SECTION
 import React from 'react';
+import { useSeoMeta, SEO } from '../lib/useSeoMeta';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import Stats from '../components/Stats';
@@ -12,6 +13,7 @@ import Collaborate from '../components/Collaborate';
 import Footer from '../components/Footer';
 
 const Home = () => {
+    useSeoMeta(SEO.home);
     return (
         <main className="relative w-full bg-deep-black">
             <Navbar />

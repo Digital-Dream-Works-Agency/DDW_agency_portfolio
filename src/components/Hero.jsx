@@ -1,4 +1,5 @@
-import { useRef, useEffect, useState } from 'react';
+// src/components/Hero.jsx
+import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useNavigate } from 'react-router-dom';
@@ -6,209 +7,147 @@ import SplitType from 'split-type';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Native GSAP Tilt Component ────────────────────────────────────────────────
-const GSAPTilt = ({ children, className }) => {
-    const tiltRef = useRef(null);
-
-    useEffect(() => {
-        const el = tiltRef.current;
-        if (!el) return;
-
-        const xTo = gsap.quickTo(el, "rotationY", { ease: "power2.out", duration: 0.5 });
-        const yTo = gsap.quickTo(el, "rotationX", { ease: "power2.out", duration: 0.5 });
-
-        const handleMouseMove = (e) => {
-            const rect = el.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            xTo(x * 15);
-            yTo(-y * 15);
-        };
-
-        const handleMouseLeave = () => {
-            xTo(0);
-            yTo(0);
-        };
-
-        el.addEventListener('mousemove', handleMouseMove);
-        el.addEventListener('mouseleave', handleMouseLeave);
-        
-        return () => {
-            el.removeEventListener('mousemove', handleMouseMove);
-            el.removeEventListener('mouseleave', handleMouseLeave);
-        };
-    }, []);
-
-    return (
-        <div ref={tiltRef} className={className} style={{ transformPerspective: 1000 }}>
-            {children}
-        </div>
-    );
-};
-
-// ─── Magnetic Effect Hook ──────────────────────────────────────────────────────
 const useMagneticEffect = (ref, strength = 0.2) => {
     useEffect(() => {
         const element = ref.current;
         if (!element) return;
         const xTo = gsap.quickTo(element, "x", { duration: 0.4, ease: "power2.out" });
         const yTo = gsap.quickTo(element, "y", { duration: 0.4, ease: "power2.out" });
-
         const handleMouseMove = (e) => {
             const rect = element.getBoundingClientRect();
             xTo((e.clientX - rect.left - rect.width / 2) * strength);
             yTo((e.clientY - rect.top - rect.height / 2) * strength);
         };
         const handleMouseLeave = () => { xTo(0); yTo(0); };
-
         element.addEventListener('mousemove', handleMouseMove);
         element.addEventListener('mouseleave', handleMouseLeave);
         return () => { element.removeEventListener('mousemove', handleMouseMove); element.removeEventListener('mouseleave', handleMouseLeave); };
     }, [strength]);
 };
 
-// ─── Advanced CTA Button Component ─────────────────────────────────────────────
 const CTAButton = ({ href, children, variant = 'primary', onClick, external = false }) => {
     const btnRef = useRef(null);
     useMagneticEffect(btnRef, 0.25);
-
-    const baseStyles = 'relative group px-8 py-3 font-bold text-xs uppercase tracking-wider transition-all duration-300 inline-flex items-center justify-center gap-2 overflow-hidden shadow-lg';
+    const base = 'relative group px-8 py-3.5 font-bold text-xs uppercase tracking-wider transition-all duration-300 inline-flex items-center justify-center gap-2 overflow-hidden shadow-lg';
     const variants = {
         primary: 'bg-orange-vibrant text-deep-black hover:bg-cream',
-        secondary: 'border-2 border-orange-vibrant text-pure-white hover:bg-orange-vibrant hover:text-deep-black',
+        secondary: 'border-2 border-orange-vibrant/60 text-pure-white hover:bg-orange-vibrant hover:text-deep-black',
     };
-
-    const ButtonContent = (
+    const inner = (
         <>
-            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
             <span className="relative z-10 flex items-center gap-2">
                 {children}
-                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
             </span>
-            <span className="absolute inset-0 border-2 border-white/0 group-hover:border-white/20 transition-all duration-500" />
         </>
     );
-
-    if (external) return <a ref={btnRef} href={href} target="_blank" rel="noopener noreferrer" className={`${baseStyles} ${variants[variant]}`}>{ButtonContent}</a>;
-    return <button ref={btnRef} onClick={onClick} className={`${baseStyles} ${variants[variant]}`}>{ButtonContent}</button>;
+    if (external) return <a ref={btnRef} href={href} target="_blank" rel="noopener noreferrer" className={`${base} ${variants[variant]}`}>{inner}</a>;
+    return <button ref={btnRef} onClick={onClick} className={`${base} ${variants[variant]}`}>{inner}</button>;
 };
 
-// ─── Floating Badge Component ──────────────────────────────────────────────────
-const FloatingBadge = ({ satisfactionRef }) => {
-    const badgeRef = useRef(null);
-
+const AbstractBrandVisual = () => {
+    const containerRef = useRef(null);
     useEffect(() => {
-        gsap.to(badgeRef.current, { y: -12, duration: 2.5, repeat: -1, yoyo: true, ease: 'power1.inOut' });
-        gsap.to(badgeRef.current, { rotation: 5, duration: 3, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+        const ctx = gsap.context(() => {
+            gsap.to('.orb-1', { scale: 1.15, duration: 4, repeat: -1, yoyo: true, ease: 'power1.inOut' });
+            gsap.to('.orb-2', { scale: 0.88, duration: 5.5, repeat: -1, yoyo: true, ease: 'power1.inOut', delay: 1 });
+            gsap.to('.orb-3', { scale: 1.1, duration: 3.5, repeat: -1, yoyo: true, ease: 'power1.inOut', delay: 0.5 });
+            gsap.to('.ring-rotate', { rotation: 360, duration: 28, repeat: -1, ease: 'none', transformOrigin: '50% 50%' });
+            gsap.to('.ring-rotate-2', { rotation: -360, duration: 20, repeat: -1, ease: 'none', transformOrigin: '50% 50%' });
+        }, containerRef);
+        return () => ctx.revert();
     }, []);
-
     return (
-        <div ref={badgeRef} className="absolute bottom-8 -right-10 bg-gradient-to-br from-orange-vibrant to-orange-600 p-4 md:p-5 rounded-full z-40 shadow-2xl shadow-orange-vibrant/50 flex flex-col items-center justify-center text-deep-black border-4 border-deep-black group cursor-default">
-            <div className="absolute inset-0 rounded-full border-2 border-orange-vibrant animate-ping opacity-20" />
-            <span ref={satisfactionRef} className="text-xl md:text-2xl font-black mb-0.5">0%</span>
-            <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-tighter text-center leading-tight">Client<br/>Satisfaction</span>
-            <div className="absolute inset-0 rounded-full bg-cream opacity-0 group-hover:opacity-30 blur-xl transition-opacity duration-500" />
+        <div ref={containerRef} className="relative w-[280px] h-[280px] md:w-[420px] md:h-[420px] lg:w-[480px] lg:h-[480px] mx-auto flex items-center justify-center">
+            <div className="orb-1 absolute inset-0 rounded-full bg-gradient-to-br from-[#FF570F]/30 to-[#630D00]/20 blur-[60px]" />
+            <div className="orb-2 absolute inset-[15%] rounded-full bg-gradient-to-tr from-[#EE7D1D]/40 to-[#FF570F]/10 blur-[40px]" />
+            <div className="orb-3 absolute inset-[30%] rounded-full bg-gradient-to-br from-[#FDE87A]/30 to-[#FF570F]/40 blur-[30px]" />
+            <div className="ring-rotate absolute inset-0 rounded-full border border-dashed border-orange-vibrant/30" />
+            <div className="ring-rotate-2 absolute inset-[8%] rounded-full border border-dotted border-cream/20" />
+            <div className="absolute top-[12%] left-[50%] -translate-x-1/2 w-2 h-2 rounded-full bg-orange-vibrant shadow-lg shadow-orange-vibrant/60" />
+            <div className="absolute bottom-[15%] right-[20%] w-1.5 h-1.5 rounded-full bg-cream shadow-lg shadow-cream/50" />
+            <div className="absolute left-[10%] top-[45%] w-1.5 h-1.5 rounded-full bg-orange-soft shadow-lg shadow-orange-soft/50" />
+            <div className="relative z-10 flex flex-col items-center justify-center w-28 h-28 md:w-36 md:h-36 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d] border border-orange-vibrant/20 shadow-2xl shadow-orange-vibrant/10 backdrop-blur-sm">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" className="mb-2 opacity-80">
+                    <rect x="4" y="4" width="14" height="14" rx="2" stroke="#FF570F" strokeWidth="1.5" />
+                    <rect x="22" y="4" width="14" height="14" rx="2" stroke="#EE7D1D" strokeWidth="1.5" />
+                    <rect x="4" y="22" width="14" height="14" rx="2" stroke="#EE7D1D" strokeWidth="1.5" />
+                    <rect x="22" y="22" width="14" height="14" rx="2" stroke="#FDE87A" strokeWidth="1.5" />
+                    <circle cx="20" cy="20" r="3" fill="#FF570F" />
+                </svg>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-text-muted">Systems</span>
+            </div>
+            <div className="absolute top-[8%] right-[10%] px-3 py-1.5 rounded-lg bg-[#111]/80 border border-orange-vibrant/20 backdrop-blur-sm hidden md:flex items-center gap-2 shadow-lg">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                <span className="text-[10px] font-mono text-text-muted">US + EU</span>
+            </div>
+            <div className="absolute bottom-[12%] left-[5%] px-3 py-1.5 rounded-lg bg-[#111]/80 border border-cream/20 backdrop-blur-sm hidden md:flex items-center gap-2 shadow-lg">
+                <div className="w-1.5 h-1.5 rounded-full bg-orange-vibrant animate-pulse" />
+                <span className="text-[10px] font-mono text-text-muted">Retainer-based</span>
+            </div>
         </div>
     );
 };
 
-// ─── Main Hero Component ───────────────────────────────────────────────────────
 const Hero = () => {
     const sectionRef = useRef(null);
-    const textRef = useRef(null);
-    const imgRef = useRef(null);
-    const circleRef = useRef(null);
-    const satisfactionRef = useRef(null);
-    const gradientTextRef = useRef(null);
-    const prlx1Ref = useRef(null);
-    const prlx2Ref = useRef(null);
-    const prlx3Ref = useRef(null);
-    const prlx4Ref = useRef(null);
+    const headlineRef = useRef(null);
     const navigate = useNavigate();
 
-    // Container Animations & Counter
     useEffect(() => {
-        gsap.set('.gsap-reveal', { autoAlpha: 0 });
         const ctx = gsap.context(() => {
-            const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
-            tl.to(textRef.current, { autoAlpha: 1, x: 0, duration: 1.2, delay: 0.2 }, 0)
-              .to(imgRef.current, { autoAlpha: 1, x: 0, scale: 1, duration: 1.2 }, '-=0.9')
-              .from('.hero-description', { opacity: 0, y: 30, duration: 0.8 }, '-=0.5')
-              .from('.hero-cta', { opacity: 0, y: 20, stagger: 0.15, duration: 0.7 }, '-=0.4');
-
-            gsap.to(circleRef.current, { rotation: 360, duration: 25, repeat: -1, ease: 'none' });
-
-            const obj = { value: 0 };
-            gsap.to(obj, {
-                value: 100, duration: 2.5, delay: 1.5, ease: 'power2.out',
-                onUpdate: () => { if (satisfactionRef.current) satisfactionRef.current.innerText = Math.floor(obj.value) + '%'; }
-            });
-
-            // Native GSAP Parallax
-            gsap.to(prlx1Ref.current, { yPercent: -40, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
-            gsap.to(prlx2Ref.current, { yPercent: 30, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
-            gsap.to(prlx3Ref.current, { yPercent: 15, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
-            gsap.to(prlx4Ref.current, { yPercent: -20, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
-
+            if (headlineRef.current) {
+                const split = new SplitType(headlineRef.current, { types: 'words' });
+                gsap.from(split.words, { opacity: 0, y: 40, duration: 0.9, stagger: 0.06, ease: 'power3.out', delay: 0.2 });
+            }
+            gsap.from('.hero-sub', { opacity: 0, y: 24, duration: 0.8, ease: 'power2.out', delay: 0.7 });
+            gsap.from('.hero-cta', { opacity: 0, y: 16, stagger: 0.12, duration: 0.7, ease: 'power2.out', delay: 0.95 });
+            gsap.from('.hero-trust', { opacity: 0, duration: 0.6, ease: 'power2.out', delay: 1.3 });
+            gsap.from('.hero-visual', { opacity: 0, x: 40, duration: 1.1, ease: 'power3.out', delay: 0.4 });
         }, sectionRef);
-
         return () => ctx.revert();
     }, []);
 
-    const handleViewCaseStudies = () => {
-        navigate('/case-studies');
-        setTimeout(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 100);
-    };
+    const handleViewWork = () => { navigate('/projects'); setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100); };
 
     return (
-        <section ref={sectionRef} className="relative w-full min-h-screen flex items-center justify-center pt-24 pb-8 px-6 overflow-hidden bg-deep-black">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.02)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
-
-            <div ref={prlx1Ref} className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-vibrant/10 blur-[120px] rounded-full -z-10 animate-pulse" />
-            <div ref={prlx2Ref} className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cream/5 blur-[100px] rounded-full -z-10" />
-
-            <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 relative z-10">
-                <div className="flex-1 text-center lg:text-left gsap-reveal" ref={textRef}>
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-heading font-black leading-[1.1] mb-0 text-pure-white perspective-[1000px]">
-                        Strategic Software <br /> Consulting &
+        <section ref={sectionRef} className="relative w-full min-h-screen flex items-center justify-center pt-28 pb-12 px-6 overflow-hidden bg-deep-black">
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.025)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_40%,black,transparent)]" />
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-orange-vibrant/8 blur-[140px] rounded-full -z-10" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#630D00]/15 blur-[100px] rounded-full -z-10" />
+            <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16 relative z-10">
+                <div className="flex-1 text-center lg:text-left max-w-2xl">
+                    <div className="hero-trust inline-flex items-center gap-2 px-4 py-2 border border-orange-vibrant/30 bg-orange-vibrant/8 rounded-full mb-8">
+                        <div className="w-1.5 h-1.5 rounded-full bg-orange-vibrant animate-pulse" />
+                        <span className="text-orange-vibrant text-xs font-bold uppercase tracking-[0.2em]">Florida &middot; Rome &middot; Retainer-based</span>
+                    </div>
+                    <h1 ref={headlineRef} className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-black leading-[1.05] mb-6 text-pure-white">
+                        Software systems &amp; marketing infrastructure.{' '}
+                        <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">Built to run.</span>
                     </h1>
-                    <h1 ref={gradientTextRef} className="text-4xl md:text-6xl lg:text-7xl font-heading font-black leading-[1.1] mb-4 bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">
-                        Marketing Systems.
-                    </h1>
-                    <p className="hero-description text-pure-white/80 text-base md:text-lg mb-6 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                        Enterprise-grade solutions that scale with your ambition. We build systems that drive <span className="text-orange-vibrant font-bold relative">real results<span className="absolute bottom-0 left-0 w-full h-0.5 bg-orange-vibrant/40" /></span>.
+                    <p className="hero-sub text-pure-white/65 text-base md:text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
+                        Most companies already have the tools. The gap is the team that makes them work together.
+                        We build and maintain the systems your ops and marketing teams run on &mdash; on retainer, not on projects.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <div className="hero-cta"><CTAButton href="https://calendly.com/digi-dreamworks/onboarding-call" variant="primary" external={true}>Book Strategy Call</CTAButton></div>
-                        <div className="hero-cta"><CTAButton onClick={handleViewCaseStudies} variant="secondary">View Case Studies</CTAButton></div>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
+                        <div className="hero-cta"><CTAButton href="https://calendly.com/digi-dreamworks/onboarding-call" variant="primary" external>Book a 20-Min Call</CTAButton></div>
+                        <div className="hero-cta"><CTAButton onClick={handleViewWork} variant="secondary">See Our Work</CTAButton></div>
+                    </div>
+                    <div className="hero-trust flex flex-wrap items-center gap-x-6 gap-y-2 justify-center lg:justify-start">
+                        {['Retainer-only engagements', 'US & EU clients', '7 core service areas'].map((item) => (
+                            <div key={item} className="flex items-center gap-2">
+                                <svg className="w-3.5 h-3.5 text-orange-vibrant flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>
+                                <span className="text-text-muted text-xs font-medium">{item}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
-
-                <div ref={imgRef} className="flex-1 relative gsap-reveal">
-                    <div className="relative w-[280px] h-[280px] md:w-[400px] md:h-[400px] lg:w-[450px] lg:h-[450px] mx-auto">
-                        <GSAPTilt className="absolute inset-0 rounded-full overflow-hidden border-[10px] border-white/5 z-20 shadow-2xl shadow-orange-vibrant/20 group">
-                            <img src="https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Modern Agency Team" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="eager" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-deep-black/60 via-transparent to-transparent" />
-                            <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/0 to-orange-vibrant/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                        </GSAPTilt>
-
-                        <div ref={circleRef} className="absolute -inset-3 border border-dashed border-orange-vibrant/40 rounded-full z-10" />
-
-                        <div ref={prlx3Ref} className="absolute -top-3 -right-3 w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden border-4 border-deep-black z-30 shadow-2xl hidden md:block">
-                            <img src="https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Business Meeting" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" loading="lazy" />
-                        </div>
-
-                        <div ref={prlx4Ref} className="absolute -bottom-4 -left-8 w-32 h-32 md:w-44 md:h-40 rounded-2xl overflow-hidden border-4 border-deep-black z-30 shadow-2xl hidden md:block">
-                            <img src="https://images.pexels.com/photos/3182762/pexels-photo-3182762.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Creative Designer" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" loading="lazy" />
-                        </div>
-
-                        <FloatingBadge satisfactionRef={satisfactionRef} />
-                        <div className="absolute -z-10 inset-0 bg-gradient-to-br from-orange-vibrant/20 to-transparent rounded-full blur-3xl scale-110" />
-                    </div>
-                </div>
+                <div className="hero-visual flex-1 flex items-center justify-center"><AbstractBrandVisual /></div>
+            </div>
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+                <span className="text-[10px] uppercase tracking-widest text-text-muted">Scroll</span>
+                <div className="w-px h-8 bg-gradient-to-b from-orange-vibrant to-transparent" />
             </div>
         </section>
     );

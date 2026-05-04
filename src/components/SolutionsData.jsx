@@ -1,156 +1,181 @@
-import { useEffect, useRef, useState } from 'react';
+// src/components/SolutionsData.jsx
+// Six homepage service cards — no stock photos, brand-aligned abstract backgrounds
+import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SplitType from 'split-type';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Solutions Data ─────────────────────────────────────────────────────────────
+// Abstract card background: dot grid + corner glow — no stock photography
+const AbstractCardBg = ({ accent = '#FF570F' }) => (
+    <div className="absolute inset-0 overflow-hidden rounded-3xl">
+        <div className="absolute inset-0 opacity-[0.06]"
+            style={{ backgroundImage: `radial-gradient(${accent} 1px, transparent 1px)`, backgroundSize: '24px 24px' }} />
+        <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-[80px]"
+            style={{ background: `${accent}33` }} />
+        <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full blur-[60px]"
+            style={{ background: `${accent}1a` }} />
+    </div>
+);
+
 const solutionsData = [
-    { title: "Custom Software Development", desc: "Enterprise-grade web applications and bespoke system architecture designed for high-stakes operations.", features: ["Scalable Architecture", "Bespoke Design", "API Integration"], image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800", icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>, color: "from-orange-vibrant to-orange-soft" },
-    { title: "AI Development & Integration", desc: "Seamless LLM integration and workflow automation tailored to your enterprise systems.", features: ["LLM Infrastructure", "Workflow Automation", "Custom Models"], image: "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=800", icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10H12V2z" /><path d="M12 12L2.1 12.3" /></svg>, color: "from-cream to-orange-vibrant" },
-    { title: "Cloud Infrastructure & DevOps", desc: "Secure, scalable cloud environments with automated CI/CD pipelines for continuous deployment.", features: ["Automated Pipelines", "Cloud Scaling", "Security Hardening"], image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800", icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17.5 19a5.5 5.5 0 0 0 2.5-10.5 8.5 8.5 0 1 0-15 4.5 4.5 4.5 0 0 0 2.5 8.5h10z" /></svg>, color: "from-orange-soft to-maroon-dark" },
-    { title: "Strategic Consulting", desc: "Fractional CTO services and technical audits to guide your architectural roadmap.", features: ["Technical Audits", "Architectural Roadmap", "Executive Advisory"], image: "https://images.pexels.com/photos/3182811/pexels-photo-3182811.jpeg?auto=compress&cs=tinysrgb&w=800", icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></svg>, color: "from-orange-vibrant to-cream" },
-    { title: "Marketing Systems & Automation", desc: "Unified marketing infrastructure connecting CRM, ESP, and analytics into a single growth engine.", features: ["CRM Integration", "Email Automation", "Analytics Dashboard"], image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800", icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20v-6M6 20V10M18 20V4" /></svg>, color: "from-cream to-orange-soft" },
-    { title: "SEO & Content Strategy", desc: "Data-backed Technical SEO and content strategy to build long-term market authority.", features: ["Technical SEO", "Content Strategy", "Link Building"], image: "https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=800", icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>, color: "from-orange-vibrant to-maroon-dark" }
+    {
+        title: "Custom Software Development",
+        desc: "Most off-the-shelf tools create workarounds, not solutions. We build the exact system your operation needs, then keep it running on retainer.",
+        features: ["Bespoke architecture", "API integration", "Ongoing maintenance"],
+        accent: "#FF570F",
+        icon: <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg>,
+    },
+    {
+        title: "AI Development & Integration",
+        desc: "We wire LLMs and automation into your existing stack, not as experiments but as production systems your team relies on daily.",
+        features: ["LLM infrastructure", "Workflow automation", "Custom model deployment"],
+        accent: "#EE7D1D",
+        icon: <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" /></svg>,
+    },
+    {
+        title: "Cloud Infrastructure & DevOps",
+        desc: "A 99.9% uptime target means nothing without the infrastructure decisions behind it. We architect, deploy, and monitor cloud environments on retainer.",
+        features: ["CI/CD automation", "Cloud scaling", "Security hardening"],
+        accent: "#FDE87A",
+        icon: <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M17.5 19a5.5 5.5 0 0 0 2.5-10.5 8.5 8.5 0 1 0-15 4.5 4.5 4.5 0 0 0 2.5 8.5h10z" /></svg>,
+    },
+
+    {
+        title: "Software Consultancy",
+        desc: "When you're making an architectural decision you'll live with for three years, a fractional CTO who's shipped comparable systems is worth more than a slide deck.",
+        features: ["Technical audits", "Architectural roadmaps", "Executive advisory"],
+        accent: "#FF570F",
+        icon: <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg>,
+    },
+    {
+        title: "Marketing Systems & Automation",
+        desc: "A CRM your team actually uses. Email sequences that fire when they should. Analytics that tell you what changed and why. We build the stack and keep it calibrated.",
+        features: ["CRM integration", "Email automation", "Analytics infrastructure"],
+        accent: "#EE7D1D",
+        icon: <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M12 20v-6M6 20V10M18 20V4" /></svg>,
+    },
+    {
+        title: "SEO & Content Strategy",
+        desc: "Not keyword stuffing. Technical SEO and content infrastructure built for compounding returns. Your domain becomes an asset, not an afterthought.",
+        features: ["Technical SEO", "Content infrastructure", "Rank tracking"],
+        accent: "#FDE87A",
+        icon: <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>,
+    },
 ];
 
-// ─── Native GSAP Tilt Component ────────────────────────────────────────────────
 const GSAPTilt = ({ children, className }) => {
     const tiltRef = useRef(null);
-
     useEffect(() => {
         const el = tiltRef.current;
         if (!el) return;
-
         const xTo = gsap.quickTo(el, "rotationY", { ease: "power2.out", duration: 0.5 });
         const yTo = gsap.quickTo(el, "rotationX", { ease: "power2.out", duration: 0.5 });
-
         const handleMouseMove = (e) => {
             const rect = el.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            xTo(x * 10); 
-            yTo(-y * 10); 
+            xTo(((e.clientX - rect.left) / rect.width - 0.5) * 10);
+            yTo(-((e.clientY - rect.top) / rect.height - 0.5) * 10);
         };
-
         const handleMouseLeave = () => { xTo(0); yTo(0); };
-
         el.addEventListener('mousemove', handleMouseMove);
         el.addEventListener('mouseleave', handleMouseLeave);
         return () => { el.removeEventListener('mousemove', handleMouseMove); el.removeEventListener('mouseleave', handleMouseLeave); };
     }, []);
-
     return <div ref={tiltRef} className={className} style={{ transformPerspective: 1000 }}>{children}</div>;
 };
 
-// ─── Solution Card Component ───────────────────────────────────────────────────
 const SolutionCard = ({ solution, index }) => {
     const cardRef = useRef(null);
-
+    useEffect(() => {
+        if (!cardRef.current) return;
+        gsap.fromTo(cardRef.current, { opacity: 0, y: 48 }, {
+            opacity: 1, y: 0, duration: 0.75, ease: 'power3.out',
+            scrollTrigger: { trigger: cardRef.current, start: 'top 88%', once: true },
+            delay: (index % 3) * 0.12,
+        });
+    }, [index]);
     return (
-        <GSAPTilt className="solution-card">
-            <div ref={cardRef} className="relative h-[520px] bg-gradient-to-br from-[#151a1d] to-[#0d1012] rounded-3xl overflow-hidden border-2 border-orange-vibrant/10 hover:border-orange-vibrant/50 transition-all duration-500 cursor-pointer group">
-                <div className="absolute inset-0 z-0">
-                    <img src={solution.image} alt={solution.title} className="w-full h-full object-cover opacity-15 group-hover:opacity-30 group-hover:scale-110 transition-all duration-700 grayscale group-hover:grayscale-0" loading="lazy" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-deep-black via-deep-black/95 to-transparent" />
-                </div>
-                <div className={`absolute inset-0 bg-gradient-to-br ${solution.color.replace('to-', 'to-').replace('from-', 'from-')} opacity-0 group-hover:opacity-20 transition-opacity duration-700 blur-2xl`} />
-
+        <GSAPTilt className="solution-card h-full">
+            <div ref={cardRef} className="relative h-[380px] bg-[#0e1012] rounded-3xl overflow-hidden border border-white/5 hover:border-orange-vibrant/30 transition-all duration-500 cursor-default group">
+                <AbstractCardBg accent={solution.accent} />
                 <div className="relative z-10 p-8 h-full flex flex-col justify-between">
-                    <div className="flex justify-between items-start">
-                        <div className={`p-4 rounded-2xl bg-gradient-to-br ${solution.color} text-deep-black group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-2xl shadow-orange-vibrant/50`}>
+                    <div>
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5 border border-white/8"
+                            style={{ background: `${solution.accent}18`, color: solution.accent }}>
                             {solution.icon}
                         </div>
-                        <span className="text-7xl font-black text-white/5 group-hover:text-orange-vibrant/20 transition-colors duration-500">0{index + 1}</span>
+                        <h3 className="text-lg font-bold text-pure-white mb-3 leading-tight">{solution.title}</h3>
+                        <p className="text-pure-white/55 text-sm leading-relaxed">{solution.desc}</p>
                     </div>
-
-                    <div className="space-y-4">
-                        <h3 className="text-2xl font-heading font-bold text-pure-white group-hover:text-orange-vibrant transition-colors duration-300">{solution.title}</h3>
-                        <p className="text-sm text-text-muted leading-relaxed group-hover:text-pure-white/80 transition-colors duration-300">{solution.desc}</p>
-                        <ul className="space-y-2 opacity-0 max-h-0 group-hover:opacity-100 group-hover:max-h-48 transition-all duration-500 overflow-hidden">
-                            {solution.features.map((feature, i) => (
-                                <li key={i} className="flex items-center gap-2 text-xs text-pure-white/90">
-                                    <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${solution.color}`} /> {feature}
-                                </li>
-                            ))}
-                        </ul>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                        {solution.features.map((f) => (
+                            <span key={f} className="text-[11px] font-medium px-2.5 py-1 rounded-full border"
+                                style={{ borderColor: `${solution.accent}40`, color: solution.accent }}>
+                                {f}
+                            </span>
+                        ))}
                     </div>
                 </div>
-
-                <div className="absolute bottom-8 right-8 w-14 h-14 rounded-full bg-gradient-to-br from-orange-vibrant to-orange-600 text-deep-black flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 z-20 shadow-2xl shadow-orange-vibrant/60">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7V17" /></svg>
-                </div>
-                <div className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-orange-vibrant to-cream w-0 group-hover:w-full transition-all duration-700" />
             </div>
         </GSAPTilt>
     );
 };
 
 const Solutions = () => {
-    const gridRef = useRef(null);
-    const headingRef = useRef(null);
     const sectionRef = useRef(null);
-    const prlx1Ref = useRef(null);
-    const prlx2Ref = useRef(null);
-    const prlxHeaderRef = useRef(null);
-    const [textSplit, setTextSplit] = useState(null);
-
-    useEffect(() => {
-        const heading = document.querySelector('.solutions-main-heading');
-        if (heading && !textSplit) {
-            const split = new SplitType(heading, { types: 'words' });
-            setTextSplit(split);
-
-            gsap.from(split.words, {
-                opacity: 0, y: 50, rotationX: -45, transformOrigin: 'top center', stagger: 0.06, duration: 1, ease: 'power3.out',
-                scrollTrigger: { trigger: heading, start: 'top 80%', once: true }
-            });
-        }
-        return () => { if (textSplit) textSplit.revert(); };
-    }, [textSplit]);
+    const headingRef = useRef(null);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            gsap.from('.solution-card', {
-                y: 80, opacity: 0, scale: 0.9, rotationY: -15, duration: 1, stagger: 0.15, ease: 'power3.out',
-                scrollTrigger: { trigger: gridRef.current, start: 'top 70%', once: true }
+            if (headingRef.current) {
+                const split = new SplitType(headingRef.current, { types: 'words' });
+                gsap.from(split.words, {
+                    opacity: 0, y: 32, duration: 0.8, stagger: 0.05, ease: 'power3.out',
+                    scrollTrigger: { trigger: headingRef.current, start: 'top 85%', once: true },
+                });
+            }
+            gsap.from('.solutions-sub', {
+                opacity: 0, y: 20, duration: 0.7, ease: 'power2.out',
+                scrollTrigger: { trigger: '.solutions-sub', start: 'top 88%', once: true },
             });
-
-            // Native Parallax
-            gsap.to(prlx1Ref.current, { yPercent: 20, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
-            gsap.to(prlx2Ref.current, { yPercent: -20, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
-            gsap.to(prlxHeaderRef.current, { yPercent: 10, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
-
-        }, gridRef);
-
+        }, sectionRef);
         return () => ctx.revert();
     }, []);
 
     return (
-        <section id="solutions" ref={sectionRef} className="relative py-32 bg-deep-black overflow-hidden">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.02)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
+        <section ref={sectionRef} id="solutions" className="relative py-28 px-6 bg-deep-black overflow-hidden">
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.018)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.018)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-orange-vibrant/4 blur-[120px] rounded-full" />
 
-            <div ref={prlx1Ref} className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-orange-vibrant/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
-            <div ref={prlx2Ref} className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-cream/5 rounded-full blur-[120px] pointer-events-none" />
-
-            <div className="relative z-10 max-w-7xl mx-auto px-6" ref={gridRef}>
-                <div ref={prlxHeaderRef} className="solutions-header text-center mb-20">
-                    <span className="inline-block px-6 py-2.5 border-2 border-orange-vibrant/40 bg-orange-vibrant/10 text-orange-vibrant text-xs font-bold uppercase tracking-[0.25em] rounded-full mb-8 backdrop-blur-sm shadow-lg shadow-orange-vibrant/20">
-                        <span className="inline-block w-2 h-2 bg-orange-vibrant rounded-full mr-2 animate-pulse" /> Enterprise Solutions
-                    </span>
-                    <h2 ref={headingRef} className="solutions-main-heading text-5xl md:text-6xl lg:text-7xl font-heading font-black mb-6 leading-tight perspective-1000">
-                        Solutions Built For <br />
-                        <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent inline-block">Modern Brands</span>
+            <div className="max-w-7xl mx-auto relative z-10">
+                <div className="text-center mb-16">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-orange-vibrant/30 bg-orange-vibrant/8 rounded-full mb-6">
+                        <div className="w-1.5 h-1.5 rounded-full bg-orange-vibrant" />
+                        <span className="text-orange-vibrant text-[11px] font-bold uppercase tracking-[0.18em]">What we maintain</span>
+                    </div>
+                    <h2 ref={headingRef} className="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-pure-white mb-5">
+                        Six services.{' '}
+                        <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">Ongoing retainers.</span>
                     </h2>
-                    <p className="text-xl text-text-muted max-w-2xl mx-auto leading-relaxed">Empowering your digital journey with state-of-the-art technology services tailored for growth and innovation.</p>
+                    <p className="solutions-sub text-pure-white/50 text-base md:text-lg max-w-xl mx-auto leading-relaxed">
+                        Every service is sold as a retainer. The same team that builds it maintains it. No handoffs, no re-onboarding.
+                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {solutionsData.map((solution, index) => <SolutionCard key={index} solution={solution} index={index} />)}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {solutionsData.map((s, i) => <SolutionCard key={s.title} solution={s} index={i} />)}
+                </div>
+
+                <div className="text-center mt-14">
+                    <a href="https://calendly.com/digi-dreamworks/onboarding-call"
+                        target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-8 py-3.5 bg-orange-vibrant text-deep-black font-bold text-xs uppercase tracking-wider hover:bg-cream transition-colors duration-300 shadow-lg shadow-orange-vibrant/20">
+                        Discuss Your Retainer
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                    </a>
                 </div>
             </div>
-            <style jsx>{`.perspective-1000 { perspective: 1000px; }`}</style>
         </section>
     );
 };

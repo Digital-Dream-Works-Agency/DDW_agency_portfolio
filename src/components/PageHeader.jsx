@@ -134,17 +134,17 @@ const PageHeader = ({ title, breadcrumb, subtitle }) => {
                             <GSAPTilt>
                                 <div className="relative w-[380px] h-[460px]">
                                     <div className="absolute inset-0 rounded-2xl overflow-hidden border border-orange-vibrant/20 shadow-2xl shadow-orange-vibrant/10">
-                                        <img src="https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=800" alt={title} className="w-full h-full object-cover opacity-60" />
+                                        {/* Abstract background replaces stock photo */}
                                         <div className="absolute inset-0 bg-gradient-to-t from-deep-black/80 via-transparent to-transparent" />
                                     </div>
                                     <div ref={circleRef} className="absolute -inset-4 border border-dashed border-orange-vibrant/20 rounded-2xl pointer-events-none" />
                                     <div className="absolute -bottom-6 -left-10 bg-bg-surface border border-orange-vibrant/30 rounded-xl p-5 shadow-xl backdrop-blur-sm z-10">
-                                        <div className="text-3xl font-black mb-1 bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">10+</div>
-                                        <div className="text-xs text-text-muted uppercase tracking-widest">Years Experience</div>
+                                        <div className="text-3xl font-black mb-1 bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">7</div>
+                                        <div className="text-xs text-text-muted uppercase tracking-widest">Core Services</div>
                                     </div>
                                     <div className="absolute -top-4 -right-4 w-20 h-20 bg-orange-vibrant rounded-full flex flex-col items-center justify-center text-deep-black shadow-lg shadow-orange-vibrant/40 z-10">
-                                        <div className="text-xl font-black leading-none">150+</div>
-                                        <div className="text-[8px] font-black uppercase tracking-tighter">Projects</div>
+                                        <div className="text-xl font-black leading-none">US</div>
+                                        <div className="text-[8px] font-black uppercase tracking-tighter">+ EU</div>
                                     </div>
                                 </div>
                             </GSAPTilt>

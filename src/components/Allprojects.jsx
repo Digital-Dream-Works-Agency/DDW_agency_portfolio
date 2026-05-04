@@ -8,15 +8,15 @@ gsap.registerPlugin(ScrollTrigger);
 
 // ─── Data ──────────────────────────────────────────────────────────────────────
 const projectsData = [
-    { id: 'enterprise-dispatch-system', title: 'Enterprise Dispatch System', category: 'Custom Software', img: 'https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['React', 'Node.js', 'AWS'], metrics: { clients: '500+', uptime: '99.9%' }, gradient: 'from-orange-vibrant/20 to-purple-600/20' },
-    { id: 'financial-intelligence-dashboard', title: 'Financial Intelligence Dashboard', category: 'Custom Software', img: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['Data Viz', 'Python', 'ML'], metrics: { revenue: '$2M+', accuracy: '95%' }, gradient: 'from-blue-500/20 to-cyan-400/20' },
-    { id: 'supply-chain-erp', title: 'Supply Chain ERP Architecture', category: 'Custom Software', img: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['SAP', 'Oracle', 'Integration'], metrics: { efficiency: '+40%', cost: '-30%' }, gradient: 'from-green-500/20 to-emerald-400/20' },
-    { id: 'healthcare-data-infrastructure', title: 'Healthcare Data Infrastructure', category: 'Custom Software', img: 'https://images.pexels.com/photos/3182811/pexels-photo-3182811.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['HIPAA', 'Cloud', 'Security'], metrics: { compliance: '100%', scale: '5x' }, gradient: 'from-red-500/20 to-pink-400/20' },
-    { id: 'legal-case-management', title: 'Legal Case Management Suite', category: 'Custom Software', img: 'https://images.pexels.com/photos/1181333/pexels-photo-1181333.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['React', 'PostgreSQL', 'Auth'], metrics: { cases: '10K+', time: '-50%' }, gradient: 'from-indigo-500/20 to-violet-400/20' },
-    { id: 'saas-seo-strategy', title: 'SaaS Growth & SEO Strategy', category: 'SEO & Marketing', img: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['SEO', 'Content', 'Analytics'], metrics: { traffic: '+250%', leads: '+180%' }, gradient: 'from-yellow-500/20 to-amber-400/20' },
-    { id: 'marketing-automation-hub', title: 'Marketing Automation Hub', category: 'SEO & Marketing', img: 'https://images.pexels.com/photos/1181671/pexels-photo-1181671.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['HubSpot', 'Automation', 'CRM'], metrics: { conversion: '+65%', roi: '450%' }, gradient: 'from-orange-vibrant/20 to-red-500/20' },
-    { id: 'omni-channel-crm', title: 'Omni-channel CRM Integration', category: 'SEO & Marketing', img: 'https://images.pexels.com/photos/1181263/pexels-photo-1181263.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['CRM', 'API', 'Omnichannel'], metrics: { channels: '8', retention: '+42%' }, gradient: 'from-teal-500/20 to-cyan-400/20' },
-    { id: 'enterprise-content-authority', title: 'Enterprise Content Authority', category: 'SEO & Marketing', img: 'https://images.pexels.com/photos/1181298/pexels-photo-1181298.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['Content', 'SEO', 'DA'], metrics: { da: '72', articles: '500+' }, gradient: 'from-purple-500/20 to-pink-400/20' },
+    { id: 'enterprise-dispatch-system', title: 'Enterprise Dispatch System', category: 'Custom Software', img: null, tags: ['React', 'Node.js', 'AWS'], metrics: { clients: '500+', uptime: '99.9%' }, gradient: 'from-orange-vibrant/20 to-purple-600/20' },
+    { id: 'financial-intelligence-dashboard', title: 'Financial Intelligence Dashboard', category: 'Custom Software', img: null, tags: ['Data Viz', 'Python', 'ML'], metrics: { revenue: '$2M+', accuracy: '95%' }, gradient: 'from-blue-500/20 to-cyan-400/20' },
+    { id: 'supply-chain-erp', title: 'Supply Chain ERP Architecture', category: 'Custom Software', img: null, tags: ['SAP', 'Oracle', 'Integration'], metrics: { efficiency: '+40%', cost: '-30%' }, gradient: 'from-green-500/20 to-emerald-400/20' },
+    { id: 'healthcare-data-infrastructure', title: 'Healthcare Data Infrastructure', category: 'Custom Software', img: null, tags: ['HIPAA', 'Cloud', 'Security'], metrics: { compliance: '100%', scale: '5x' }, gradient: 'from-red-500/20 to-pink-400/20' },
+    { id: 'legal-case-management', title: 'Legal Case Management Suite', category: 'Custom Software', img: null, tags: ['React', 'PostgreSQL', 'Auth'], metrics: { cases: '10K+', time: '-50%' }, gradient: 'from-indigo-500/20 to-violet-400/20' },
+    { id: 'saas-seo-strategy', title: 'SaaS Growth & SEO Strategy', category: 'SEO & Marketing', img: null, tags: ['SEO', 'Content', 'Analytics'], metrics: { traffic: '+250%', leads: '+180%' }, gradient: 'from-yellow-500/20 to-amber-400/20' },
+    { id: 'marketing-automation-hub', title: 'Marketing Automation Hub', category: 'SEO & Marketing', img: null, tags: ['HubSpot', 'Automation', 'CRM'], metrics: { conversion: '+65%', roi: '450%' }, gradient: 'from-orange-vibrant/20 to-red-500/20' },
+    { id: 'omni-channel-crm', title: 'Omni-channel CRM Integration', category: 'SEO & Marketing', img: null, tags: ['CRM', 'API', 'Omnichannel'], metrics: { channels: '8', retention: '+42%' }, gradient: 'from-teal-500/20 to-cyan-400/20' },
+    { id: 'enterprise-content-authority', title: 'Enterprise Content Authority', category: 'SEO & Marketing', img: null, tags: ['Content', 'SEO', 'DA'], metrics: { da: '72', articles: '500+' }, gradient: 'from-purple-500/20 to-pink-400/20' },
 ];
 
 const CATEGORIES = ['All', 'Custom Software', 'SEO & Marketing'];
@@ -80,7 +80,10 @@ const ProjectCard = memo(({ item, index }) => {
             <div onClick={handleClick} className="proj-card relative bg-gradient-to-br from-[#151a1d] to-[#0d1012] rounded-2xl overflow-hidden flex flex-col h-[480px] border-2 border-orange-vibrant/10 hover:border-orange-vibrant/50 shadow-2xl transition-all duration-500 cursor-pointer group">
                 <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl`} />
                 <div className="flex-1 overflow-hidden relative">
-                    <img src={item.img} alt={item.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    {item.img
+                        ? <img src={item.img} alt={item.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        : <div className="absolute inset-0 bg-gradient-to-br from-[#0e1012] to-[#080808]"><div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '20px 20px' }} /></div>
+                    }
                     <div className="absolute inset-0 bg-gradient-to-t from-deep-black via-deep-black/60 to-transparent" />
                     <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/0 to-orange-vibrant/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                     <div className="absolute top-4 left-4 flex flex-wrap gap-2">

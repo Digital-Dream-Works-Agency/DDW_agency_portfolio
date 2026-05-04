@@ -4,15 +4,17 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import PageHeader from '../components/PageHeader';
 import Allprojects from '../components/Allprojects';
+import { useSeoMeta, SEO } from '../lib/useSeoMeta';
 
 const ProjectsPage = () => {
+    useSeoMeta(SEO.projects);
     return (
         <main className="relative w-full bg-deep-black text-white">
             <Navbar />
             <PageHeader
                 title="Our Portfolio"
                 breadcrumb="Portfolio"
-                subtitle="150+ projects delivered across custom software, AI integration, and marketing infrastructure."
+                subtitle="A selection of software systems and marketing infrastructure built and maintained on retainer."
             />
             <Allprojects />
             <Footer />

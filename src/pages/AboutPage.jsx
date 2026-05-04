@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSeoMeta, SEO } from '../lib/useSeoMeta';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import PageHeader from '../components/PageHeader';
@@ -181,6 +182,7 @@ const CTAButton = ({ to, children, variant = 'primary' }) => {
 };
 
 const AboutPage = () => {
+    useSeoMeta(SEO.about);
     const sectionRef = useRef(null);
     const headingRef = useRef(null);
     const prlx1Ref = useRef(null);
@@ -220,7 +222,7 @@ const AboutPage = () => {
         { year: '2014', event: 'Founded by ex-Google engineers frustrated with agency quality' },
         { year: '2017', event: 'First enterprise client: $2M+ annual contract' },
         { year: '2020', event: 'Expanded to AI/ML infrastructure consulting' },
-        { year: '2024', event: '150+ projects delivered, $50M+ client revenue generated' },
+        { year: '2024', event: 'Seven retainer services active. US and EU clients. 100% retainer model.' },
     ];
 
     return (
@@ -250,24 +252,24 @@ const AboutPage = () => {
                                 <p className="text-orange-vibrant font-bold text-lg">We operate as your technical partner, not a vendor.</p>
                             </div>
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-8 border-t-2 border-orange-vibrant/20">
-                                <StatCard value="10+" label="Years" />
-                                <StatCard value="150+" label="Projects" />
-                                <StatCard value="50M+" label="Revenue" />
-                                <StatCard value="600%" label="Peak ROAS" />
+                                <StatCard value="7" label="Services" />
+                                <StatCard value="100%" label="Retainer Model" />
+                                <StatCard value="2" label="Global Markets" />
+                                <StatCard value="<24hr" label="Response SLA" />
                             </div>
                         </div>
 
                         <div className="fade-up">
                             <div className="grid grid-cols-2 gap-6">
                                 <GSAPTilt className="col-span-2 relative aspect-[16/10] rounded-3xl overflow-hidden border-2 border-orange-vibrant/20 shadow-2xl group">
-                                    <img src="https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Team collaboration" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
+                                    <div className="w-full h-full bg-gradient-to-br from-[#0e1012] to-[#080808]"><div className="w-full h-full opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '20px 20px' }} /></div>
                                     <div className="absolute inset-0 bg-gradient-to-t from-deep-black/60 to-transparent" />
                                 </GSAPTilt>
                                 <GSAPTilt className="relative aspect-square rounded-2xl overflow-hidden border-2 border-orange-vibrant/10 group">
-                                    <img src="https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Strategy session" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
+                                    <div className="w-full h-full bg-gradient-to-br from-[#0e1012] to-[#080808]"><div className="w-full h-full opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '20px 20px' }} /></div>
                                 </GSAPTilt>
                                 <GSAPTilt className="relative aspect-square rounded-2xl overflow-hidden border-2 border-orange-vibrant/10 group">
-                                    <img src="https://images.pexels.com/photos/3182811/pexels-photo-3182811.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Development work" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
+                                    <div className="w-full h-full bg-gradient-to-br from-[#0e1012] to-[#080808]"><div className="w-full h-full opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '20px 20px' }} /></div>
                                 </GSAPTilt>
                             </div>
                         </div>

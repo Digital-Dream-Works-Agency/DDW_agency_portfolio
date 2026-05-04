@@ -1,4 +1,5 @@
 // src/components/Collaborate.jsx
+// No stock photography — abstract gradient with call-to-action
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -6,207 +7,151 @@ import SplitType from 'split-type';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Native GSAP Tilt Component ────────────────────────────────────────────────
-const GSAPTilt = ({ children, className }) => {
-    const tiltRef = useRef(null);
-
-    useEffect(() => {
-        const el = tiltRef.current;
-        if (!el) return;
-
-        const xTo = gsap.quickTo(el, "rotationY", { ease: "power2.out", duration: 0.5 });
-        const yTo = gsap.quickTo(el, "rotationX", { ease: "power2.out", duration: 0.5 });
-
-        const handleMouseMove = (e) => {
-            const rect = el.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            xTo(x * 8); 
-            yTo(-y * 8); 
-        };
-
-        const handleMouseLeave = () => { xTo(0); yTo(0); };
-
-        el.addEventListener('mousemove', handleMouseMove);
-        el.addEventListener('mouseleave', handleMouseLeave);
-        return () => { el.removeEventListener('mousemove', handleMouseMove); el.removeEventListener('mouseleave', handleMouseLeave); };
-    }, []);
-
-    return <div ref={tiltRef} className={className} style={{ transformPerspective: 1000 }}>{children}</div>;
-};
-
-// ─── Magnetic Hook ─────────────────────────────────────────────────────────────
-const useMagneticEffect = (ref, strength = 0.3) => {
+const useMagneticEffect = (ref, strength = 0.2) => {
     useEffect(() => {
         const el = ref.current;
         if (!el) return;
-        const xTo = gsap.quickTo(el, "x", { duration: 0.4, ease: 'power2.out' });
-        const yTo = gsap.quickTo(el, "y", { duration: 0.4, ease: 'power2.out' });
-
+        const xTo = gsap.quickTo(el, "x", { duration: 0.4, ease: "power2.out" });
+        const yTo = gsap.quickTo(el, "y", { duration: 0.4, ease: "power2.out" });
         const onMove = (e) => {
-            const rect = el.getBoundingClientRect();
-            xTo((e.clientX - rect.left - rect.width / 2) * strength);
-            yTo((e.clientY - rect.top - rect.height / 2) * strength);
+            const r = el.getBoundingClientRect();
+            xTo((e.clientX - r.left - r.width / 2) * strength);
+            yTo((e.clientY - r.top - r.height / 2) * strength);
         };
         const onLeave = () => { xTo(0); yTo(0); };
-
         el.addEventListener('mousemove', onMove);
         el.addEventListener('mouseleave', onLeave);
         return () => { el.removeEventListener('mousemove', onMove); el.removeEventListener('mouseleave', onLeave); };
     }, [strength]);
 };
 
-// ─── Magnetic Button ───────────────────────────────────────────────────────────
-const MagneticButton = ({ href, children }) => {
+// Abstract brand visual: no stock photos, pure CSS + SVG
+const AbstractCTAVisual = () => {
     const ref = useRef(null);
-    useMagneticEffect(ref, 0.25);
-    
-    return (
-        <a
-            ref={ref}
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="relative group inline-flex items-center gap-3 bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-widest px-12 py-6 overflow-hidden shadow-2xl shadow-orange-vibrant/40 hover:shadow-cream/30 transition-shadow duration-500"
-        >
-            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-            <span className="absolute inset-0 bg-cream scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" />
-            <span className="relative z-10 flex items-center gap-3">
-                {children}
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-            </span>
-        </a>
-    );
-};
-
-// ─── Floating Stat Pill ────────────────────────────────────────────────────────
-const StatPill = ({ value, label, delay }) => {
-    const pillRef = useRef(null);
     useEffect(() => {
-        gsap.to(pillRef.current, {
-            y: -10, duration: 2 + delay, repeat: -1, yoyo: true, ease: 'sine.inOut', delay,
-        });
-    }, [delay]);
-
+        const ctx = gsap.context(() => {
+            gsap.to('.cta-orb-a', { scale: 1.2, duration: 4.5, repeat: -1, yoyo: true, ease: 'power1.inOut' });
+            gsap.to('.cta-orb-b', { scale: 0.85, duration: 6, repeat: -1, yoyo: true, ease: 'power1.inOut', delay: 1.5 });
+            gsap.to('.cta-ring', { rotation: 360, duration: 30, repeat: -1, ease: 'none', transformOrigin: '50% 50%' });
+        }, ref);
+        return () => ctx.revert();
+    }, []);
     return (
-        <div ref={pillRef} className="absolute bg-deep-black/80 backdrop-blur-md border border-orange-vibrant/30 rounded-2xl px-5 py-3 shadow-2xl shadow-orange-vibrant/10">
-            <div className="text-xl font-black text-orange-vibrant">{value}</div>
-            <div className="text-xs text-pure-white/50 uppercase tracking-wider">{label}</div>
+        <div ref={ref} className="relative w-64 h-64 mx-auto flex items-center justify-center hidden lg:flex">
+            <div className="cta-orb-a absolute inset-0 rounded-full bg-gradient-to-br from-[#FF570F]/25 to-[#630D00]/15 blur-[50px]" />
+            <div className="cta-orb-b absolute inset-[20%] rounded-full bg-gradient-to-tr from-[#FDE87A]/20 to-[#EE7D1D]/15 blur-[30px]" />
+            <div className="cta-ring absolute inset-[5%] rounded-full border border-dashed border-orange-vibrant/25" />
+            <div className="relative z-10 w-24 h-24 rounded-2xl flex flex-col items-center justify-center bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d] border border-orange-vibrant/20 shadow-xl">
+                <svg width="32" height="32" fill="none" viewBox="0 0 32 32" className="text-orange-vibrant">
+                    <circle cx="16" cy="16" r="12" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M16 10v6l4 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                <span className="text-[9px] font-bold text-text-muted uppercase tracking-wider mt-1.5">20 min</span>
+            </div>
         </div>
     );
 };
 
-// ─── Main Component ────────────────────────────────────────────────────────────
+const agendaItems = [
+    {
+        num: '01',
+        title: 'Map your stack',
+        desc: 'We ask what you have, what you own, and what you are paying for that does nothing.',
+    },
+    {
+        num: '02',
+        title: 'Identify the constraint',
+        desc: 'One thing is usually preventing everything else. We find it in 20 minutes or fewer.',
+    },
+    {
+        num: '03',
+        title: 'Tell you if we are the right fit',
+        desc: 'If we are not, we say so. If we are, we describe exactly what a retainer would include.',
+    },
+];
+
 const Collaborate = () => {
     const sectionRef = useRef(null);
     const headingRef = useRef(null);
-    const badgeRef = useRef(null);
-    const ctaRef = useRef(null);
-    const prlxBgRef = useRef(null);
-    const prlxGlowRef = useRef(null);
+    const ctaBtnRef = useRef(null);
+    useMagneticEffect(ctaBtnRef, 0.2);
 
-    // ── SplitType text reveal ──
-    useEffect(() => {
-        if (!headingRef.current) return;
-        const split = new SplitType(headingRef.current, { types: 'words' });
-        
-        gsap.from(split.words, {
-            opacity: 0, y: 60, rotationX: -40, transformOrigin: 'top center', stagger: 0.08, duration: 1, ease: 'power3.out',
-            scrollTrigger: { trigger: headingRef.current, start: 'top 80%' },
-        });
-
-        return () => split.revert();
-    }, []);
-
-    // ── Other animations ──
     useEffect(() => {
         const ctx = gsap.context(() => {
-            gsap.from(badgeRef.current, { opacity: 0, x: -40, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' }});
-            gsap.from(ctaRef.current, { opacity: 0, y: 30, scale: 0.95, duration: 0.8, delay: 0.5, ease: 'back.out(1.7)', scrollTrigger: { trigger: sectionRef.current, start: 'top 75%' }});
-            gsap.from('.collab-stat', { opacity: 0, scale: 0.8, stagger: 0.15, duration: 0.7, ease: 'back.out(1.5)', scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' }});
-            
-            // Background image scale
-            gsap.fromTo('.collab-bg-img', { scale: 1.15 }, { scale: 1, duration: 2, ease: 'power2.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' }});
-
-            // Native GSAP Parallax
-            gsap.to(prlxBgRef.current, { yPercent: 20, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
-            gsap.to(prlxGlowRef.current, { yPercent: -30, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
-
+            if (headingRef.current) {
+                const split = new SplitType(headingRef.current, { types: 'words' });
+                gsap.from(split.words, {
+                    opacity: 0, y: 32, duration: 0.9, stagger: 0.06, ease: 'power3.out',
+                    scrollTrigger: { trigger: headingRef.current, start: 'top 85%', once: true },
+                });
+            }
+            gsap.from('.collab-sub', {
+                opacity: 0, y: 20, duration: 0.75, ease: 'power2.out',
+                scrollTrigger: { trigger: '.collab-sub', start: 'top 88%', once: true },
+            });
+            gsap.from('.agenda-item', {
+                opacity: 0, x: -24, duration: 0.65, stagger: 0.12, ease: 'power2.out',
+                scrollTrigger: { trigger: '.agenda-item', start: 'top 88%', once: true },
+            });
         }, sectionRef);
         return () => ctx.revert();
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative py-32 w-full overflow-hidden bg-deep-black border-y border-orange-vibrant/20">
-            
-            {/* ── Background Image with Native Parallax ── */}
-            <div ref={prlxBgRef} className="absolute inset-0 z-0">
-                <div className="absolute inset-0">
-                    <img src="https://images.pexels.com/photos/3182826/pexels-photo-3182826.jpeg" alt="Collaboration" className="collab-bg-img w-full h-full object-cover object-right" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-deep-black via-deep-black/92 to-deep-black/50" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-deep-black/60 via-transparent to-transparent" />
-                </div>
-            </div>
+        <section ref={sectionRef} className="relative py-28 px-6 overflow-hidden bg-[#080808]">
+            {/* Abstract background */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.02)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,black,transparent)]" />
+            <div className="absolute top-0 right-0 w-[500px] h-[400px] bg-[#FF570F]/6 blur-[120px] rounded-full" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[300px] bg-[#630D00]/10 blur-[100px] rounded-full" />
 
-            {/* ── Animated grid overlay ── */}
-            <div className="absolute inset-0 z-0 pointer-events-none opacity-30" style={{ backgroundImage: 'linear-gradient(rgba(255,87,15,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,87,15,0.04) 1px, transparent 1px)', backgroundSize: '50px 50px', maskImage: 'linear-gradient(to right, black 40%, transparent 100%)' }} />
-
-            {/* ── Background glow blobs ── */}
-            <div ref={prlxGlowRef} className="absolute top-0 left-0 w-96 h-96 bg-orange-vibrant/8 blur-[120px] rounded-full pointer-events-none" />
-
-            <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <div className="max-w-7xl mx-auto relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
-                    {/* ── LEFT: Main Content ── */}
+                    {/* Left: Copy */}
                     <div>
-                        <div ref={badgeRef} className="inline-flex items-center gap-3 px-6 py-3 border border-orange-vibrant/40 mb-10 backdrop-blur-sm bg-orange-vibrant/8 shadow-lg shadow-orange-vibrant/15">
-                            <span className="w-2 h-2 rounded-full bg-orange-vibrant animate-pulse shadow-lg shadow-orange-vibrant/80" />
-                            <span className="text-orange-vibrant text-xs font-bold tracking-[0.3em] uppercase">Let's Collaborate</span>
-                            <span className="w-2 h-2 rounded-full bg-orange-vibrant animate-pulse shadow-lg shadow-orange-vibrant/80" />
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-orange-vibrant/30 bg-orange-vibrant/8 rounded-full mb-8">
+                            <div className="w-1.5 h-1.5 rounded-full bg-orange-vibrant animate-pulse" />
+                            <span className="text-orange-vibrant text-[11px] font-bold uppercase tracking-[0.18em]">Discovery call</span>
                         </div>
 
-                        <h2 ref={headingRef} className="text-5xl md:text-6xl lg:text-7xl font-heading font-black leading-[1.05] mb-6 tracking-tight text-pure-white perspective-1000">
-                            Ready to <br />
-                        </h2>
-                        <h2 className="text-5xl md:text-6xl lg:text-7xl font-heading font-black leading-[1.05] mb-12 tracking-tight" style={{ background: 'linear-gradient(135deg, #FF570F 0%, #FDE87A 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', display: 'block' }}>
-                            work with us?
+                        <h2 ref={headingRef} className="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-pure-white leading-[1.08] mb-6">
+                            Before you brief another agency, take{' '}
+                            <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">20 minutes.</span>
                         </h2>
 
-                        <p className="text-pure-white/60 text-lg leading-relaxed mb-10 max-w-md">
-                            From strategy to execution — we build systems that drive measurable growth. One call is all it takes.
+                        <p className="collab-sub text-pure-white/55 text-base md:text-lg leading-relaxed mb-10 max-w-lg">
+                            We run a structured 20-minute call. No pitch deck. No sales theatre. Three things happen:
                         </p>
 
-                        <div ref={ctaRef}>
-                            <MagneticButton href="https://calendly.com/digi-dreamworks/onboarding-call">
-                                Book a Strategy Call
-                            </MagneticButton>
+                        <div className="space-y-6 mb-10">
+                            {agendaItems.map((item) => (
+                                <div key={item.num} className="agenda-item flex gap-5">
+                                    <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border border-orange-vibrant/30 bg-orange-vibrant/10">
+                                        <span className="text-orange-vibrant font-mono text-xs font-bold">{item.num}</span>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-pure-white font-semibold text-sm mb-1">{item.title}</h3>
+                                        <p className="text-pure-white/45 text-sm leading-relaxed">{item.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
+
+                        <a ref={ctaBtnRef}
+                            href="https://calendly.com/digi-dreamworks/onboarding-call"
+                            target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-8 py-4 bg-orange-vibrant text-deep-black font-bold text-xs uppercase tracking-wider hover:bg-cream transition-colors duration-300 shadow-lg shadow-orange-vibrant/25 group">
+                            Book the 20-Minute Call
+                            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                        </a>
                     </div>
 
-                    {/* ── RIGHT: 3D Tilt Card + Floating Stats ── */}
-                    <div className="hidden lg:block relative h-80">
-                        <GSAPTilt className="absolute inset-0">
-                            <div className="w-full h-full rounded-3xl border border-orange-vibrant/15 backdrop-blur-sm flex items-center justify-center relative overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255,87,15,0.05) 0%, rgba(10,10,10,0.8) 100%)' }}>
-                                <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/5 to-transparent rounded-3xl" />
-                                <div className="text-center relative z-10">
-                                    <div className="text-6xl font-black mb-2" style={{ background: 'linear-gradient(135deg, #FF570F 0%, #FDE87A 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                                        100%
-                                    </div>
-                                    <div className="text-pure-white/40 text-xs uppercase tracking-widest">Client Satisfaction</div>
-                                </div>
-                            </div>
-                        </GSAPTilt>
-
-                        <div className="collab-stat absolute -top-6 -left-6 z-20"><StatPill value="600%" label="Peak ROAS" delay={0} /></div>
-                        <div className="collab-stat absolute -bottom-6 -right-6 z-20"><StatPill value="418K" label="Purchases" delay={0.4} /></div>
-                        <div className="collab-stat absolute top-1/2 -right-10 z-20"><StatPill value="$0.09" label="CPC Achieved" delay={0.8} /></div>
+                    {/* Right: Abstract visual */}
+                    <div className="flex items-center justify-center">
+                        <AbstractCTAVisual />
                     </div>
                 </div>
             </div>
-
-            <style jsx>{`.perspective-1000 { perspective: 1000px; }`}</style>
         </section>
     );
 };

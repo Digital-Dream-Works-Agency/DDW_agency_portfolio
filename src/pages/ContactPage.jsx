@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useSeoMeta, SEO } from '../lib/useSeoMeta';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import PageHeader from '../components/PageHeader';
@@ -101,6 +102,7 @@ const ContactItem = ({ icon, title, lines }) => (
 );
 
 const ContactPage = () => {
+    useSeoMeta(SEO.contact);
     const [formData, setFormData] = useState({ name: '', email: '', company: '', budget: '', message: '' });
     const [submitted, setSubmitted] = useState(false);
     const [submitting, setSubmitting] = useState(false);

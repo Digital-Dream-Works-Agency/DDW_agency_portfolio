@@ -6,12 +6,12 @@ import { Link } from 'react-router-dom';
 gsap.registerPlugin(ScrollTrigger);
 
 const featuredProjects = [
-    { id: 'enterprise-dispatch', title: 'Enterprise Dispatch System', category: 'Custom Software', description: 'Real-time logistics platform handling 500+ daily operations with 99.9% uptime.', img: 'https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg?auto=compress&cs=tinysrgb&w=1200', tags: ['React', 'Node.js', 'AWS'], metrics: [{ label: 'Active Users', value: '500+' }, { label: 'System Uptime', value: '99.9%' }], featured: true },
-    { id: 'financial-dashboard', title: 'Financial Intelligence Dashboard', category: 'Custom Software', description: 'ML-powered analytics platform processing $2M+ in transactions daily.', img: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=1200', tags: ['Python', 'ML', 'Data Viz'], metrics: [{ label: 'Revenue Impact', value: '$2M+' }, { label: 'Accuracy', value: '95%' }] },
-    { id: 'saas-seo', title: 'SaaS Growth Engine', category: 'SEO & Marketing', description: 'Integrated marketing stack driving 250% traffic growth in 6 months.', img: 'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg?auto=compress&cs=tinysrgb&w=1200', tags: ['SEO', 'Analytics', 'Automation'], metrics: [{ label: 'Traffic Growth', value: '+250%' }, { label: 'Lead Gen', value: '+180%' }] },
-    { id: 'healthcare-data', title: 'Healthcare Data Infrastructure', category: 'Custom Software', description: 'HIPAA-compliant cloud infrastructure scaled to 5x capacity.', img: 'https://images.pexels.com/photos/3182811/pexels-photo-3182811.jpeg?auto=compress&cs=tinysrgb&w=1200', tags: ['HIPAA', 'Cloud', 'Security'], metrics: [{ label: 'Compliance', value: '100%' }, { label: 'Scale', value: '5x' }] },
-    { id: 'supply-chain', title: 'Supply Chain ERP', category: 'Custom Software', description: 'End-to-end supply chain automation reducing costs by 30%.', img: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1200', tags: ['SAP', 'Oracle', 'Integration'], metrics: [{ label: 'Efficiency', value: '+40%' }, { label: 'Cost Reduction', value: '-30%' }] },
-    { id: 'marketing-hub', title: 'Marketing Automation Hub', category: 'SEO & Marketing', description: 'Unified CRM achieving 450% ROI through intelligent automation.', img: 'https://images.pexels.com/photos/1181671/pexels-photo-1181671.jpeg?auto=compress&cs=tinysrgb&w=1200', tags: ['CRM', 'Automation', 'HubSpot'], metrics: [{ label: 'Conversion', value: '+65%' }, { label: 'ROI', value: '450%' }] },
+    { id: 'enterprise-dispatch', title: 'Enterprise Dispatch System', category: 'Custom Software', description: 'Real-time logistics platform handling 500+ daily operations with 99.9% uptime.', img: null, tags: ['React', 'Node.js', 'AWS'], metrics: [{ label: 'Active Users', value: '500+' }, { label: 'System Uptime', value: '99.9%' }], featured: true },
+    { id: 'financial-dashboard', title: 'Financial Intelligence Dashboard', category: 'Custom Software', description: 'ML-powered analytics platform processing $2M+ in transactions daily.', img: null, tags: ['Python', 'ML', 'Data Viz'], metrics: [{ label: 'Revenue Impact', value: '$2M+' }, { label: 'Accuracy', value: '95%' }] },
+    { id: 'saas-seo', title: 'SaaS Growth Engine', category: 'SEO & Marketing', description: 'Integrated marketing stack driving 250% traffic growth in 6 months.', img: null, tags: ['SEO', 'Analytics', 'Automation'], metrics: [{ label: 'Traffic Growth', value: '+250%' }, { label: 'Lead Gen', value: '+180%' }] },
+    { id: 'healthcare-data', title: 'Healthcare Data Infrastructure', category: 'Custom Software', description: 'HIPAA-compliant cloud infrastructure scaled to 5x capacity.', img: null, tags: ['HIPAA', 'Cloud', 'Security'], metrics: [{ label: 'Compliance', value: '100%' }, { label: 'Scale', value: '5x' }] },
+    { id: 'supply-chain', title: 'Supply Chain ERP', category: 'Custom Software', description: 'End-to-end supply chain automation reducing costs by 30%.', img: null, tags: ['SAP', 'Oracle', 'Integration'], metrics: [{ label: 'Efficiency', value: '+40%' }, { label: 'Cost Reduction', value: '-30%' }] },
+    { id: 'marketing-hub', title: 'Marketing Automation Hub', category: 'SEO & Marketing', description: 'Unified CRM achieving 450% ROI through intelligent automation.', img: null, tags: ['CRM', 'Automation', 'HubSpot'], metrics: [{ label: 'Conversion', value: '+65%' }, { label: 'ROI', value: '450%' }] },
 ];
 
 const HeroProjectCard = ({ project }) => {
@@ -20,7 +20,10 @@ const HeroProjectCard = ({ project }) => {
         <Link to="/projects" className="group block relative h-[600px] rounded-3xl overflow-hidden border-2 border-orange-vibrant/20 hover:border-orange-vibrant/50 transition-all duration-700">
             <div className="absolute inset-0">
                 {!imageLoaded && <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/20 to-deep-black animate-pulse" />}
-                <img src={project.img} alt={project.title} loading="eager" onLoad={() => setImageLoaded(true)} className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`} />
+                {project.img
+                    ? <img src={project.img} alt={project.title} loading="eager" onLoad={() => setImageLoaded(true)} className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`} />
+                    : <div className="absolute inset-0 bg-gradient-to-br from-[#0e1012] to-[#080808] flex items-center justify-center"><div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '24px 24px' }} /><div className="w-16 h-16 rounded-xl border border-orange-vibrant/20 flex items-center justify-center opacity-40"><svg fill="none" stroke="#FF570F" strokeWidth="1.5" viewBox="0 0 24 24" className="w-8 h-8"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg></div></div>
+                }
                 <div className="absolute inset-0 bg-gradient-to-t from-deep-black via-deep-black/60 to-transparent" />
             </div>
             <div className="relative h-full flex flex-col justify-end p-10 md:p-12">
@@ -59,7 +62,10 @@ const ProjectCard = ({ project }) => {
         <Link to="/projects" ref={cardRef} className="group block relative h-[480px] rounded-3xl overflow-hidden border-2 border-orange-vibrant/10 hover:border-orange-vibrant/40 transition-all duration-700 hover:-translate-y-2">
             <div className="absolute inset-0">
                 {!imageLoaded && <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/10 to-deep-black animate-pulse" />}
-                <img src={project.img} alt={project.title} loading="lazy" onLoad={() => setImageLoaded(true)} className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`} />
+                {project.img
+                    ? <img src={project.img} alt={project.title} loading="lazy" onLoad={() => setImageLoaded(true)} className={`w-full h-full object-cover transition-all duration-1000 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`} />
+                    : <div className="absolute inset-0 bg-gradient-to-br from-[#0e1012] to-[#080808] flex items-center justify-center"><div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '20px 20px' }} /><div className="w-10 h-10 rounded-lg border border-orange-vibrant/20 flex items-center justify-center opacity-35"><svg fill="none" stroke="#FF570F" strokeWidth="1.5" viewBox="0 0 24 24" className="w-5 h-5"><polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" /></svg></div></div>
+                }
                 <div className="absolute inset-0 bg-gradient-to-t from-deep-black via-deep-black/40 to-transparent" />
             </div>
             <div className="relative h-full flex flex-col justify-end p-8">
