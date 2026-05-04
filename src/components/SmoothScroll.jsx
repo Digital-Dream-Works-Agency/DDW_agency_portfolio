@@ -1,3 +1,4 @@
+// src/components/SmoothScroll.jsx
 import { useEffect } from 'react';
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
@@ -11,9 +12,10 @@ const SmoothScroll = ({ children }) => {
             duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             smoothWheel: true,
-            smoothTouch: false,
+            touchMultiplier: 2,
         });
 
+        // Lenis ko GSAP ke sath properly sync karna
         lenis.on('scroll', ScrollTrigger.update);
 
         const rafCallback = (time) => {

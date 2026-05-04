@@ -9,14 +9,17 @@ const StatItem = ({ end, suffix, label, prefix = '' }) => {
     const countRef = useRef(null);
 
     useEffect(() => {
+        if (!countRef.current) return;
         const obj = { value: 0 };
-        gsap.to(obj, {
+        
+        const anim = gsap.to(obj, {
             value: end,
             duration: 2.5,
             ease: "power2.out",
             scrollTrigger: {
                 trigger: countRef.current,
                 start: "top 85%",
+                once: true // Performance tweak: run only once
             },
             onUpdate: () => {
                 if (countRef.current) {
@@ -24,11 +27,13 @@ const StatItem = ({ end, suffix, label, prefix = '' }) => {
                 }
             }
         });
+
+        return () => anim.kill(); // Cleanup
     }, [end, suffix, prefix]);
 
     return (
-        <div className="stat-item magnetic group text-center p-12 rounded-3xl bg-gradient-to-br from-bg-surface to-bg-base border-2 border-orange-vibrant/10 hover:border-orange-vibrant/30 transition-all duration-500 shadow-xl hover:shadow-orange-vibrant/20">
-            <div ref={countRef} className="text-7xl font-black gradient-text mb-4">
+        <div className="stat-item magnetic group text-center p-12 rounded-3xl bg-gradient-to-br from-[#151a1d] to-[#0d1012] border-2 border-orange-vibrant/10 hover:border-orange-vibrant/30 transition-all duration-500 shadow-xl hover:shadow-orange-vibrant/20">
+            <div ref={countRef} className="text-7xl font-black bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent mb-4">
                 0{suffix}
             </div>
             <div className="h-px w-16 bg-gradient-to-r from-transparent via-orange-vibrant to-transparent mx-auto mb-4"></div>
@@ -53,6 +58,7 @@ const Stats = () => {
                 scrollTrigger: {
                     trigger: statsRef.current,
                     start: "top 85%",
+                    once: true
                 }
             });
         }, statsRef);
@@ -60,8 +66,7 @@ const Stats = () => {
     }, []);
 
     return (
-        <section ref={statsRef} className="py-16 bg-bg-surface border-y border-orange-vibrant/10 overflow-hidden relative">
-            {/* Decorative Background */}
+        <section ref={statsRef} className="py-16 bg-deep-black border-y border-orange-vibrant/10 overflow-hidden relative">
             <div className="absolute inset-0 opacity-5 pointer-events-none">
                 <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-orange-vibrant rounded-full blur-3xl" />
                 <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-cream rounded-full blur-3xl" />

@@ -20,7 +20,6 @@ const Home = () => {
             <Solutions />
             <AboutSection />
             <HomeProjects /> {/* ✅ ADDED - Projects slider section */}
-            <CaseStudies />
             <Testimonials />
             <Collaborate />
             <Footer />

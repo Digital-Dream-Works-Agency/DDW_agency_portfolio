@@ -1,53 +1,43 @@
-// src/App.jsx - ADD ABOUT PAGE ROUTE
-import { useState, useEffect } from 'react';
+// src/App.jsx
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import ProjectsPage from './pages/Projectspage';
 import ServicesPage from './pages/ServicesPage';
 import CaseStudiesPage from './pages/CaseStudiesPage';
 import ContactPage from './pages/ContactPage';
-import AboutPage from './pages/AboutPage'; // ✅ NEW IMPORT
+import AboutPage from './pages/AboutPage';
 import ScrollToTop from './components/ScrollToTop';
-import LoadingScreen from './components/LoadingScreen';
 import SmoothScroll from './components/SmoothScroll';
 import CustomCursor from './components/CustomCursor';
-import PageTransition from './components/PageTransition';
+import LoadingScreen from './components/LoadingScreen';
 
-const AppContent = () => {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 2000); // ✅ REDUCED from 3000ms
-    return () => clearTimeout(timeout);
-  }, []);
-
-  return (
-    <SmoothScroll>
-      <div className="App">
-        <CustomCursor />
-        <LoadingScreen isLoading={loading} />
-        {!loading && (
-          <Routes>
-            <Route path="/" element={<PageTransition><Home /></PageTransition>} />
-            <Route path="/services" element={<PageTransition><ServicesPage /></PageTransition>} />
-            <Route path="/case-studies" element={<PageTransition><CaseStudiesPage /></PageTransition>} />
-            <Route path="/projects" element={<PageTransition><ProjectsPage /></PageTransition>} />
-            <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} /> {/* ✅ NEW ROUTE */}
-            <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
-          </Routes>
-        )}
-      </div>
-    </SmoothScroll>
-  );
-};
- 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
   return (
     <Router>
       <ScrollToTop />
-      <AppContent />
+      <SmoothScroll>
+        <div className="App relative w-full bg-deep-black min-h-screen">
+          <CustomCursor />
+          
+          {/* GSAP Loading Screen */}
+          {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
+          
+          {/* Main App Content - Wait for loader to finish */}
+          <div className={isLoading ? "h-screen overflow-hidden" : ""}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/case-studies" element={<CaseStudiesPage />} />
+              <Route path="/projects" element={<ProjectsPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+            </Routes>
+          </div>
+        </div>
+      </SmoothScroll>
     </Router>
   );
 }

@@ -1,73 +1,50 @@
-// src/components/Navbar.jsx - FULLY UPGRADED
+// src/components/Navbar.jsx
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// ─── Magnetic Hook ─────────────────────────────────────────────────────────────
-const useMagnetic = (ref, strength = 0.3) => {
+gsap.registerPlugin(ScrollTrigger);
+
+// ─── Magnetic Hook (GSAP quickTo se optimized) ─────────────────────────────
+const useMagnetic = (ref, strength = 0.25) => {
     useEffect(() => {
         const el = ref.current;
         if (!el) return;
+
+        const xTo = gsap.quickTo(el, "x", { duration: 0.4, ease: "power2.out" });
+        const yTo = gsap.quickTo(el, "y", { duration: 0.4, ease: "power2.out" });
+
         const onMove = (e) => {
             const rect = el.getBoundingClientRect();
-            gsap.to(el, {
-                x: (e.clientX - rect.left - rect.width / 2) * strength,
-                y: (e.clientY - rect.top - rect.height / 2) * strength,
-                duration: 0.4, ease: 'power2.out',
-            });
+            xTo((e.clientX - rect.left - rect.width / 2) * strength);
+            yTo((e.clientY - rect.top - rect.height / 2) * strength);
         };
-        const onLeave = () => gsap.to(el, { x: 0, y: 0, duration: 0.6, ease: 'elastic.out(1, 0.3)' });
+        const onLeave = () => {
+            xTo(0);
+            yTo(0);
+        };
+
         el.addEventListener('mousemove', onMove);
         el.addEventListener('mouseleave', onLeave);
         return () => { el.removeEventListener('mousemove', onMove); el.removeEventListener('mouseleave', onLeave); };
     }, [strength]);
 };
 
-// ─── Scroll Progress Bar ───────────────────────────────────────────────────────
-const ScrollProgressBar = () => {
-    const [progress, setProgress] = useState(0);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const total = document.body.scrollHeight - window.innerHeight;
-            setProgress(total > 0 ? (window.scrollY / total) * 100 : 0);
-        };
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    return (
-        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white/5">
-            <motion.div
-                className="h-full origin-left"
-                style={{
-                    width: `${progress}%`,
-                    background: 'linear-gradient(90deg, #FF570F, #FDE87A)',
-                }}
-                transition={{ duration: 0.1 }}
-            />
-        </div>
-    );
-};
-
-// ─── Magnetic CTA Button ───────────────────────────────────────────────────────
-// ─── Magnetic CTA Button ───────────────────────────────────────────────────────
+// ─── Magnetic CTA Button ───────────────────────────────────────────────────
 const MagneticCTA = () => {
     const ref = useRef(null);
     useMagnetic(ref, 0.25);
 
     return (
-        <a // <--- Ye opening tag yahan hona chahiye
+        <a
             ref={ref}
             href="https://calendly.com/digi-dreamworks/onboarding-call"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden lg:inline-flex relative items-center gap-2 px-8 py-3 bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-wider overflow-hidden group transition-colors duration-300 shadow-lg shadow-orange-vibrant/30"
         >
-            {/* Shine sweep */}
             <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-            {/* Fill on hover */}
             <span className="absolute inset-0 bg-cream scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" />
             <span className="relative z-10 flex items-center gap-2">
                 Book a Call
@@ -79,23 +56,59 @@ const MagneticCTA = () => {
     );
 };
 
-// ─── Main Navbar ───────────────────────────────────────────────────────────────
+// ─── Main Navbar ───────────────────────────────────────────────────────────
 const Navbar = () => {
-    const [scrolled, setScrolled] = useState(false);
-    const [scrollY, setScrollY] = useState(0);
+    const navRef = useRef(null);
+    const progressRef = useRef(null);
+    const mobileMenuRef = useRef(null);
     const [mobileOpen, setMobileOpen] = useState(false);
     const location = useLocation();
 
+    // Reset mobile menu on route change
+    useEffect(() => { setMobileOpen(false); }, [location]);
+
+    // GSAP Scroll Animations (No React State Re-renders!)
     useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 50);
-            setScrollY(window.scrollY);
+        const nav = navRef.current;
+        const progressBar = progressRef.current;
+
+        // Intro animation for Navbar
+        gsap.fromTo(nav, { yPercent: -100 }, { yPercent: 0, duration: 1, ease: 'power3.out' });
+
+        // ScrollTrigger for background and padding change
+        ScrollTrigger.create({
+            start: 'top -50',
+            end: 99999,
+            toggleClass: { className: 'nav-scrolled', targets: nav },
+            onEnter: () => gsap.to(nav, { backgroundColor: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(16px)', padding: '12px 0', borderBottom: '1px solid rgba(255,87,15,0.2)', duration: 0.3 }),
+            onLeaveBack: () => gsap.to(nav, { backgroundColor: 'transparent', backdropFilter: 'blur(0px)', padding: '24px 0', borderBottom: '1px solid transparent', duration: 0.3 })
+        });
+
+        // ScrollTrigger for Progress Bar
+        gsap.to(progressBar, {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+                trigger: document.body,
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 0.1, // Smooth progress
+            }
+        });
+
+        return () => {
+            ScrollTrigger.getAll().forEach(t => t.kill());
         };
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    useEffect(() => { setMobileOpen(false); }, [location]);
+    // Mobile Menu Animation
+    useEffect(() => {
+        if (mobileOpen) {
+            gsap.to(mobileMenuRef.current, { x: '0%', duration: 0.5, ease: 'power3.out' });
+        } else {
+            gsap.to(mobileMenuRef.current, { x: '100%', duration: 0.5, ease: 'power3.in' });
+        }
+    }, [mobileOpen]);
 
     const handleHomeClick = (e) => {
         if (location.pathname === '/') {
@@ -113,62 +126,29 @@ const Navbar = () => {
         { name: 'Contact', path: '/contact' },
     ];
 
-    const isActive = (path) => {
-        if (path === '/') return location.pathname === '/';
-        return location.pathname.startsWith(path);
-    };
-
-    // Shrink values based on scroll
-    const logoSize = scrolled ? 'w-9 h-9' : 'w-12 h-12';
-    const logoTextSize = scrolled ? 'text-lg' : 'text-xl';
-    const navPy = scrolled ? 'py-3' : 'py-6';
+    const isActive = (path) => path === '/' ? location.pathname === '/' : location.pathname.startsWith(path);
 
     return (
         <>
-            <motion.nav
-                initial={{ y: -100 }}
-                animate={{ y: 0 }}
-                transition={{ duration: 0.8, ease: [0.6, 0.01, 0.05, 0.95] }}
-                className={`fixed top-0 left-0 w-full z-[100] transition-all duration-500 ${navPy} ${
-                    scrolled
-                        ? 'bg-deep-black/95 backdrop-blur-2xl border-b border-orange-vibrant/20 shadow-2xl shadow-black/50'
-                        : 'bg-transparent'
-                }`}
+            <nav
+                ref={navRef}
+                className="fixed top-0 left-0 w-full z-[100] py-6 transition-colors duration-300"
             >
                 <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-
-                    {/* Logo — shrinks on scroll */}
-                    <Link
-                        to="/"
-                        onClick={handleHomeClick}
-                        className="flex items-center gap-3 group z-[110]"
-                    >
-                        <div className={`relative ${logoSize} rounded-xl overflow-hidden border-2 border-orange-vibrant/30 group-hover:border-orange-vibrant transition-all duration-500 shadow-lg group-hover:shadow-orange-vibrant/40`}>
-                            <img
-                                src="/logo.jpeg"
-                                alt="DDW Agency"
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                            />
+                    
+                    {/* Logo */}
+                    <Link to="/" onClick={handleHomeClick} className="flex items-center gap-3 group z-[110]">
+                        <div className="relative w-10 h-10 rounded-xl overflow-hidden border-2 border-orange-vibrant/30 group-hover:border-orange-vibrant transition-all duration-500 shadow-lg">
+                            <img src="/logo.jpeg" alt="DDW Agency" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                         </div>
                         <div className="hidden sm:flex flex-col">
-                            <span className={`${logoTextSize} font-heading font-bold tracking-tight leading-none transition-all duration-500`}>
-                                DDW{' '}
-                                <span style={{
-                                    background: 'linear-gradient(135deg, #FF570F 0%, #FDE87A 100%)',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent',
-                                    backgroundClip: 'text',
-                                }}>
-                                    Agency
-                                </span>
-                            </span>
-                            <span className={`text-[8px] text-text-muted uppercase tracking-wider transition-all duration-500 ${scrolled ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
-                                Enterprise Solutions
+                            <span className="text-xl font-heading font-bold tracking-tight leading-none">
+                                DDW <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">Agency</span>
                             </span>
                         </div>
                     </Link>
 
-                    {/* Nav Links */}
+                    {/* Desktop Links */}
                     <ul className="hidden lg:flex items-center gap-8">
                         {navLinks.map((link) => (
                             <li key={link.name}>
@@ -188,7 +168,6 @@ const Navbar = () => {
                         ))}
                     </ul>
 
-                    {/* Magnetic CTA */}
                     <MagneticCTA />
 
                     {/* Mobile Hamburger */}
@@ -203,77 +182,49 @@ const Navbar = () => {
                     </button>
                 </div>
 
-                {/* Scroll Progress Bar — sirf scrolled state mein dikhta hai */}
-                {scrolled && <ScrollProgressBar />}
-            </motion.nav>
+                {/* GSAP Scroll Progress Bar */}
+                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white/5 opacity-0 nav-progress-wrapper transition-opacity duration-300">
+                    <div 
+                        ref={progressRef}
+                        className="h-full bg-gradient-to-r from-[#FF570F] to-[#FDE87A] origin-left scale-x-0"
+                    />
+                </div>
+            </nav>
 
-            {/* Mobile Menu */}
-            <AnimatePresence>
-                {mobileOpen && (
-                    <>
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            onClick={() => setMobileOpen(false)}
-                            className="fixed inset-0 bg-black/95 backdrop-blur-xl z-[98] lg:hidden"
-                        />
-                        <motion.div
-                            initial={{ x: '100%' }}
-                            animate={{ x: 0 }}
-                            exit={{ x: '100%' }}
-                            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                            className="fixed top-0 right-0 bottom-0 w-[85%] max-w-md bg-bg-surface border-l border-orange-vibrant/20 z-[99] lg:hidden overflow-y-auto"
-                        >
-                            <div className="relative p-8 pt-24">
-                                <ul className="space-y-6 mb-12">
-                                    {navLinks.map((link, index) => (
-                                        <motion.li
-                                            key={link.name}
-                                            initial={{ opacity: 0, x: 50 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: index * 0.08 }}
-                                        >
-                                            <Link
-                                                to={link.path}
-                                                onClick={(e) => {
-                                                    if (link.path === '/') handleHomeClick(e);
-                                                    setMobileOpen(false);
-                                                }}
-                                                className={`block text-3xl font-heading font-bold transition-colors py-2 ${
-                                                    isActive(link.path) ? 'text-orange-vibrant' : 'text-pure-white hover:text-orange-vibrant'
-                                                }`}
-                                            >
-                                                {link.name}
-                                            </Link>
-                                            <div className="h-px bg-gradient-to-r from-orange-vibrant/30 to-transparent mt-3" />
-                                        </motion.li>
-                                    ))}
-                                </ul>
-
-                                <motion.a
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.4 }}
-                                    href="https://calendly.com/digi-dreamworks/onboarding-call"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block w-full text-center px-8 py-4 bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-wider hover:bg-cream transition-all shadow-lg"
+            {/* Mobile Menu (GSAP Controlled) */}
+            <div 
+                ref={mobileMenuRef}
+                className="fixed top-0 right-0 bottom-0 w-full md:w-[85%] max-w-md bg-deep-black/95 backdrop-blur-xl border-l border-orange-vibrant/20 z-[99] lg:hidden overflow-y-auto translate-x-full"
+            >
+                <div className="relative p-8 pt-32">
+                    <ul className="space-y-6 mb-12">
+                        {navLinks.map((link) => (
+                            <li key={link.name}>
+                                <Link
+                                    to={link.path}
+                                    onClick={(e) => {
+                                        if (link.path === '/') handleHomeClick(e);
+                                        setMobileOpen(false);
+                                    }}
+                                    className={`block text-3xl font-heading font-bold transition-colors py-2 ${
+                                        isActive(link.path) ? 'text-orange-vibrant' : 'text-pure-white hover:text-orange-vibrant'
+                                    }`}
                                 >
-                                    Book a Call →
-                                </motion.a>
-
-                                {/* Mobile footer info */}
-                                <div className="mt-12 pt-8 border-t border-white/5">
-                                    <p className="text-text-muted text-xs uppercase tracking-widest mb-2">Offices</p>
-                                    <p className="text-pure-white/60 text-sm">Rome, Italy • Florida, USA</p>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
+                                    {link.name}
+                                </Link>
+                                <div className="h-px bg-gradient-to-r from-orange-vibrant/30 to-transparent mt-3" />
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+            
+            <style jsx>{`
+                /* Jab navbar scroll hota hai toh progress bar dikhegi */
+                .nav-scrolled .nav-progress-wrapper {
+                    opacity: 1;
+                }
+            `}</style>
         </>
     );
 };
