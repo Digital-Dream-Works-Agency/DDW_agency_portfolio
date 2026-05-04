@@ -8,18 +8,63 @@ gsap.registerPlugin(ScrollTrigger);
 
 // ─── Data ──────────────────────────────────────────────────────────────────────
 const projectsData = [
-    { id: 'enterprise-dispatch-system', title: 'Enterprise Dispatch System', category: 'Custom Software', img: null, tags: ['React', 'Node.js', 'AWS'], metrics: { clients: '500+', uptime: '99.9%' }, gradient: 'from-orange-vibrant/20 to-purple-600/20' },
-    { id: 'financial-intelligence-dashboard', title: 'Financial Intelligence Dashboard', category: 'Custom Software', img: null, tags: ['Data Viz', 'Python', 'ML'], metrics: { revenue: '$2M+', accuracy: '95%' }, gradient: 'from-blue-500/20 to-cyan-400/20' },
-    { id: 'supply-chain-erp', title: 'Supply Chain ERP Architecture', category: 'Custom Software', img: null, tags: ['SAP', 'Oracle', 'Integration'], metrics: { efficiency: '+40%', cost: '-30%' }, gradient: 'from-green-500/20 to-emerald-400/20' },
-    { id: 'healthcare-data-infrastructure', title: 'Healthcare Data Infrastructure', category: 'Custom Software', img: null, tags: ['HIPAA', 'Cloud', 'Security'], metrics: { compliance: '100%', scale: '5x' }, gradient: 'from-red-500/20 to-pink-400/20' },
-    { id: 'legal-case-management', title: 'Legal Case Management Suite', category: 'Custom Software', img: null, tags: ['React', 'PostgreSQL', 'Auth'], metrics: { cases: '10K+', time: '-50%' }, gradient: 'from-indigo-500/20 to-violet-400/20' },
-    { id: 'saas-seo-strategy', title: 'SaaS Growth & SEO Strategy', category: 'SEO & Marketing', img: null, tags: ['SEO', 'Content', 'Analytics'], metrics: { traffic: '+250%', leads: '+180%' }, gradient: 'from-yellow-500/20 to-amber-400/20' },
-    { id: 'marketing-automation-hub', title: 'Marketing Automation Hub', category: 'SEO & Marketing', img: null, tags: ['HubSpot', 'Automation', 'CRM'], metrics: { conversion: '+65%', roi: '450%' }, gradient: 'from-orange-vibrant/20 to-red-500/20' },
-    { id: 'omni-channel-crm', title: 'Omni-channel CRM Integration', category: 'SEO & Marketing', img: null, tags: ['CRM', 'API', 'Omnichannel'], metrics: { channels: '8', retention: '+42%' }, gradient: 'from-teal-500/20 to-cyan-400/20' },
-    { id: 'enterprise-content-authority', title: 'Enterprise Content Authority', category: 'SEO & Marketing', img: null, tags: ['Content', 'SEO', 'DA'], metrics: { da: '72', articles: '500+' }, gradient: 'from-purple-500/20 to-pink-400/20' },
+    {
+        id: 'mathfel',
+        title: 'Mathfel — Video Door Intercom',
+        category: 'Google Ads',
+        img: null,
+        tags: ['Google Ads', 'EU Market', 'E-Commerce'],
+        metrics: { ROAS: '600%', Revenue: '€418K' },
+        gradient: 'from-orange-vibrant/20 to-amber-400/20',
+    },
+    {
+        id: 'pj-bold',
+        title: 'PJ BOLD — Silicone Molds',
+        category: 'Google Ads',
+        img: null,
+        tags: ['Google Ads', 'USA', 'E-Commerce'],
+        metrics: { ROAS: '14.54x', Revenue: '$38K' },
+        gradient: 'from-orange-vibrant/20 to-red-500/20',
+    },
+    {
+        id: 'cpa-moms',
+        title: 'CPA MOMS — Tax Franchise',
+        category: 'Google Ads',
+        img: null,
+        tags: ['Google Ads', 'Lead Gen', 'USA'],
+        metrics: { Conversions: '+53%', CPC: '-51%' },
+        gradient: 'from-blue-500/20 to-cyan-400/20',
+    },
+    {
+        id: 'uae-home-appliances',
+        title: 'UAE Home Appliances',
+        category: 'Meta Ads',
+        img: null,
+        tags: ['Meta Ads', 'Shopify', 'UAE'],
+        metrics: { ROAS: '4.86x', Orders: '572' },
+        gradient: 'from-purple-500/20 to-pink-400/20',
+    },
+    {
+        id: 'us-health-clinic',
+        title: 'US Health Clinic',
+        category: 'Google Ads',
+        img: null,
+        tags: ['Google Ads', 'Healthcare', 'USA'],
+        metrics: { Conversions: '15,594', CPC: '$0.09' },
+        gradient: 'from-green-500/20 to-emerald-400/20',
+    },
+    {
+        id: 'us-therapy-practice',
+        title: 'US Therapy Practice',
+        category: 'Google Ads',
+        img: null,
+        tags: ['Google Ads', 'Healthcare', 'Calls'],
+        metrics: { Calls: '517', 'Per Call': '$34.70' },
+        gradient: 'from-teal-500/20 to-cyan-400/20',
+    },
 ];
 
-const CATEGORIES = ['All', 'Custom Software', 'SEO & Marketing'];
+const CATEGORIES = ['All', 'Google Ads', 'Meta Ads'];
 const ITEMS_PER_PAGE = 6;
 
 // ─── Native GSAP Tilt Component ────────────────────────────────────────────────

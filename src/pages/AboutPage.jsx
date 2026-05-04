@@ -219,10 +219,10 @@ const AboutPage = () => {
     ];
 
     const timelineData = [
-        { year: '2014', event: 'Founded by ex-Google engineers frustrated with agency quality' },
-        { year: '2017', event: 'First enterprise client: $2M+ annual contract' },
-        { year: '2020', event: 'Expanded to AI/ML infrastructure consulting' },
-        { year: '2024', event: 'Seven retainer services active. US and EU clients. 100% retainer model.' },
+        { year: '2019', event: 'DDW founded. First retainer engagements in digital marketing.' },
+        { year: '2021', event: 'Expanded into custom software and cloud infrastructure.' },
+        { year: '2023', event: 'AI development and automation added as a core service.' },
+        { year: '2025', event: 'Seven retainer services active. US and EU clients. 100% retainer model.' },
     ];
 
     return (

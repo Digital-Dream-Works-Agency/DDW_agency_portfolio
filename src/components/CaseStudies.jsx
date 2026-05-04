@@ -6,22 +6,78 @@ gsap.registerPlugin(ScrollTrigger);
 
 // ─── Data (Emojis Replaced with High-End SVGs) ────────────────────────────────
 const caseStudies = [
-    { 
-        client: 'Italian Fashion E-Commerce', industry: 'E-Commerce • Italy/EU', title: '€69.7K Ad Spend Generated 418K Purchases at 600% ROAS', challenge: 'Italian fashion retailer spending €20K/month on Google Shopping with inconsistent 180-250% ROAS. Needed to scale profitably to €70K/month without margin erosion.', solution: ['Restructured entire Google Shopping feed with Italian-optimized product titles', 'Implemented tiered bidding strategy by product margin and seasonality', 'Created separate campaigns for high-AOV vs. volume products', 'Integrated with existing Italian e-commerce platform (custom API)'], results: [{ metric: 418000, display: '418K', label: 'Purchases (4 months)', suffix: '' }, { metric: 600, display: '600%', label: 'Peak ROAS', suffix: '%' }, { metric: 69.7, display: '€69.7K', label: 'Monthly Spend', suffix: '' }, { metric: 1100, display: '1.1K', label: 'Daily Conversions', suffix: '' }], tags: ['Google Ads', 'E-Commerce', 'Italy'], accent: '#FF570F', number: '01', 
-        icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg> 
+    {
+        client: 'Mathfel',
+        industry: 'B2B Tech — Video Door Intercom Systems',
+        location: 'EU',
+        title: 'ROAS Doubled to 600% on €69.7K Monthly Google Ads Spend',
+        challenge: 'Mathfel specialises in high-quality video door intercom systems. They were running Google Shopping at 310% ROAS on ~€60K/month. The ceiling was margin erosion as spend scaled toward €70K. They needed a structure that could absorb the budget increase without compressing returns.',
+        solution: ['Restructured Google Shopping feed with product-level margin segmentation', 'Implemented tiered bidding by margin and seasonal demand curves', 'Split campaigns by high-AOV vs. volume products to protect blended ROAS', 'Added Performance Max alongside Shopping for incremental reach'],
+        results: [{ display: '600%', label: 'Peak ROAS', sub: 'Up from 310% before engagement' }, { display: '418K', label: 'Sales (EUR)', sub: 'Sep–Dec 2024, 4-month window' }, { display: '1.1K', label: 'Conversions', sub: 'Up from 623 in prior period' }, { display: '114%', label: 'Conv. Value Increase', sub: 'Same budget, significantly more return' }],
+        tags: ['Google Ads', 'Google Shopping', 'B2B', 'EU'],
+        accent: '#FF570F', number: '01',
+        icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
     },
-    { 
-        client: 'US Healthcare Clinic', industry: 'Healthcare • USA', title: '15,594 Patient Appointments Booked at $0.09 CPC', challenge: 'Medical clinic in competitive US market struggling with $3+ CPC on Google Ads. Needed cost-effective patient acquisition across 12 states.', solution: ['Built location-specific landing pages for each service line', 'Implemented appointment booking integration with Google Ads tracking', 'Optimized for "near me" searches with geo-targeted bid adjustments', 'Created remarketing campaigns for incomplete bookings'], results: [{ metric: 15594, display: '15,594', label: 'Conversions', suffix: '' }, { metric: 0.09, display: '$0.09', label: 'Average CPC', suffix: '' }, { metric: 4.58, display: '4.58%', label: 'CTR', suffix: '%' }, { metric: 6.3, display: '$6.3K', label: 'Total Spend', suffix: '' }], tags: ['Google Ads', 'Healthcare', 'USA'], accent: '#FDE87A', number: '02', 
-        icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8m0 0V5a2 2 0 012-2h-2m0 10h5m-9 0h4m-8 8V9c0-1.1.9-2 2-2h14a2 2 0 012 2v12H2z" /></svg> 
+    {
+        client: 'PJ BOLD',
+        industry: 'E-Commerce — Custom Silicone Molds',
+        location: 'USA',
+        title: '$38K Revenue on a $2,600 Budget: ROAS 1.83x to 14.54x',
+        challenge: 'PJ BOLD sells custom silicone molds for gummies, candies, and chocolates. Google Ads were generating $4,830 in conversion value on $2,634 spend — a 1.83x ROAS. Profitable but stuck. Higher-margin SKUs were being treated identically to low-margin volume products in the campaign structure.',
+        solution: ['Complete campaign rebuild with SKU-level segmentation by margin and AOV', 'Keyword strategy shifted to high-intent transactional terms', 'Landing page alignment to highest-converting product categories', 'Budget reallocation from broad match to exact and phrase match winners'],
+        results: [{ display: '14.54x', label: 'Final ROAS', sub: 'Up from 1.83x at start' }, { display: '$38K', label: 'Revenue Generated', sub: 'On $2,625 ad spend' }, { display: '7x', label: 'Sales Increase', sub: 'Same budget, 7x more revenue' }, { display: '62%', label: 'Impressions Growth', sub: '270K to 441K impressions' }],
+        tags: ['Google Ads', 'E-Commerce', 'ROAS Turnaround', 'USA'],
+        accent: '#EE7D1D', number: '02',
+        icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>
     },
-    { 
-        client: 'European E-Commerce', industry: 'E-Commerce • EU', title: '317 Purchases via Meta Ads at €11.52 Cost Per Sale', challenge: 'Multi-country EU e-commerce store struggling with Meta Ads profitability. High cart abandonment, low ROAS across 5 markets.', solution: ['Built retargeting campaigns with dynamic product ads in 5 languages', 'Created lookalike audiences based on high-LTV customer segments', 'Implemented abandoned cart recovery via Meta Messenger', 'Optimized creative testing framework (10+ variants per product)'], results: [{ metric: 317, display: '317', label: 'Purchases', suffix: '' }, { metric: 11.52, display: '€11.52', label: 'Cost/Purchase', suffix: '' }, { metric: 6190, display: '6,190', label: 'Add-to-Carts', suffix: '' }, { metric: 3.61, display: '3.61%', label: 'CTR', suffix: '%' }], tags: ['Meta Ads', 'E-Commerce', 'EU'], accent: '#FF570F', number: '03', 
-        icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg> 
+    {
+        client: 'CPA MOMS',
+        industry: 'Professional Services — National Tax Franchise',
+        location: 'USA',
+        title: '53% More Conversions, Cost Per Lead Cut in Half in 30 Days',
+        challenge: 'CPA MOMS is a national franchise of specialist CPAs serving entrepreneurs. Google Ads were generating 15 conversions/month at $144.54 per conversion. With known LTV, they needed more volume and lower CPL — not just one or the other.',
+        solution: ['Full keyword audit: removed low-intent terms bleeding budget', 'Restructured ad groups around franchise-specific service lines', 'Landing page rebuilds to match ad message and eliminate conversion friction', 'Added callout extensions and sitelinks for credibility and click-through'],
+        results: [{ display: '53%', label: 'Conversion Increase', sub: '15 to 23 conversions/month' }, { display: '$71.42', label: 'Cost Per Conversion', sub: 'Down from $144.54 — 50% drop' }, { display: '45%', label: 'Conv. Rate Improvement', sub: '8.33% to 12.11%' }, { display: '56%', label: 'Brand Impression Growth', sub: '5.72K to 8.5K impressions' }],
+        tags: ['Google Ads', 'Lead Generation', 'Franchise', 'USA'],
+        accent: '#FDE87A', number: '03',
+        icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
     },
-    { 
-        client: 'US Therapy Practice', industry: 'Mental Health • USA', title: '517 High-Intent Phone Calls for Therapy Services', challenge: 'Therapy practice needed qualified calls from people actively seeking help. Standard lead gen campaigns were attracting low-intent browsers.', solution: ['Call-only Google Ads campaigns targeting crisis + immediate-need keywords', 'Custom call tracking integration with practice management system', 'Optimized for phone impression share in high-intent moments', 'A/B tested ad copy focused on immediate availability'], results: [{ metric: 517, display: '517', label: 'Phone Calls', suffix: '' }, { metric: 34.70, display: '$34.70', label: 'Cost Per Call', suffix: '' }, { metric: 3.23, display: '3.23%', label: 'CTR', suffix: '%' }, { metric: 60, display: '60%+', label: 'Booked Rate', suffix: '%' }], tags: ['Google Ads', 'Call Campaigns', 'USA'], accent: '#FDE87A', number: '04', 
-        icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg> 
+    {
+        client: 'UAE Home Appliances Brand',
+        industry: 'E-Commerce — Home Appliances',
+        location: 'UAE',
+        title: 'AED 47,950 in Sales on 7,500 AED/Month Meta Ads Budget',
+        challenge: 'A UAE home appliances brand on Shopify was running Meta Ads without a funnel structure — all spend hitting cold audiences, conversion rate below 1%. They needed a full-funnel rebuild without increasing the monthly budget.',
+        solution: ['Built awareness-to-conversion funnel: reach then engagement then purchase campaigns', 'Created lookalike audiences from Shopify purchase data', 'Launched dynamic product ads for abandoned cart recovery', 'Optimised creative by product category for UAE purchasing behaviour'],
+        results: [{ display: 'AED 47.9K', label: 'Total Sales', sub: 'Shopify-tracked revenue' }, { display: '572', label: 'Orders', sub: '1.32% conversion rate' }, { display: '4.86x', label: 'Purchase ROAS', sub: 'Return on ad spend' }, { display: '42,633', label: 'Sessions', sub: 'Driven to storefront' }],
+        tags: ['Meta Ads', 'Shopify', 'E-Commerce', 'UAE'],
+        accent: '#FF570F', number: '04',
+        icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016 2.993 2.993 0 002.25-1.016 3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 2.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" /></svg>
     },
+    {
+        client: 'US Health Clinic',
+        industry: 'Healthcare — Medical Services',
+        location: 'USA',
+        title: '15,594 Patient Conversions at $0.09 CPC Across the USA',
+        challenge: 'A US healthcare provider offering multiple service lines needed cost-effective patient acquisition nationally. Competitors were pushing CPCs to $3–5. They needed high conversion volume without paying premium rates for generic medical keywords.',
+        solution: ['Rebuilt keyword strategy around long-tail, high-intent health service queries', 'Created service-line specific ad groups with dedicated landing pages', 'Implemented call tracking integrated with their appointment booking system', 'Layered bid adjustments for time-of-day and geo to match intent windows'],
+        results: [{ display: '15,594', label: 'Conversions', sub: 'Patient contacts and bookings' }, { display: '$0.09', label: 'Average CPC', sub: 'vs. $3–5+ industry benchmark' }, { display: '4.58%', label: 'CTR', sub: '1.56M impressions, 71,784 clicks' }, { display: '$6.3K', label: 'Total Ad Spend', sub: 'Exceptional acquisition efficiency' }],
+        tags: ['Google Ads', 'Healthcare', 'Lead Generation', 'USA'],
+        accent: '#EE7D1D', number: '05',
+        icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
+    },
+    {
+        client: 'US Therapy Practice',
+        industry: 'Mental Health — Counseling Services',
+        location: 'USA',
+        title: '517 Qualified Therapy Calls at $34.70 Per Call',
+        challenge: 'A therapy and counseling provider needed phone calls from people actively seeking help — not generic health browsers. Standard lead gen was pulling low-intent clicks. Every wasted call slot had a real cost to a small practice.',
+        solution: ['Call-only campaigns targeting crisis and immediate-need search queries', 'Custom call tracking with practice management system integration', 'Optimised phone impression share during highest-intent time windows', 'A/B tested ad copy focused on immediate availability and confidentiality'],
+        results: [{ display: '517', label: 'Phone Calls', sub: 'High-intent therapy seekers' }, { display: '$34.70', label: 'Cost Per Call', sub: 'Total spend $17,943 for 517 calls' }, { display: '3.23%', label: 'CTR', sub: '481K impressions, 15,556 clicks' }, { display: '4,644', label: 'Calls — Limo Campaign', sub: 'Parallel luxury transport campaign' }],
+        tags: ['Google Ads', 'Call Campaigns', 'Mental Health', 'USA'],
+        accent: '#FDE87A', number: '06',
+        icon: <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" /></svg>
+    }
 ];
 
 // ─── Native GSAP Tilt Component ────────────────────────────────────────────────

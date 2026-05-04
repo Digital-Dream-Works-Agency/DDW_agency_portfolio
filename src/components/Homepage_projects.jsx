@@ -6,12 +6,61 @@ import { Link } from 'react-router-dom';
 gsap.registerPlugin(ScrollTrigger);
 
 const featuredProjects = [
-    { id: 'enterprise-dispatch', title: 'Enterprise Dispatch System', category: 'Custom Software', description: 'Real-time logistics platform handling 500+ daily operations with 99.9% uptime.', img: null, tags: ['React', 'Node.js', 'AWS'], metrics: [{ label: 'Active Users', value: '500+' }, { label: 'System Uptime', value: '99.9%' }], featured: true },
-    { id: 'financial-dashboard', title: 'Financial Intelligence Dashboard', category: 'Custom Software', description: 'ML-powered analytics platform processing $2M+ in transactions daily.', img: null, tags: ['Python', 'ML', 'Data Viz'], metrics: [{ label: 'Revenue Impact', value: '$2M+' }, { label: 'Accuracy', value: '95%' }] },
-    { id: 'saas-seo', title: 'SaaS Growth Engine', category: 'SEO & Marketing', description: 'Integrated marketing stack driving 250% traffic growth in 6 months.', img: null, tags: ['SEO', 'Analytics', 'Automation'], metrics: [{ label: 'Traffic Growth', value: '+250%' }, { label: 'Lead Gen', value: '+180%' }] },
-    { id: 'healthcare-data', title: 'Healthcare Data Infrastructure', category: 'Custom Software', description: 'HIPAA-compliant cloud infrastructure scaled to 5x capacity.', img: null, tags: ['HIPAA', 'Cloud', 'Security'], metrics: [{ label: 'Compliance', value: '100%' }, { label: 'Scale', value: '5x' }] },
-    { id: 'supply-chain', title: 'Supply Chain ERP', category: 'Custom Software', description: 'End-to-end supply chain automation reducing costs by 30%.', img: null, tags: ['SAP', 'Oracle', 'Integration'], metrics: [{ label: 'Efficiency', value: '+40%' }, { label: 'Cost Reduction', value: '-30%' }] },
-    { id: 'marketing-hub', title: 'Marketing Automation Hub', category: 'SEO & Marketing', description: 'Unified CRM achieving 450% ROI through intelligent automation.', img: null, tags: ['CRM', 'Automation', 'HubSpot'], metrics: [{ label: 'Conversion', value: '+65%' }, { label: 'ROI', value: '450%' }] },
+    {
+        id: 'mathfel',
+        title: 'Mathfel — Video Door Intercom',
+        category: 'Google Ads',
+        description: 'EU Google Ads campaign generating 600% ROAS on €69.7K spend in the competitive home security market.',
+        img: null,
+        tags: ['Google Ads', 'EU Market', 'E-Commerce'],
+        metrics: [{ label: 'ROAS', value: '600%' }, { label: 'Revenue', value: '€418K' }],
+        featured: true,
+    },
+    {
+        id: 'pj-bold',
+        title: 'PJ BOLD — Silicone Molds',
+        category: 'Google Ads',
+        description: 'Scaled Google Ads from 1.83x to 14.54x ROAS — $2.6K spend turned into $38K revenue in 60 days.',
+        img: null,
+        tags: ['Google Ads', 'USA', 'E-Commerce'],
+        metrics: [{ label: 'ROAS', value: '14.54x' }, { label: 'Revenue', value: '$38K' }],
+    },
+    {
+        id: 'cpa-moms',
+        title: 'CPA MOMS — Tax Franchise',
+        category: 'Google Ads',
+        description: 'Cut CPC from $144 to $71 while growing conversions 53% for a national US tax franchise.',
+        img: null,
+        tags: ['Google Ads', 'Lead Gen', 'USA'],
+        metrics: [{ label: 'More Conversions', value: '+53%' }, { label: 'CPC Drop', value: '-51%' }],
+    },
+    {
+        id: 'uae-home-appliances',
+        title: 'UAE Home Appliances',
+        category: 'Meta Ads',
+        description: 'Meta Ads + Shopify optimization: AED 47.9K sales, 572 orders, 42K sessions at 4.86x ROAS.',
+        img: null,
+        tags: ['Meta Ads', 'Shopify', 'UAE'],
+        metrics: [{ label: 'ROAS', value: '4.86x' }, { label: 'Orders', value: '572' }],
+    },
+    {
+        id: 'us-health-clinic',
+        title: 'US Health Clinic',
+        category: 'Google Ads',
+        description: 'Google Ads delivering 15,594 conversions at $0.09 CPC for a multi-location US health clinic.',
+        img: null,
+        tags: ['Google Ads', 'Healthcare', 'USA'],
+        metrics: [{ label: 'Conversions', value: '15,594' }, { label: 'CPC', value: '$0.09' }],
+    },
+    {
+        id: 'us-therapy-practice',
+        title: 'US Therapy Practice',
+        category: 'Google Ads',
+        description: '517 qualified phone calls at $34.70/call from Google Ads for a US therapy practice.',
+        img: null,
+        tags: ['Google Ads', 'Healthcare', 'Calls'],
+        metrics: [{ label: 'Phone Calls', value: '517' }, { label: 'Per Call', value: '$34.70' }],
+    },
 ];
 
 const HeroProjectCard = ({ project }) => {
