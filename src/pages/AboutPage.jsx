@@ -255,7 +255,7 @@ const AboutPage = () => {
                                 <StatCard value="7" label="Services" />
                                 <StatCard value="100%" label="Retainer Model" />
                                 <StatCard value="2" label="Global Markets" />
-                                <StatCard value="<24hr" label="Response SLA" />
+                                <StatCard value="24hr" label="Response SLA" />
                             </div>
                         </div>
 
