@@ -120,22 +120,25 @@ const Hero = () => {
                 <div className="flex-1 text-center lg:text-left max-w-2xl">
                     <div className="hero-trust inline-flex items-center gap-2 px-4 py-2 border border-orange-vibrant/30 bg-orange-vibrant/8 rounded-full mb-8">
                         <div className="w-1.5 h-1.5 rounded-full bg-orange-vibrant animate-pulse" />
-                        <span className="text-orange-vibrant text-xs font-bold uppercase tracking-[0.2em]">Florida &middot; Rome &middot; Retainer-based</span>
+                        <span className="text-orange-vibrant text-xs font-bold uppercase tracking-[0.2em]">Florida LLC &middot; Florida &amp; Rome &middot; Retainer-only</span>
                     </div>
                     <h1 ref={headlineRef} className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-black leading-[1.05] mb-6 text-pure-white">
-                        Software systems &amp; marketing infrastructure.{' '}
-                        <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">Built to run.</span>
+                        Most agencies show you case studies.{' '}
+                        <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">We show you the accounts.</span>
                     </h1>
-                    <p className="hero-sub text-pure-white/65 text-base md:text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
-                        Most companies already have the tools. The gap is the team that makes them work together.
-                        We build and maintain the systems your ops and marketing teams run on &mdash; on retainer, not on projects.
+                    <p className="hero-sub text-pure-white/65 text-base md:text-lg leading-relaxed mb-3 max-w-xl mx-auto lg:mx-0">
+                        $683K in Meta spend managed last month. $2.7M in Amazon sales on a retainer running since 2015. 600% ROAS on Google. Every number is live &mdash; dashboard screenshots available on the first call.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
-                        <div className="hero-cta"><CTAButton href="https://calendly.com/digi-dreamworks/onboarding-call" variant="primary" external>Book a 20-Min Call</CTAButton></div>
-                        <div className="hero-cta"><CTAButton onClick={handleViewWork} variant="secondary">See Our Work</CTAButton></div>
+                    <p className="hero-sub text-pure-white/45 text-sm leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
+                        If you&rsquo;re spending $50K+ a month and the returns don&rsquo;t match, the channel isn&rsquo;t the problem. Who owns the account is.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-6">
+                        <div className="hero-cta"><CTAButton href="https://calendly.com/digi-dreamworks/onboarding-call" variant="primary" external>See If We&rsquo;re a Fit</CTAButton></div>
+                        <div className="hero-cta"><CTAButton onClick={handleViewWork} variant="secondary">See the Numbers</CTAButton></div>
                     </div>
+                    <p className="hero-cta text-text-muted text-xs text-center lg:text-left mb-6">20 minutes. No deck. If we&rsquo;re not the right fit, we&rsquo;ll tell you on the call.</p>
                     <div className="hero-trust flex flex-wrap items-center gap-x-6 gap-y-2 justify-center lg:justify-start">
-                        {['Retainer-only engagements', 'US & EU clients', '7 core service areas'].map((item) => (
+                        {['Meta · Google · Amazon · TikTok · SEO', 'US & EU clients', 'Active since 2015'].map((item) => (
                             <div key={item} className="flex items-center gap-2">
                                 <svg className="w-3.5 h-3.5 text-orange-vibrant flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>
                                 <span className="text-text-muted text-xs font-medium">{item}</span>

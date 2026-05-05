@@ -55,18 +55,18 @@ const AbstractCTAVisual = () => {
 const agendaItems = [
     {
         num: '01',
-        title: 'Map your stack',
-        desc: 'We ask what you have, what you own, and what you are paying for that does nothing.',
+        title: "Look at what you're running",
+        desc: "We look at the actual account — spend, ROAS, structure, where the budget goes. Not a questionnaire. The real numbers.",
     },
     {
         num: '02',
-        title: 'Identify the constraint',
-        desc: 'One thing is usually preventing everything else. We find it in 20 minutes or fewer.',
+        title: 'Tell you exactly where the gap is',
+        desc: "There's usually one thing costing the most. We'll name it in plain terms, not agency jargon.",
     },
     {
         num: '03',
-        title: 'Tell you if we are the right fit',
-        desc: 'If we are not, we say so. If we are, we describe exactly what a retainer would include.',
+        title: "Tell you plainly if we're the right fit",
+        desc: "If DDW isn't the right team for your account, we'll say so on the call. No follow-up unless you ask for one.",
     },
 ];
 
@@ -115,12 +115,15 @@ const Collaborate = () => {
                         </div>
 
                         <h2 ref={headingRef} className="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-pure-white leading-[1.08] mb-6">
-                            Before you brief another agency, take{' '}
-                            <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">20 minutes.</span>
+                            Every month with the wrong team is budget that{' '}
+                            <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">doesn&rsquo;t compound.</span>
                         </h2>
 
-                        <p className="collab-sub text-pure-white/55 text-base md:text-lg leading-relaxed mb-10 max-w-lg">
-                            We run a structured 20-minute call. No pitch deck. No sales theatre. Three things happen:
+                        <p className="collab-sub text-pure-white/55 text-base md:text-lg leading-relaxed mb-3 max-w-lg">
+                            At $50K/month in ad spend, a 1x improvement in ROAS is worth more than the retainer costs in a year. There&rsquo;s one thing we say on every first call that most agencies won&rsquo;t. It usually tells you in 10 minutes whether we&rsquo;re worth your time.
+                        </p>
+                        <p className="collab-sub text-pure-white/40 text-sm leading-relaxed mb-10 max-w-lg">
+                            Book 20 minutes. Here&rsquo;s what happens on the call:
                         </p>
 
                         <div className="space-y-6 mb-10">
