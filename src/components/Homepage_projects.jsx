@@ -26,7 +26,7 @@ const featuredProjects = [
         id: 'amazon-us',
         title: 'Amazon Brand — US Market',
         category: 'Amazon Management',
-        description: '$2.7M in sales managed. 27.64% ACOS. 129,800 orders. We've run this account since 2015 — full PPC management and seller central operations.',
+        description: "$2.7M in sales managed. 27.64% ACOS. 129,800 orders. We've run this account since 2015 — full PPC management and seller central operations.",
         img: '/portfolio/amazon-ads-main.png',
         proof: '/portfolio/amazon-ads-main.png',
         tags: ['Amazon Ads', 'Amazon FBA', 'USA'],

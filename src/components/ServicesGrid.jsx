@@ -35,7 +35,7 @@ const servicesData = [
     },
     {
         title: 'Amazon Management',
-        desc: '$2.7M in sales managed. 129,800 orders. 27.64% ACOS. We've run one account since 2015 — full PPC management, seller central operations, listing optimization, and inventory strategy on retainer.',
+        desc: "$2.7M in sales managed. 129,800 orders. 27.64% ACOS. We've run one account since 2015 — full PPC management, seller central operations, listing optimization, and inventory strategy on retainer.",
         proof: '$2.7M+ sales managed',
         gradient: 'from-[#FDE87A]/12 to-[#EE7D1D]/10',
         accent: '#FDE87A',

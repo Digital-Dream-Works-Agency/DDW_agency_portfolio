@@ -52,7 +52,7 @@ const results = [
         value: '978+',
         label: 'AI Calls Handled',
         context: '24/7 · Books appointments · Qualifies leads',
-        client: 'Lyra — DDW's own AI voice receptionist SaaS',
+        client: "Lyra — DDW's own AI voice receptionist SaaS",
         accent: '#FF570F',
         channel: 'AI SaaS',
     },
