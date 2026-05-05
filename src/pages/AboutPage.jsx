@@ -219,16 +219,17 @@ const AboutPage = () => {
     ];
 
     const timelineData = [
-        { year: '2019', event: 'DDW founded. First retainer engagements in digital marketing.' },
-        { year: '2021', event: 'Expanded into custom software and cloud infrastructure.' },
-        { year: '2023', event: 'AI development and automation added as a core service.' },
-        { year: '2025', event: 'Seven retainer services active. US and EU clients. 100% retainer model.' },
+        { year: '2015', event: 'First Amazon brand taken on retainer. Still running that account today — $2.7M+ in sales managed.' },
+        { year: '2019', event: 'DDW formally founded as a Florida LLC. Expanded into Meta and Google Ads management for US and EU brands.' },
+        { year: '2021', event: 'Rome office opened. EU client base grows — Meta spend hits $400K+/month under management.' },
+        { year: '2023', event: 'AI development and custom software added as core retainer services. TikTok Shop launched for clients.' },
+        { year: '2025', event: 'Seven retainer services active. $683K managed in a single month. Lyra and Sviluppiamo.dev live.' },
     ];
 
     return (
         <main className="relative w-full bg-deep-black">
             <Navbar />
-            <PageHeader title="About Us" breadcrumb="About" subtitle="We're not an agency. We're an embedded technical partner that sits inside your business and builds systems that scale." />
+            <PageHeader title="About DDW" breadcrumb="About" subtitle="Florida LLC. Offices in Florida and Rome. We manage $683K+/month in Meta spend, $2.7M+ in Amazon sales, and ship live SaaS products — all on retainer." />
 
             <section ref={sectionRef} className="relative py-20 md:py-32 bg-deep-black overflow-hidden">
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.02)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
@@ -242,20 +243,21 @@ const AboutPage = () => {
                                     <span className="inline-block w-2 h-2 bg-orange-vibrant rounded-full mr-2 animate-pulse" /> Our Story
                                 </span>
                                 <h2 ref={headingRef} className="about-main-heading text-4xl md:text-5xl lg:text-6xl font-heading font-black text-pure-white mb-6 leading-tight perspective-[1000px]">
-                                    Why We <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent inline-block">Exist</span>
+                                    Florida LLC.{' '}
+                                    <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent inline-block">Two Offices.</span>
                                 </h2>
                             </div>
                             <div className="space-y-6 text-base md:text-lg text-pure-white/70 leading-relaxed">
-                                <p>DDW Agency was born out of frustration. We were the engineers and growth operators getting burned by agencies that overpromised and underdelivered.</p>
-                                <p>So we built the firm we always wanted to hire — one that treats your business like our own, builds systems that scale, and ties our success to measurable outcomes.</p>
-                                <p>Our clients don't come to us for templated websites. They come when the stakes are high: scaling from $1M → $10M ARR, rebuilding legacy infrastructure, or launching products where failure costs millions.</p>
-                                <p className="text-orange-vibrant font-bold text-lg">We operate as your technical partner, not a vendor.</p>
+                                <p>Digital Dream Works is a Florida LLC with offices in Florida and Rome. We serve US and EU clients across digital marketing, AI, and custom software — all on retainer.</p>
+                                <p>We manage $683K+ in Meta ad spend per month, $2.7M+ in Amazon sales, run Google Ads at 600% ROAS, and have shipped 3 live SaaS products including Lyra and Sviluppiamo.dev.</p>
+                                <p>Our clients don't come to us for one-off projects. They come when the stakes are real — when they need a team that builds the infrastructure, runs the accounts, and stays accountable month over month.</p>
+                                <p className="text-orange-vibrant font-bold text-lg">Retainer-only. One team. US + EU markets.</p>
                             </div>
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-8 border-t-2 border-orange-vibrant/20">
-                                <StatCard value="7" label="Services" />
-                                <StatCard value="100%" label="Retainer Model" />
-                                <StatCard value="2" label="Global Markets" />
-                                <StatCard value="24hr" label="Response SLA" />
+                                <StatCard value="683K+" label="Meta $/month" />
+                                <StatCard value="7" label="Service Areas" />
+                                <StatCard value="2" label="Offices" />
+                                <StatCard value="2015" label="Since" />
                             </div>
                         </div>
 

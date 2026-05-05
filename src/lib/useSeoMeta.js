@@ -26,33 +26,33 @@ export const useSeoMeta = ({ title, description, canonical }) => {
 
 export const SEO = {
     home: {
-        title: 'Digital Dream Works | Software Systems & Marketing Infrastructure',
-        description: 'Retainer-based software systems and marketing infrastructure for US and EU companies. Custom software, AI automation, cloud deployment, and SEO — maintained by the team that built them.',
+        title: 'Digital Dream Works | Meta, Google, Amazon, TikTok & AI — Florida LLC',
+        description: '$683K+ monthly Meta spend managed. $2.7M Amazon sales. 600% Google ROAS. TikTok Shop, SEO, AI software — Florida LLC with offices in Florida and Rome. All retainer.',
         canonical: `${SITE_URL}/`,
     },
     services: {
-        title: 'Services | Digital Dream Works — 7 Retainer Service Areas',
-        description: 'Seven retainer services: Custom Software, Web Development, AI Automation, Cloud Deployment, Marketing Systems, Software Consultancy, and SEO. One team, no handoffs.',
+        title: 'Services | Digital Dream Works — Meta, Google, Amazon, TikTok, SEO & AI',
+        description: 'Seven retainer services: Meta Ads, Google Ads, Amazon Management, TikTok Shop, SEO, AI Development, and SaaS Products. One team. US and EU markets.',
         canonical: `${SITE_URL}/services`,
     },
     projects: {
-        title: 'Projects | Digital Dream Works',
-        description: 'Production-grade software and marketing systems built and maintained by Digital Dream Works on retainer.',
+        title: 'Projects | Digital Dream Works — Real Accounts, Real Numbers',
+        description: '$683K Meta spend managed, $2.7M Amazon sales, 600% Google ROAS, $290K TikTok GMV, 54K monthly SEO visitors — all from live DDW client accounts. Dashboard screenshots available.',
         canonical: `${SITE_URL}/projects`,
     },
     caseStudies: {
         title: 'Case Studies | Digital Dream Works',
-        description: 'Real engagement outcomes from Digital Dream Works retainer clients across software, AI automation, cloud infrastructure, and marketing systems.',
+        description: 'Verified results from DDW retainer clients — Meta, Google Ads, Amazon, TikTok Shop, SEO, and AI software. No projections, no estimates.',
         canonical: `${SITE_URL}/case-studies`,
     },
     about: {
-        title: 'About | Digital Dream Works — Built By Engineers, Not Marketers',
-        description: 'Digital Dream Works is a cross-functional team in Florida and Rome building and maintaining software systems and marketing infrastructure on retainer.',
+        title: 'About | Digital Dream Works — Florida LLC, Offices in Florida & Rome',
+        description: 'Digital Dream Works is a Florida LLC with offices in Florida and Rome. We manage $683K+/month in Meta spend, $2.7M+ in Amazon sales, and ship live SaaS products on retainer.',
         canonical: `${SITE_URL}/about`,
     },
     contact: {
         title: 'Contact | Digital Dream Works — Book a Discovery Call',
-        description: 'Book a 20-minute discovery call. We map your stack, identify constraints, and tell you plainly if DDW is the right fit.',
+        description: 'Book a 20-minute discovery call. We work with US and EU brands on Meta, Google, Amazon, TikTok, SEO, and AI software — all on retainer.',
         canonical: `${SITE_URL}/contact`,
     },
 };
