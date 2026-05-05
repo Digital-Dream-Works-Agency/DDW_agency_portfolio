@@ -208,8 +208,14 @@ const ProjectCard = memo(({ item }) => {
                         <img src={item.img} alt={item.title} loading="lazy" onLoad={() => setImgLoaded(true)} className={`w-full h-full object-cover object-top transition-all duration-1000 group-hover:scale-105 ${imgLoaded ? 'opacity-40' : 'opacity-0'}`} />
                     </>
                 ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#0e1012] to-[#080808]">
-                        <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient}`}>
+                        <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '22px 22px' }} />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center select-none">
+                                <div className="text-7xl md:text-8xl font-black text-pure-white/10 leading-none">{Object.values(item.metrics)[0]}</div>
+                                <div className="text-[11px] uppercase tracking-[0.2em] text-pure-white/10 mt-2">{Object.keys(item.metrics)[0]}</div>
+                            </div>
+                        </div>
                     </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-deep-black via-deep-black/60 to-transparent" />

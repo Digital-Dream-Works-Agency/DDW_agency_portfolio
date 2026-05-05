@@ -12,8 +12,8 @@ const featuredProjects = [
         title: 'EU Fashion & Golf Brand',
         category: 'Meta Ads',
         description: '$683K managed in a single month. 343 campaigns. 76M impressions. 5.48 ROAS across the full account. One of our longest-running Meta retainers.',
-        img: '/portfolio/google-ads-600roas.png',
-        proof: '/portfolio/google-ads-600roas.png',
+        img: null,
+        proof: null,
         tags: ['Meta Ads', 'EU Market', 'E-Commerce'],
         metrics: [
             { label: 'Monthly Spend Managed', value: '$683K' },
@@ -88,8 +88,8 @@ const featuredProjects = [
         tags: ['AI SaaS', 'Voice AI', 'Built by DDW'],
         metrics: [
             { label: 'Calls Handled', value: '978+' },
-            { label: 'AI-Handled', value: '300%' },
-            { label: 'Time to Market', value: '95X Faster' },
+            { label: 'Availability', value: '24/7' },
+            { label: 'Built by DDW', value: 'Live' },
         ],
     },
 ];

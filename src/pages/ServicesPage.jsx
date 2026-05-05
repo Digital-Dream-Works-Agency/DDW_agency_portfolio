@@ -38,12 +38,55 @@ const GSAPTilt = ({ children, className }) => {
 
 // ─── Services Data ──────────────────────────────────────────────────────────────
 const servicesData = [
-    { number: '01', title: 'Custom Software Development', tagline: 'Built for scale. Designed for growth.', desc: 'Enterprise-grade web applications, internal tools, and bespoke system architecture designed for high-stakes operations. We architect systems that are maintainable, scalable, and built to last.', features: ['Full-stack web application development', 'API design and third-party integrations', 'Database architecture and optimization', 'Legacy system modernization', 'Code audits and technical due diligence'], deliverable: 'Production-ready system with full documentation', timeline: '6–16 weeks', color: 'from-orange-vibrant to-orange-soft', img: null, icon: '💻' },
-    { number: '02', title: 'AI Development & Integration', tagline: 'LLMs that work for your business, not the other way around.', desc: 'We integrate large language models and AI automation into your existing workflows. From customer-facing chatbots to internal data pipelines, we build AI that generates measurable ROI.', features: ['LLM API integration (OpenAI, Anthropic, custom)', 'Retrieval-Augmented Generation (RAG) systems', 'Workflow automation with AI decision layers', 'Custom fine-tuning and prompt engineering', 'AI-powered analytics dashboards'], deliverable: 'Integrated AI system with monitoring dashboard', timeline: '4–10 weeks', color: 'from-cream to-orange-vibrant', img: null, icon: '🤖' },
-    { number: '03', title: 'Cloud Infrastructure & DevOps', tagline: 'Ship faster. Break nothing.', desc: 'Secure, scalable cloud environments with automated CI/CD pipelines. We handle architecture, deployment, monitoring, and security so your team can focus on building.', features: ['AWS / GCP / Azure architecture design', 'Automated CI/CD pipeline setup', 'Docker and Kubernetes orchestration', 'Security hardening and compliance', 'Performance monitoring and alerting'], deliverable: 'Fully automated infrastructure with runbook', timeline: '3–8 weeks', color: 'from-orange-soft to-maroon-dark', img: null, icon: '☁️' },
-    { number: '04', title: 'Strategic Technical Consulting', tagline: 'The CTO you need, without the full-time cost.', desc: 'Fractional CTO services, technical audits, and architectural roadmaps. We help you make the right technical decisions before you build — saving months of rework and hundreds of thousands in wasted budget.', features: ['Technical architecture review', 'Build vs. buy analysis', 'Engineering team assessment', 'Vendor and technology selection', 'Roadmap planning and prioritization'], deliverable: 'Architecture document + prioritized roadmap', timeline: '1–4 weeks', color: 'from-orange-vibrant to-cream', img: null, icon: '📊' },
-    { number: '05', title: 'Marketing Systems & Automation', tagline: 'Your marketing stack, finally connected.', desc: 'We build unified marketing infrastructure that connects your CRM, email platform, ad accounts, and analytics into one coherent growth engine — fully automated and measurable.', features: ['CRM setup and migration (HubSpot, Salesforce)', 'Email automation sequences', 'Ad platform integration and tracking', 'Attribution modeling', 'Reporting dashboards'], deliverable: 'Connected marketing stack with SOP documentation', timeline: '4–8 weeks', color: 'from-cream to-orange-soft', img: null, icon: '📈' },
-    { number: '06', title: 'SEO & Content Strategy', tagline: 'Organic growth that compounds.', desc: 'Data-backed technical SEO and content strategy to build long-term market authority. We focus on the 20% of optimizations that drive 80% of results — not vanity metrics.', features: ['Technical SEO audit and fixes', 'Keyword research and content planning', 'Link building and authority building', 'Core Web Vitals optimization', 'Monthly performance reporting'], deliverable: 'SEO roadmap + monthly execution report', timeline: 'Ongoing monthly retainer', color: 'from-orange-vibrant to-maroon-dark', img: null, icon: '🔍' },
+    {
+        number: '01', title: 'Meta Ads Management', icon: '📱',
+        tagline: '$683K managed in a single month. 5.48x average ROAS.',
+        desc: 'We run full-funnel Meta strategy for EU and US e-commerce brands — prospecting, retargeting, catalog ads, and creative testing. 343 active campaigns across one account. Not a single one running without a reason.',
+        features: ['Full-funnel campaign architecture (prospecting + retargeting)', 'Dynamic catalog and shopping ads', 'Creative testing and iteration frameworks', 'Audience segmentation across EU and US markets', 'Monthly performance reporting with dashboard access'],
+        deliverable: 'Live account access + monthly performance review', timeline: 'Ongoing retainer', color: 'from-orange-vibrant to-orange-soft', img: null,
+    },
+    {
+        number: '02', title: 'Google Ads Management', icon: '🔍',
+        tagline: '600% ROAS. €418K revenue on €69.7K spend.',
+        desc: 'Search, shopping, and display campaigns built around real conversion data. We manage EU and US accounts across competitive verticals — home security, e-commerce, healthcare, lead gen. The ROAS numbers are from live accounts, not projections.',
+        features: ['Search and shopping campaign architecture', 'Conversion tracking and attribution setup', 'Competitor and keyword gap analysis', 'Bid strategy optimisation and audience layering', 'Cross-market EU and US campaign management'],
+        deliverable: 'Live account access + weekly optimisation log', timeline: 'Ongoing retainer', color: 'from-orange-soft to-cream', img: null,
+    },
+    {
+        number: '03', title: 'Amazon Management', icon: '📦',
+        tagline: '$2.7M in sales managed. Running since 2015.',
+        desc: 'Full Amazon PPC management and seller central operations. We have managed one account continuously since 2015 — 129,800 orders, 27.64% ACOS. We handle everything: sponsored products, sponsored brands, listing optimisation, inventory strategy, and review management.',
+        features: ['Sponsored Products, Brands, and Display campaigns', 'Seller Central operations and account health', 'Listing copy and A+ content optimisation', 'Inventory and FBA strategy', 'Review management and brand protection'],
+        deliverable: 'Full account access + monthly ACOS and revenue report', timeline: 'Ongoing retainer', color: 'from-cream to-orange-vibrant', img: null,
+    },
+    {
+        number: '04', title: 'TikTok Shop & Social Commerce', icon: '🎵',
+        tagline: '$290K GMV in 7 days. 9,010 orders. +121% order growth.',
+        desc: 'Full TikTok Shop setup, affiliate creator management, shoppable content strategy, and LIVE commerce execution. We built the infrastructure, recruited the affiliates, and ran the GMV — $290,753 in one week on a single account.',
+        features: ['TikTok Shop setup and product onboarding', 'Affiliate creator recruitment and management', 'Shoppable video content strategy', 'LIVE commerce planning and execution', 'TikTok Ads integration for paid amplification'],
+        deliverable: 'Live shop + affiliate network + weekly GMV report', timeline: 'Ongoing retainer', color: 'from-orange-vibrant to-orange-soft', img: null,
+    },
+    {
+        number: '05', title: 'SEO & Organic Growth', icon: '📈',
+        tagline: '2K to 54K monthly visitors. 251K clicks. 10.3M impressions.',
+        desc: 'Technical SEO, content architecture, and link-building that compounds. We rebuilt Syncwire from 2K to 54K monthly visitors — full technical audit, site architecture overhaul, content strategy, and sustained link acquisition. All maintained on retainer.',
+        features: ['Technical SEO audit and implementation', 'Site architecture and internal linking rebuild', 'Keyword research and content strategy', 'Link-building and authority acquisition', 'Core Web Vitals and crawl optimisation'],
+        deliverable: 'SEO roadmap + monthly ranking and traffic report', timeline: 'Ongoing retainer', color: 'from-orange-soft to-cream', img: null,
+    },
+    {
+        number: '06', title: 'AI Development & Custom Software', icon: '🤖',
+        tagline: 'Built for your stack. Maintained by the team that built it.',
+        desc: 'We build AI automation, custom software, and internal tools that your operation actually runs on. LLM pipelines, voice AI (Lyra), workflow automation, and full-stack web applications — all maintained on retainer by the same engineers who scoped it.',
+        features: ['LLM and voice AI integration (OpenAI, Twilio, Google Cloud)', 'Custom web applications and internal tools', 'Workflow automation and decision pipelines', 'API design and third-party integrations', 'Cloud infrastructure on AWS / GCP'],
+        deliverable: 'Production system + documentation + ongoing maintenance', timeline: 'Ongoing retainer', color: 'from-cream to-orange-vibrant', img: null,
+    },
+    {
+        number: '07', title: 'SaaS Products', icon: '🚀',
+        tagline: 'Lyra. Sviluppiamo.dev. Built and shipped by DDW.',
+        desc: "We build and operate our own SaaS products. Lyra is an AI voice receptionist that answers every business call 24/7 — books appointments, qualifies leads, sends follow-ups. Sviluppiamo.dev is our Italian-market vibe coding platform. Both are live, paying products.",
+        features: ['Lyra — AI voice receptionist (lyrabyddw.com)', 'Sviluppiamo.dev — Italian vibe coding platform', 'Twilio + AWS + Google Cloud infrastructure', 'Full product ownership from build to GTM', 'Available as white-label for select partners'],
+        deliverable: 'Live product with full operational runbook', timeline: 'Ongoing operations', color: 'from-orange-vibrant to-cream', img: null,
+    },
 ];
 
 const useMagneticEffect = (ref, strength = 0.2) => {
@@ -164,7 +207,7 @@ const ServicesPage = () => {
     return (
         <main className="relative w-full bg-deep-black">
             <Navbar />
-            <PageHeader title="Our Services" breadcrumb="Services" subtitle="Enterprise-grade solutions built for businesses that cannot afford to fail." />
+            <PageHeader title="Services" breadcrumb="Services" subtitle="Meta · Google · Amazon · TikTok · SEO · AI · SaaS. Seven retainer services. One team. Florida LLC with offices in Florida and Rome." />
 
             <section className="relative py-20 bg-deep-black overflow-hidden">
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.02)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
@@ -174,9 +217,9 @@ const ServicesPage = () => {
                 <div className="relative z-10 max-w-4xl mx-auto px-6 text-center mb-20">
                     <span className="inline-block px-6 py-2.5 border-2 border-orange-vibrant/40 bg-orange-vibrant/10 text-orange-vibrant text-xs font-bold uppercase tracking-[0.25em] rounded-full mb-8 backdrop-blur-sm"><span className="inline-block w-2 h-2 bg-orange-vibrant rounded-full mr-2 animate-pulse" />What We Do</span>
                     <h2 ref={headingRef} className="text-4xl md:text-5xl lg:text-6xl font-heading font-black text-pure-white mb-6 leading-tight perspective-[1000px]">
-                        Solutions That Scale <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent inline-block">With Your Business</span>
+                        Every channel.{' '}<span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent inline-block">One team.</span>
                     </h2>
-                    <p className="text-lg md:text-xl text-text-muted leading-relaxed">From technical strategy to full-stack execution, we build systems that drive measurable growth.</p>
+                    <p className="text-lg md:text-xl text-text-muted leading-relaxed">All seven retainer services are run by the same team. No handoffs, no account managers reading your numbers for the first time on the monthly call.</p>
                 </div>
             </section>
 
