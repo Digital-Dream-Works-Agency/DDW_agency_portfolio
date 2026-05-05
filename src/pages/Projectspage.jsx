@@ -12,9 +12,9 @@ const ProjectsPage = () => {
         <main className="relative w-full bg-deep-black text-white">
             <Navbar />
             <PageHeader
-                title="Our Portfolio"
+                title="Work We've Done"
                 breadcrumb="Portfolio"
-                subtitle="A selection of software systems and marketing infrastructure built and maintained on retainer."
+                subtitle="Real accounts. Real numbers. Every result below is from a live retainer — dashboard screenshots available on request."
             />
             <Allprojects />
             <Footer />
