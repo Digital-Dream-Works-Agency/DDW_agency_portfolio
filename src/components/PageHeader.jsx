@@ -242,8 +242,7 @@ const PageHeader = ({ title, breadcrumb, subtitle }) => {
                     </div>
 
                     {/* RIGHT */}
-                    <div className="header-anim hidden lg:flex items-center justify-end">
-                        <div ref={cardPrlxRef} className="relative w-[480px] h-[480px]">
+<div className="header-anim hidden lg:flex items-center justify-center lg:scale-90 xl:scale-100 origin-center">                        <div ref={cardPrlxRef} className="relative w-[480px] h-[480px]">
 
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <OrbitVisual />
