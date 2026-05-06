@@ -10,114 +10,189 @@ import { Link } from 'react-router-dom';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Custom GSAP Tilt Component ────────────────────────────────────────────────
 const GSAPTilt = ({ children, className }) => {
     const tiltRef = useRef(null);
+    const rectRef = useRef(null);
+
     useEffect(() => {
         const el = tiltRef.current;
         if (!el) return;
+        
         const xTo = gsap.quickTo(el, "rotationY", { ease: "power2.out", duration: 0.5 });
         const yTo = gsap.quickTo(el, "rotationX", { ease: "power2.out", duration: 0.5 });
 
-        const handleMouseMove = (e) => {
-            const rect = el.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            xTo(x * 5); // Subtle tilt for cards
-            yTo(-y * 5); 
+        const handleMouseEnter = () => {
+            rectRef.current = el.getBoundingClientRect();
         };
-        const handleMouseLeave = () => { xTo(0); yTo(0); };
 
+        const handleMouseMove = (e) => {
+            if (!rectRef.current) rectRef.current = el.getBoundingClientRect();
+            const x = (e.clientX - rectRef.current.left) / rectRef.current.width - 0.5;
+            const y = (e.clientY - rectRef.current.top) / rectRef.current.height - 0.5;
+            xTo(x * 2);
+            yTo(-y * 2);
+        };
+
+        const handleMouseLeave = () => { 
+            xTo(0); 
+            yTo(0); 
+            rectRef.current = null;
+        };
+
+        el.addEventListener('mouseenter', handleMouseEnter);
         el.addEventListener('mousemove', handleMouseMove);
         el.addEventListener('mouseleave', handleMouseLeave);
-        return () => { el.removeEventListener('mousemove', handleMouseMove); el.removeEventListener('mouseleave', handleMouseLeave); };
+        
+        return () => { 
+            el.removeEventListener('mouseenter', handleMouseEnter);
+            el.removeEventListener('mousemove', handleMouseMove); 
+            el.removeEventListener('mouseleave', handleMouseLeave); 
+        };
     }, []);
 
     return <div ref={tiltRef} className={className} style={{ transformPerspective: 1000 }}>{children}</div>;
 };
 
-// ─── Services Data ──────────────────────────────────────────────────────────────
+const ParticleBackground = () => {
+    const canvasRef = useRef(null);
+    const isVisibleRef = useRef(false);
+    
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => { isVisibleRef.current = entry.isIntersecting; },
+            { rootMargin: '50px' }
+        );
+        if (canvasRef.current) observer.observe(canvasRef.current);
+        return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        
+        const resizeCanvas = () => {
+            if (canvas.parentElement) {
+                canvas.width = canvas.parentElement.offsetWidth;
+                canvas.height = canvas.parentElement.offsetHeight;
+            }
+        };
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const particles = Array.from({ length: 25 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 1.5 + 0.5,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            alpha: Math.random() * 0.4 + 0.1,
+        }));
+
+        let frame;
+        const draw = () => {
+            frame = requestAnimationFrame(draw);
+            
+            if (!isVisibleRef.current) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,87,15,${p.alpha})`;
+                ctx.fill();
+            });
+            
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distSq = dx * dx + dy * dy;
+                    
+                    if (distSq < 6400) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(255,87,15,${0.1 * (1 - Math.sqrt(distSq) / 80)})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+        };
+        draw();
+        
+        return () => {
+            cancelAnimationFrame(frame);
+            window.removeEventListener('resize', resizeCanvas);
+        };
+    }, []);
+
+    return (
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-2xl opacity-40 group-hover:opacity-100 transition-opacity duration-1000">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+            <canvas ref={canvasRef} className="absolute inset-0 w-full h-full mix-blend-screen" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#111418] via-[#111418]/90 to-transparent" />
+        </div>
+    );
+};
+
 const servicesData = [
     {
-        number: '01', title: 'Meta Ads Management', icon: '📱',
-        tagline: '$683K managed in a single month. 5.48x average ROAS.',
-        desc: 'We run full-funnel Meta strategy for EU and US e-commerce brands — prospecting, retargeting, catalog ads, and creative testing. 343 active campaigns across one account. Not a single one running without a reason.',
-        features: ['Full-funnel campaign architecture (prospecting + retargeting)', 'Dynamic catalog and shopping ads', 'Creative testing and iteration frameworks', 'Audience segmentation across EU and US markets', 'Monthly performance reporting with dashboard access'],
-        deliverable: 'Live account access + monthly performance review', timeline: 'Ongoing retainer', color: 'from-orange-vibrant to-orange-soft', img: null,
+        number: '01', title: 'Custom Software Development',
+        tagline: 'Built for scale. Designed for growth.',
+        desc: 'Enterprise-grade web applications, internal tools, and bespoke system architecture designed for high-stakes operations. We architect systems that are maintainable, scalable, and built to last.',
+        features: ['Full-stack web application development', 'API design & integrations', 'Database architecture', 'Legacy modernization'],
+        deliverable: 'Production-ready system', timeline: '6–16 weeks'
     },
     {
-        number: '02', title: 'Google Ads Management', icon: '🔍',
-        tagline: '600% ROAS. €418K revenue on €69.7K spend.',
-        desc: 'Search, shopping, and display campaigns built around real conversion data. We manage EU and US accounts across competitive verticals — home security, e-commerce, healthcare, lead gen. The ROAS numbers are from live accounts, not projections.',
-        features: ['Search and shopping campaign architecture', 'Conversion tracking and attribution setup', 'Competitor and keyword gap analysis', 'Bid strategy optimisation and audience layering', 'Cross-market EU and US campaign management'],
-        deliverable: 'Live account access + weekly optimisation log', timeline: 'Ongoing retainer', color: 'from-orange-soft to-cream', img: null,
+        number: '02', title: 'AI Development & Integration',
+        tagline: 'LLMs that work for your business.',
+        desc: 'We integrate large language models and AI automation into your existing workflows. From custom chatbots to internal data pipelines, we build AI that generates measurable ROI.',
+        features: ['LLM API integration', 'Retrieval-Augmented Gen (RAG)', 'AI Workflow automation', 'Custom prompt engineering'],
+        deliverable: 'Integrated AI system', timeline: '4–10 weeks'
     },
     {
-        number: '03', title: 'Amazon Management', icon: '📦',
-        tagline: '$2.7M in sales managed. Running since 2015.',
-        desc: 'Full Amazon PPC management and seller central operations. We have managed one account continuously since 2015 — 129,800 orders, 27.64% ACOS. We handle everything: sponsored products, sponsored brands, listing optimisation, inventory strategy, and review management.',
-        features: ['Sponsored Products, Brands, and Display campaigns', 'Seller Central operations and account health', 'Listing copy and A+ content optimisation', 'Inventory and FBA strategy', 'Review management and brand protection'],
-        deliverable: 'Full account access + monthly ACOS and revenue report', timeline: 'Ongoing retainer', color: 'from-cream to-orange-vibrant', img: null,
+        number: '03', title: 'Cloud Infrastructure & DevOps',
+        tagline: 'Ship faster. Break nothing.',
+        desc: 'Secure, scalable cloud environments with automated CI/CD pipelines. We handle architecture, deployment, monitoring, and security so your team can focus on building.',
+        features: ['AWS/GCP architecture', 'CI/CD pipeline setup', 'Kubernetes orchestration', 'Security hardening'],
+        deliverable: 'Automated infrastructure', timeline: '3–8 weeks'
     },
     {
-        number: '04', title: 'TikTok Shop & Social Commerce', icon: '🎵',
-        tagline: '$290K GMV in 7 days. 9,010 orders. +121% order growth.',
-        desc: 'Full TikTok Shop setup, affiliate creator management, shoppable content strategy, and LIVE commerce execution. We built the infrastructure, recruited the affiliates, and ran the GMV — $290,753 in one week on a single account.',
-        features: ['TikTok Shop setup and product onboarding', 'Affiliate creator recruitment and management', 'Shoppable video content strategy', 'LIVE commerce planning and execution', 'TikTok Ads integration for paid amplification'],
-        deliverable: 'Live shop + affiliate network + weekly GMV report', timeline: 'Ongoing retainer', color: 'from-orange-vibrant to-orange-soft', img: null,
+        number: '04', title: 'Strategic Technical Consulting',
+        tagline: 'The CTO you need, on-demand.',
+        desc: 'Fractional CTO services, technical audits, and architectural roadmaps. We help you make the right technical decisions before you build — saving months of rework.',
+        features: ['Architecture review', 'Build vs. buy analysis', 'Engineering team assessment', 'Roadmap planning'],
+        deliverable: 'Architecture & roadmap', timeline: '1–4 weeks'
     },
     {
-        number: '05', title: 'SEO & Organic Growth', icon: '📈',
-        tagline: '2K to 54K monthly visitors. 251K clicks. 10.3M impressions.',
-        desc: 'Technical SEO, content architecture, and link-building that compounds. We rebuilt Syncwire from 2K to 54K monthly visitors — full technical audit, site architecture overhaul, content strategy, and sustained link acquisition. All maintained on retainer.',
-        features: ['Technical SEO audit and implementation', 'Site architecture and internal linking rebuild', 'Keyword research and content strategy', 'Link-building and authority acquisition', 'Core Web Vitals and crawl optimisation'],
-        deliverable: 'SEO roadmap + monthly ranking and traffic report', timeline: 'Ongoing retainer', color: 'from-orange-soft to-cream', img: null,
+        number: '05', title: 'Marketing Systems & Automation',
+        tagline: 'Your marketing stack, unified.',
+        desc: 'We build unified marketing infrastructure that connects your CRM, email platform, ad accounts, and analytics into one coherent growth engine — fully automated and measurable.',
+        features: ['CRM setup & migration', 'Email automation', 'Ad platform integration', 'Attribution modeling'],
+        deliverable: 'Connected marketing stack', timeline: '4–8 weeks'
     },
     {
-        number: '06', title: 'AI Development & Custom Software', icon: '🤖',
-        tagline: 'Built for your stack. Maintained by the team that built it.',
-        desc: 'We build AI automation, custom software, and internal tools that your operation actually runs on. LLM pipelines, voice AI (Lyra), workflow automation, and full-stack web applications — all maintained on retainer by the same engineers who scoped it.',
-        features: ['LLM and voice AI integration (OpenAI, Twilio, Google Cloud)', 'Custom web applications and internal tools', 'Workflow automation and decision pipelines', 'API design and third-party integrations', 'Cloud infrastructure on AWS / GCP'],
-        deliverable: 'Production system + documentation + ongoing maintenance', timeline: 'Ongoing retainer', color: 'from-cream to-orange-vibrant', img: null,
-    },
-    {
-        number: '07', title: 'SaaS Products', icon: '🚀',
-        tagline: 'Lyra. Sviluppiamo.dev. Built and shipped by DDW.',
-        desc: "We build and operate our own SaaS products. Lyra is an AI voice receptionist that answers every business call 24/7 — books appointments, qualifies leads, sends follow-ups. Sviluppiamo.dev is our Italian-market vibe coding platform. Both are live, paying products.",
-        features: ['Lyra — AI voice receptionist (lyrabyddw.com)', 'Sviluppiamo.dev — Italian vibe coding platform', 'Twilio + AWS + Google Cloud infrastructure', 'Full product ownership from build to GTM', 'Available as white-label for select partners'],
-        deliverable: 'Live product with full operational runbook', timeline: 'Ongoing operations', color: 'from-orange-vibrant to-cream', img: null,
+        number: '06', title: 'SEO & Content Strategy',
+        tagline: 'Organic growth that compounds.',
+        desc: 'Data-backed technical SEO and content strategy to build long-term market authority. We focus on the 20% of optimizations that drive 80% of results.',
+        features: ['Technical SEO audit', 'Keyword research', 'Authority building', 'Core Web Vitals'],
+        deliverable: 'SEO roadmap & execution', timeline: 'Monthly retainer'
     },
 ];
 
-const useMagneticEffect = (ref, strength = 0.2) => {
-    useEffect(() => {
-        const el = ref.current;
-        if (!el) return;
-        const xTo = gsap.quickTo(el, "x", { duration: 0.4, ease: "power2.out" });
-        const yTo = gsap.quickTo(el, "y", { duration: 0.4, ease: "power2.out" });
-
-        const handleMouseMove = (e) => {
-            const rect = el.getBoundingClientRect();
-            xTo((e.clientX - rect.left - rect.width / 2) * strength);
-            yTo((e.clientY - rect.top - rect.height / 2) * strength);
-        };
-        const handleMouseLeave = () => { xTo(0); yTo(0); };
-
-        el.addEventListener('mousemove', handleMouseMove);
-        el.addEventListener('mouseleave', handleMouseLeave);
-        return () => { el.removeEventListener('mousemove', handleMouseMove); el.removeEventListener('mouseleave', handleMouseLeave); };
-    }, [strength]);
-};
-
 const ServiceCard = ({ service, index }) => {
     const cardRef = useRef(null);
-    const btnRef = useRef(null);
-    useMagneticEffect(btnRef, 0.3);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
             gsap.from(cardRef.current, {
-                opacity: 0, y: 60, duration: 1, ease: 'power3.out',
+                opacity: 0, y: 40, duration: 0.8, ease: 'power3.out',
                 scrollTrigger: { trigger: cardRef.current, start: 'top 85%', once: true }
             });
         }, cardRef);
@@ -125,55 +200,67 @@ const ServiceCard = ({ service, index }) => {
     }, []);
 
     return (
-        <div ref={cardRef}>
+        <div ref={cardRef} className="mb-12 lg:mb-16">
             <GSAPTilt>
-                <div className="group grid grid-cols-1 lg:grid-cols-12 gap-0 rounded-3xl overflow-hidden border-2 border-orange-vibrant/10 hover:border-orange-vibrant/50 transition-all duration-500 bg-gradient-to-br from-[#151a1d] to-[#0d1012] shadow-2xl hover:shadow-orange-vibrant/20">
-                    <div className="lg:col-span-4 overflow-hidden relative h-64 lg:h-auto">
-                        {service.img ? <img src={service.img} alt={service.title} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-gradient-to-br from-[#0e1012] to-[#080808]"><div className="w-full h-full opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '24px 24px' }} /></div>}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#0d1012]/50 to-[#0d1012] lg:bg-gradient-to-r lg:from-transparent lg:via-[#0d1012]/80 lg:to-[#0d1012]" />
-                        <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-20 transition-opacity duration-700 mix-blend-overlay`} />
-                        <div className="absolute top-6 left-6">
-                            <div className="relative">
-                                <span className="text-6xl md:text-7xl font-black text-orange-vibrant/20 group-hover:text-orange-vibrant/40 transition-colors duration-500">{service.number}</span>
-                                <span className="absolute -top-2 -right-2 text-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform group-hover:rotate-12">{service.icon}</span>
+                <div className="group relative w-full rounded-2xl bg-[#111418] border border-white/5 hover:border-[#FF570F]/30 transition-all duration-500 overflow-hidden flex flex-col lg:flex-row shadow-2xl hover:shadow-[#FF570F]/10">
+                    
+                    <ParticleBackground />
+
+                    <div className="relative z-10 p-8 lg:p-12 lg:w-[65%] flex flex-col justify-center overflow-hidden">
+                        <div className="absolute -bottom-12 -right-6 text-[200px] lg:text-[280px] font-black text-white/[0.03] pointer-events-none leading-none group-hover:scale-105 group-hover:text-[#FF570F]/[0.03] transition-all duration-700 ease-out select-none">
+                            {service.number}
+                        </div>
+
+                        <div className="relative z-20">
+                            <div className="flex items-center gap-4 mb-3">
+                                <span className="text-[#FF570F] font-black text-xl lg:text-2xl">{service.number}.</span>
+                                <h3 className="text-2xl md:text-3xl lg:text-4xl font-heading font-black text-white leading-tight drop-shadow-md">{service.title}</h3>
+                            </div>
+                            <p className="text-[#FF570F] font-bold tracking-widest text-xs uppercase mb-6 drop-shadow-sm">{service.tagline}</p>
+                            <p className="text-gray-300 text-sm md:text-base leading-relaxed mb-10 max-w-2xl">{service.desc}</p>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
+                                {service.features.map((feature, i) => (
+                                    <div key={i} className="flex items-start gap-3 group/feature">
+                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#FF570F]/60 group-hover/feature:bg-[#FF570F] group-hover/feature:scale-150 transition-all duration-300 flex-shrink-0 shadow-[0_0_8px_rgba(255,87,15,0.5)]" />
+                                        <span className="text-gray-400 group-hover/feature:text-gray-200 text-sm font-medium transition-colors duration-300">{feature}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                        <div className="absolute bottom-0 right-0 w-40 h-40 bg-orange-vibrant/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                     </div>
 
-                    <div className="lg:col-span-5 p-8 lg:p-10 relative">
-                        <div className={`inline-block w-16 h-1.5 bg-gradient-to-r ${service.color} rounded-full mb-6 group-hover:w-24 transition-all duration-500`} />
-                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-heading font-black text-pure-white mb-3 group-hover:text-orange-vibrant transition-colors duration-300 leading-tight">{service.title}</h3>
-                        <p className="text-orange-vibrant text-sm md:text-base font-bold mb-6 italic opacity-80 group-hover:opacity-100 transition-opacity">{service.tagline}</p>
-                        <p className="text-text-muted text-sm md:text-base leading-relaxed mb-8 group-hover:text-pure-white/70 transition-colors">{service.desc}</p>
-                        <ul className="space-y-3">
-                            {service.features.map((feature, i) => (
-                                <li key={i} className="flex items-start gap-3 text-sm text-pure-white/70 group-hover:text-pure-white/90 transition-colors duration-300" style={{ transitionDelay: `${i * 50}ms` }}>
-                                    <div className={`mt-1.5 w-2 h-2 rounded-full bg-gradient-to-r ${service.color} flex-shrink-0 group-hover:scale-125 transition-transform duration-300`} />
-                                    <span>{feature}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    <div className="relative z-10 lg:w-[35%] bg-gradient-to-br from-[#0a0c0e]/80 to-[#111418]/80 backdrop-blur-sm border-t lg:border-t-0 lg:border-l border-white/5 p-8 lg:p-12 flex flex-col justify-between overflow-hidden">
+                        
+                        <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#FF570F]/10 blur-[60px] rounded-full group-hover:bg-[#FF570F]/20 transition-colors duration-700 pointer-events-none" />
 
-                    <div className="lg:col-span-3 p-8 lg:p-10 border-t-2 lg:border-t-0 lg:border-l-2 border-orange-vibrant/10 group-hover:border-orange-vibrant/30 transition-colors duration-500 flex flex-col justify-between relative overflow-hidden">
-                        <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-5 transition-opacity duration-700`} />
-                        <div className="relative z-10 space-y-8">
+                        <div className="relative z-20 space-y-8">
                             <div>
-                                <div className="text-[10px] text-orange-vibrant font-bold uppercase tracking-widest mb-2 flex items-center gap-2"><div className={`w-1 h-1 rounded-full bg-gradient-to-r ${service.color}`} /> Deliverable</div>
-                                <div className="text-sm text-pure-white/90 leading-relaxed">{service.deliverable}</div>
+                                <span className="text-[10px] text-[#FF570F] font-bold uppercase tracking-widest block mb-2 opacity-80">Deliverable</span>
+                                <span className="text-white text-sm lg:text-base font-semibold block">{service.deliverable}</span>
                             </div>
                             <div>
-                                <div className="text-[10px] text-orange-vibrant font-bold uppercase tracking-widest mb-2 flex items-center gap-2"><div className={`w-1 h-1 rounded-full bg-gradient-to-r ${service.color}`} /> Timeline</div>
-                                <div className="text-sm text-pure-white/90 font-bold">{service.timeline}</div>
+                                <span className="text-[10px] text-[#FF570F] font-bold uppercase tracking-widest block mb-2 opacity-80">Timeline</span>
+                                <span className="text-white text-sm lg:text-base font-semibold block">{service.timeline}</span>
                             </div>
                         </div>
-                        <Link ref={btnRef} to="/contact" className="relative mt-8 w-full text-center px-6 py-4 bg-orange-vibrant text-deep-black font-bold text-xs uppercase tracking-wider hover:bg-cream transition-all duration-300 block overflow-hidden group/btn shadow-lg shadow-orange-vibrant/40">
-                            <span className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-                            <span className="relative z-10 flex items-center justify-center gap-2">Get a Quote <svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg></span>
-                        </Link>
-                        <div className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-orange-vibrant to-cream w-0 group-hover:w-full transition-all duration-1000 ease-out" />
+
+                        <div className="relative z-20 mt-12 lg:mt-0">
+                            <Link 
+                                to="/contact" 
+                                className="group/btn relative w-full flex items-center justify-between px-6 py-4 bg-[#15181c]/80 backdrop-blur-md border border-white/10 hover:border-[#FF570F] text-white font-bold text-xs uppercase tracking-widest transition-all duration-500 overflow-hidden"
+                            >
+                                <span className="absolute inset-0 bg-gradient-to-r from-[#FF570F]/0 via-[#FF570F]/10 to-[#FF570F]/0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-out" />
+                                <span className="relative z-10 group-hover/btn:text-[#FF570F] transition-colors duration-300">Get a Quote</span>
+                                <div className="relative z-10 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover/btn:bg-[#FF570F] transition-colors duration-300 shadow-[0_0_15px_rgba(255,87,15,0)] group-hover/btn:shadow-[0_0_15px_rgba(255,87,15,0.4)]">
+                                    <svg className="w-4 h-4 text-white group-hover/btn:text-black group-hover/btn:translate-x-0.5 transition-all duration-300" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                        <path strokeLinecap="square" strokeLinejoin="miter" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                    </svg>
+                                </div>
+                            </Link>
+                        </div>
                     </div>
+
                 </div>
             </GSAPTilt>
         </div>
@@ -184,7 +271,6 @@ const ServicesPage = () => {
     useSeoMeta(SEO.services);
     const headingRef = useRef(null);
     const prlx1Ref = useRef(null);
-    const prlx2Ref = useRef(null);
     const [textSplit, setTextSplit] = useState(null);
 
     useEffect(() => {
@@ -192,7 +278,7 @@ const ServicesPage = () => {
             const split = new SplitType(headingRef.current, { types: 'words' });
             setTextSplit(split);
             gsap.from(split.words, {
-                opacity: 0, y: 50, rotationX: -45, transformOrigin: 'top center', stagger: 0.06, duration: 1, ease: 'power3.out',
+                opacity: 0, y: 30, rotationX: -30, transformOrigin: 'top center', stagger: 0.05, duration: 1, ease: 'power3.out',
                 scrollTrigger: { trigger: headingRef.current, start: 'top 80%', once: true },
             });
         }
@@ -200,46 +286,64 @@ const ServicesPage = () => {
     }, [textSplit]);
 
     useEffect(() => {
-        gsap.to(prlx1Ref.current, { yPercent: 30, ease: "none", scrollTrigger: { scrub: true } });
-        gsap.to(prlx2Ref.current, { yPercent: -30, ease: "none", scrollTrigger: { scrub: true } });
+        gsap.to(prlx1Ref.current, { yPercent: 20, ease: "none", scrollTrigger: { scrub: true } });
     }, []);
 
     return (
-        <main className="relative w-full bg-deep-black">
+        <main className="relative w-full bg-[#0d1012] min-h-screen">
             <Navbar />
-            <PageHeader title="Services" breadcrumb="Services" subtitle="Meta · Google · Amazon · TikTok · SEO · AI · SaaS. Seven retainer services. One team. Florida LLC with offices in Florida and Rome." />
+            <PageHeader
+                title="Services"
+                breadcrumb="Services"
+                subtitle="Enterprise-grade solutions built for businesses that cannot afford to fail."
+            />
 
-            <section className="relative py-20 bg-deep-black overflow-hidden">
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.02)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
-                <div ref={prlx1Ref} className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-orange-vibrant/10 blur-[150px] rounded-full animate-pulse pointer-events-none" />
-                <div ref={prlx2Ref} className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-cream/5 blur-[120px] rounded-full pointer-events-none" />
+            <section className="relative pt-24 pb-16 overflow-hidden">
+                <div ref={prlx1Ref} className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[#FF570F]/5 blur-[150px] rounded-full pointer-events-none animate-pulse" />
+                <div className="absolute top-20 left-10 w-[300px] h-[300px] bg-[#FF570F]/5 blur-[100px] rounded-full pointer-events-none" />
+                
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.015)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,black,transparent)] pointer-events-none" />
 
-                <div className="relative z-10 max-w-4xl mx-auto px-6 text-center mb-20">
-                    <span className="inline-block px-6 py-2.5 border-2 border-orange-vibrant/40 bg-orange-vibrant/10 text-orange-vibrant text-xs font-bold uppercase tracking-[0.25em] rounded-full mb-8 backdrop-blur-sm"><span className="inline-block w-2 h-2 bg-orange-vibrant rounded-full mr-2 animate-pulse" />What We Do</span>
-                    <h2 ref={headingRef} className="text-4xl md:text-5xl lg:text-6xl font-heading font-black text-pure-white mb-6 leading-tight perspective-[1000px]">
-                        Every channel.{' '}<span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent inline-block">One team.</span>
+                <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+                    <span className="inline-flex items-center justify-center px-6 py-2.5 bg-[#FF570F]/10 border border-[#FF570F]/20 text-[#FF570F] text-[10px] font-bold uppercase tracking-[0.25em] rounded-full mb-8 backdrop-blur-sm shadow-[0_0_20px_rgba(255,87,15,0.1)]">
+                        <span className="w-1.5 h-1.5 bg-[#FF570F] rounded-full mr-3 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
+                        What We Do
+                    </span>
+                    <h2 ref={headingRef} className="text-4xl md:text-5xl lg:text-6xl font-heading font-black text-white mb-6 leading-tight">
+                        Solutions That Scale <br className="hidden md:block" />
+                        <span className="bg-gradient-to-r from-[#FF570F] to-[#ff844f] bg-clip-text text-transparent">With Your Business.</span>
                     </h2>
-                    <p className="text-lg md:text-xl text-text-muted leading-relaxed">All seven retainer services are run by the same team. No handoffs, no account managers reading your numbers for the first time on the monthly call.</p>
+                    <p className="text-base md:text-lg text-gray-400 leading-relaxed max-w-2xl mx-auto font-medium">
+                        From technical strategy to full-stack execution, we build systems that drive measurable growth.
+                    </p>
                 </div>
             </section>
 
-            <section className="py-20 bg-deep-black">
-                <div className="max-w-[1600px] mx-auto px-6">
-                    <div className="space-y-12">
-                        {servicesData.map((service, index) => <ServiceCard key={index} service={service} index={index} />)}
-                    </div>
+            <section className="pb-32 relative z-10">
+                <div className="max-w-[1200px] mx-auto px-6">
+                    {servicesData.map((service, index) => (
+                        <ServiceCard key={index} service={service} index={index} />
+                    ))}
                 </div>
             </section>
 
-            <section className="py-24 bg-gradient-to-b from-deep-black to-[#0d1012]">
-                <div className="max-w-4xl mx-auto px-6 text-center">
-                    <h3 className="text-4xl md:text-5xl font-heading font-black text-pure-white mb-6">Not Sure Where to Start?</h3>
-                    <p className="text-lg text-text-muted mb-10">Book a free 30-minute consultation to discuss your technical challenges.</p>
-                    <Link to="/contact" className="inline-flex items-center gap-3 px-10 py-5 bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-wider hover:bg-cream transition-all duration-300 shadow-lg shadow-orange-vibrant/40 group">
-                        Schedule Consultation <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+            <section className="relative py-24 bg-[#111418] border-t border-white/5 overflow-hidden">
+                <div className="absolute inset-0 bg-[#FF570F]/[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+                    <h3 className="text-3xl md:text-5xl font-heading font-black text-white mb-6">Ready to Build?</h3>
+                    <p className="text-lg text-gray-400 mb-10">Book a free technical consultation to discuss your roadmap.</p>
+                    <Link
+                        to="/contact"
+                        className="inline-flex items-center gap-4 px-10 py-5 bg-[#FF570F] text-[#0d1012] font-black text-xs uppercase tracking-[0.15em] hover:bg-white hover:scale-105 transition-all duration-300 shadow-[0_0_30px_rgba(255,87,15,0.3)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)] group rounded-none"
+                    >
+                        Schedule Consultation
+                        <svg className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                            <path strokeLinecap="square" strokeLinejoin="miter" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
                     </Link>
                 </div>
             </section>
+
             <Footer />
         </main>
     );
