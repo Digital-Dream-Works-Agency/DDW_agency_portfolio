@@ -1,5 +1,4 @@
 // src/components/Stats.jsx
-// Real DDW performance numbers from live ad accounts and client dashboards
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -41,28 +40,27 @@ const StatItem = ({ stat }) => {
         const obj = { value: 0 };
         const anim = gsap.to(obj, {
             value: stat.end,
-            duration: 2.4,
+            duration: 1.5, // FIX: Animation speed tez ki he (2.5 se 1.5 kar diya)
             ease: 'power2.out',
-            scrollTrigger: { trigger: countRef.current, start: 'top 85%', once: true },
+            scrollTrigger: { trigger: countRef.current, start: 'top 90%', once: true },
             onUpdate: () => {
-                if (countRef.current) {
-                    countRef.current.innerText = stat.format(obj.value);
-                }
+                if (countRef.current) countRef.current.innerText = stat.format(obj.value);
             },
         });
         return () => anim.kill();
     }, [stat]);
 
     return (
-        <div className="stat-item group text-center p-8 md:p-10 rounded-2xl bg-gradient-to-br from-[#111416] to-[#0a0d0f] border border-orange-vibrant/10 hover:border-orange-vibrant/25 transition-all duration-500">
+        <div className="stat-item group text-center p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#151a1d] to-[#0d1012] border-2 border-orange-vibrant/10 hover:border-orange-vibrant/30 transition-all duration-500 shadow-xl hover:shadow-orange-vibrant/20 flex flex-col justify-center items-center">
             <div
                 ref={countRef}
-                className="text-5xl md:text-6xl lg:text-7xl font-black bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent mb-3 tabular-nums"
+                // FIX: text size ko text-4xl lg:text-5xl kiya he aur whitespace-nowrap hata diya he
+                className="text-4xl lg:text-5xl font-black tracking-tight bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent mb-4 tabular-nums"
             >
                 {stat.format(0)}
             </div>
-            <div className="h-px w-12 bg-gradient-to-r from-transparent via-orange-vibrant to-transparent mx-auto mb-3" />
-            <div className="text-pure-white text-sm font-bold uppercase tracking-[0.12em] mb-2 group-hover:text-orange-vibrant transition-colors duration-300">
+            <div className="h-px w-16 bg-gradient-to-r from-transparent via-orange-vibrant to-transparent mx-auto mb-4" />
+            <div className="text-pure-white text-sm font-bold uppercase tracking-[0.2em] mb-3 group-hover:text-orange-vibrant transition-colors duration-300">
                 {stat.label}
             </div>
             <div className="text-text-muted text-xs leading-relaxed max-w-[200px] mx-auto">
@@ -77,19 +75,26 @@ const Stats = () => {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            gsap.from('.stat-item', {
-                y: 50, opacity: 0, duration: 0.9, stagger: 0.15, ease: 'power3.out',
-                scrollTrigger: { trigger: statsRef.current, start: 'top 85%', once: true },
-            });
+            gsap.fromTo('.stat-item', 
+                { y: 30, opacity: 0 }, // FIX: Y axis ka distance kam kiya he (60 se 30) taakeh jaldi aai
+                { 
+                    y: 0, 
+                    opacity: 1, 
+                    duration: 0.6, // FIX: Fade-in animation ka time half kiya he (1.2 se 0.6)
+                    stagger: 0.1, // FIX: Aik k baad aik aane ka time gap kam kiya he (0.2 se 0.1)
+                    ease: 'power3.out',
+                    scrollTrigger: { trigger: statsRef.current, start: 'top 90%', once: true }, // FIX: Scroll pe thora jaldi trigger hoga
+                }
+            );
         }, statsRef);
         return () => ctx.revert();
     }, []);
 
     return (
-        <section ref={statsRef} className="py-20 bg-deep-black border-y border-orange-vibrant/10 overflow-hidden relative">
+        <section ref={statsRef} className="py-16 bg-deep-black border-y border-orange-vibrant/10 overflow-hidden relative">
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/2 left-1/4 w-80 h-80 bg-orange-vibrant/5 rounded-full blur-3xl -translate-y-1/2" />
-                <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-cream/3 rounded-full blur-3xl -translate-y-1/2" />
+                <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-orange-vibrant/5 rounded-full blur-3xl -translate-y-1/2" />
+                <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-cream/3 rounded-full blur-3xl -translate-y-1/2" />
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto px-6">
@@ -98,7 +103,7 @@ const Stats = () => {
                         Real numbers · live accounts · dashboard screenshots available
                     </p>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 xl:gap-8">
                     {stats.map((stat, i) => <StatItem key={i} stat={stat} />)}
                 </div>
             </div>
