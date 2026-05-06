@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState, useCallback, memo } from 'react';
+import { useEffect, useRef, useState, memo } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Data (Preserving original Image URLs & Links) ─────────────────────────────
 const projectsData = [
     { id: 'meta-eu-fashion', title: 'EU Fashion & Golf Brand', category: 'Meta Ads', img: '/portfolio/google-ads-600roas.png', tags: ['Meta Ads', 'EU Market', 'E-Commerce'], metrics: { 'Monthly Spend': '$683K', 'ROAS': '5.48x', 'Campaigns': '343' }, gradient: 'from-orange-vibrant/20 to-red-600/15', url: null },
     { id: 'meta-eu-oct', title: 'EU Brand — October Scale', category: 'Meta Ads', img: '/portfolio/google-ads-600roas.png', tags: ['Meta Ads', 'EU Market', 'Scale'], metrics: { 'Monthly Spend': '$441K', 'ROAS': '4.70x', 'Campaigns': '285' }, gradient: 'from-orange-vibrant/15 to-red-500/15', url: null },
@@ -26,183 +25,320 @@ const projectsData = [
 const CATEGORIES = ['All', 'Meta Ads', 'Google Ads', 'Amazon', 'TikTok Shop', 'SEO', 'SaaS'];
 const ITEMS_PER_PAGE = 6;
 
-// ─── Native GSAP Tilt Component ────────────────────────────────────────────────
-const GSAPTilt = ({ children, className }) => {
-    const tiltRef = useRef(null);
-
-    useEffect(() => {
-        const el = tiltRef.current;
-        if (!el) return;
-
-        const xTo = gsap.quickTo(el, "rotationY", { ease: "power2.out", duration: 0.5 });
-        const yTo = gsap.quickTo(el, "rotationX", { ease: "power2.out", duration: 0.5 });
-
-        const handleMouseMove = (e) => {
-            const rect = el.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            xTo(x * 6); 
-            yTo(-y * 6); 
-        };
-
-        const handleMouseLeave = () => { xTo(0); yTo(0); };
-
-        el.addEventListener('mousemove', handleMouseMove);
-        el.addEventListener('mouseleave', handleMouseLeave);
-        return () => { el.removeEventListener('mousemove', handleMouseMove); el.removeEventListener('mouseleave', handleMouseLeave); };
-    }, []);
-
-    return <div ref={tiltRef} className={className} style={{ transformPerspective: 1000 }}>{children}</div>;
+const CAT_COLORS = {
+    'Meta Ads':    '#FF570F',
+    'Google Ads':  '#FDE87A',
+    'Amazon':      '#EE7D1D',
+    'TikTok Shop': '#ff4d6d',
+    'SEO':         '#4ade80',
+    'SaaS':        '#a78bfa',
+    'All':         '#FF570F',
 };
 
-const useMagneticEffect = (ref, strength = 0.25) => {
+const GSAPTilt = ({ children, className }) => {
+    const ref = useRef(null);
     useEffect(() => {
-        const element = ref.current;
-        if (!element) return;
-        const xTo = gsap.quickTo(element, "x", { duration: 0.4, ease: "power2.out" });
-        const yTo = gsap.quickTo(element, "y", { duration: 0.4, ease: "power2.out" });
-
-        const handleMouseMove = (e) => {
-            const rect = element.getBoundingClientRect();
-            xTo((e.clientX - rect.left - rect.width / 2) * strength);
-            yTo((e.clientY - rect.top - rect.height / 2) * strength);
+        const el = ref.current;
+        if (!el) return;
+        const xTo = gsap.quickTo(el, 'rotationY', { ease: 'power2.out', duration: 0.5 });
+        const yTo = gsap.quickTo(el, 'rotationX', { ease: 'power2.out', duration: 0.5 });
+        
+        let rafId;
+        const move = (e) => {
+            cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                const r = el.getBoundingClientRect();
+                xTo(((e.clientX - r.left) / r.width - 0.5) * 6);
+                yTo(-((e.clientY - r.top) / r.height - 0.5) * 6);
+            });
         };
-        const handleMouseLeave = () => { xTo(0); yTo(0); };
+        const leave = () => {
+            cancelAnimationFrame(rafId);
+            xTo(0); 
+            yTo(0); 
+        };
+        
+        el.addEventListener('mousemove', move, { passive: true });
+        el.addEventListener('mouseleave', leave);
+        return () => { 
+            cancelAnimationFrame(rafId);
+            el.removeEventListener('mousemove', move); 
+            el.removeEventListener('mouseleave', leave); 
+        };
+    }, []);
+    return <div ref={ref} className={className} style={{ transformPerspective: 1000, transformStyle: 'preserve-3d' }}>{children}</div>;
+};
 
-        element.addEventListener('mousemove', handleMouseMove);
-        element.addEventListener('mouseleave', handleMouseLeave);
-        return () => { element.removeEventListener('mousemove', handleMouseMove); element.removeEventListener('mouseleave', handleMouseLeave); };
+const useMagnetic = (ref, strength = 0.25) => {
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const xTo = gsap.quickTo(el, 'x', { duration: 0.4, ease: 'power2.out' });
+        const yTo = gsap.quickTo(el, 'y', { duration: 0.4, ease: 'power2.out' });
+        
+        let rafId;
+        const move = (e) => {
+            cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                const r = el.getBoundingClientRect();
+                xTo((e.clientX - r.left - r.width / 2) * strength);
+                yTo((e.clientY - r.top - r.height / 2) * strength);
+            });
+        };
+        const leave = () => { 
+            cancelAnimationFrame(rafId);
+            xTo(0); 
+            yTo(0); 
+        };
+        
+        el.addEventListener('mousemove', move, { passive: true });
+        el.addEventListener('mouseleave', leave);
+        return () => { 
+            cancelAnimationFrame(rafId);
+            el.removeEventListener('mousemove', move); 
+            el.removeEventListener('mouseleave', leave); 
+        };
     }, [strength]);
 };
 
-// ─── Project Card ──────────────────────────────────────────────────────────────
-const ProjectCard = memo(({ item }) => {
+const Marquee = () => {
+    const items = ['$683K Meta/mo', '600% ROAS', '$2.7M Amazon', '14.54x ROAS', '$290K GMV', '15,594 Conversions', '251K SEO Clicks', '+121% TikTok Growth', '4.86x ROAS', '978+ AI Calls'];
+    const doubled = [...items, ...items];
+    return (
+        <div className="relative w-full overflow-hidden border-y border-white/[0.06] py-3.5 mb-0" style={{ transform: 'translateZ(0)' }}>
+            <div className="absolute left-0 inset-y-0 w-24 z-10 pointer-events-none" style={{ background: 'linear-gradient(90deg,#09090b,transparent)' }} />
+            <div className="absolute right-0 inset-y-0 w-24 z-10 pointer-events-none" style={{ background: 'linear-gradient(-90deg,#09090b,transparent)' }} />
+            <div className="flex gap-10 whitespace-nowrap" style={{ animation: 'marquee 28s linear infinite', willChange: 'transform' }}>
+                {doubled.map((t, i) => (
+                    <span key={i} className="inline-flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.18em] text-white/25">
+                        <span className="w-1 h-1 rounded-full bg-[#FF570F] inline-block" />
+                        {t}
+                    </span>
+                ))}
+            </div>
+            <style>{`@keyframes marquee { from{transform:translate3d(0,0,0)} to{transform:translate3d(-50%,0,0)} }`}</style>
+        </div>
+    );
+};
+
+const ProjectCard = memo(({ item, index }) => {
+    const [hovered, setHovered] = useState(false);
     const [imgLoaded, setImgLoaded] = useState(false);
+    const cardRef = useRef(null);
     const dest = item.url || `/projects/${item.id}`;
     const isExternal = !!item.url;
+    const accent = CAT_COLORS[item.category] || '#FF570F';
+    const primaryVal = Object.values(item.metrics)[0];
+    const primaryKey = Object.keys(item.metrics)[0];
 
-    // Logic for null images
-    const primaryMetricValue = Object.values(item.metrics)[0];
-    const primaryMetricLabel = Object.keys(item.metrics)[0];
+    useEffect(() => {
+        let ctx = gsap.context(() => {
+            gsap.fromTo(cardRef.current,
+                { opacity: 0, y: 50 },
+                { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: (index % ITEMS_PER_PAGE) * 0.07,
+                  scrollTrigger: { trigger: cardRef.current, start: 'top 90%', once: true }
+                }
+            );
+        });
+        return () => ctx.revert(); 
+    }, [index]);
 
     const inner = (
-        <div className="proj-card relative bg-gradient-to-br from-[#151a1d] to-[#0d1012] rounded-2xl overflow-hidden flex flex-col h-[480px] border-2 border-orange-vibrant/10 hover:border-orange-vibrant/50 shadow-2xl transition-all duration-500 cursor-pointer group">
-            <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-20 group-hover:opacity-40 transition-opacity duration-700 blur-2xl`} />
-            
-            <div className="flex-1 overflow-hidden relative">
+        <div
+            ref={cardRef}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            className="relative rounded-2xl overflow-hidden flex flex-col cursor-pointer group"
+            style={{
+                opacity: 0,
+                background: 'linear-gradient(160deg, #111316 0%, #0c0e10 100%)',
+                border: `1px solid ${hovered ? accent + '40' : 'rgba(255,255,255,0.05)'}`,
+                transition: 'border-color 0.4s ease, box-shadow 0.4s ease',
+                boxShadow: hovered ? `0 0 60px ${accent}18, 0 20px 60px rgba(0,0,0,0.5)` : '0 4px 30px rgba(0,0,0,0.4)',
+                willChange: 'transform, opacity',
+                transform: 'translateZ(0)',
+                backfaceVisibility: 'hidden',
+                WebkitFontSmoothing: 'antialiased'
+            }}
+        >
+            <div className="h-[2px] w-full transition-all duration-500"
+                style={{ background: hovered ? `linear-gradient(90deg, ${accent}, transparent)` : 'rgba(255,255,255,0.04)' }} />
+
+            <div className="relative overflow-hidden" style={{ height: '220px', backgroundColor: '#0c0e10' }}>
                 {item.img ? (
-                    // Actual Image Path usage
                     <>
-                        {!imgLoaded && <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/10 to-deep-black animate-pulse" />}
-                        <img 
-                            src={item.img} 
-                            alt={item.title} 
-                            loading="lazy" 
-                            onLoad={() => setImgLoaded(true)} 
-                            className={`w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-105 ${imgLoaded ? 'opacity-50' : 'opacity-0'}`} 
+                        {!imgLoaded && (
+                            <div className="absolute inset-0 animate-pulse" style={{ background: `${accent}08` }} />
+                        )}
+                        <img
+                            src={item.img} alt={item.title} loading="lazy"
+                            onLoad={() => setImgLoaded(true)}
+                            className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
+                            style={{ opacity: imgLoaded ? 0.55 : 0, willChange: 'transform, opacity' }}
                         />
                     </>
                 ) : (
-                    // Abstract Background for Null Images
-                    <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient}`}>
-                        <div className="absolute inset-0 opacity-[0.06] mix-blend-overlay" style={{ backgroundImage: 'radial-gradient(#ffffff 1.5px, transparent 1.5px)', backgroundSize: '24px 24px' }} />
-                        <div className="absolute inset-0 flex items-center justify-center p-6 overflow-hidden">
-                            <div className="text-center transform scale-95 group-hover:scale-110 transition-transform duration-700 ease-out">
-                                <div className="text-7xl md:text-8xl font-heading font-black text-pure-white/10 leading-none whitespace-nowrap drop-shadow-2xl">{primaryMetricValue}</div>
-                                <div className="text-[10px] md:text-xs uppercase tracking-[0.3em] font-bold text-orange-vibrant/30 mt-3">{primaryMetricLabel}</div>
+                    <div className="absolute inset-0 flex items-center justify-center overflow-hidden"
+                        style={{ background: `radial-gradient(ellipse at 50% 0%, ${accent}12, transparent 70%)` }}>
+                        <div className="absolute inset-0 opacity-[0.04]"
+                            style={{ backgroundImage: `radial-gradient(${accent} 1px, transparent 1px)`, backgroundSize: '22px 22px' }} />
+                        <div className="text-center select-none">
+                            <div className="font-black leading-none transition-transform duration-500 group-hover:scale-110"
+                                style={{
+                                    fontSize: primaryVal.length > 6 ? '3.5rem' : '5rem',
+                                    color: accent,
+                                    textShadow: `0 0 80px ${accent}50`,
+                                    letterSpacing: '-0.03em',
+                                    willChange: 'transform'
+                                }}>
+                                {primaryVal}
+                            </div>
+                            <div className="text-[10px] uppercase tracking-[0.22em] font-bold mt-2"
+                                style={{ color: accent + '60' }}>
+                                {primaryKey}
                             </div>
                         </div>
                     </div>
                 )}
-                
-                <div className="absolute inset-0 bg-gradient-to-t from-deep-black via-deep-black/60 to-transparent" />
-                
-                <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                    {item.tags.map((tag, i) => (
-                        <span key={tag} className="px-3 py-1.5 bg-orange-vibrant/90 backdrop-blur-sm text-deep-black text-xs font-bold rounded-full shadow-lg transform translate-y-[10px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500" style={{ transitionDelay: `${i * 60}ms` }}>{tag}</span>
-                    ))}
+
+                <div className="absolute inset-0 pointer-events-none"
+                    style={{ background: 'linear-gradient(to bottom, transparent 30%, #0c0e10 100%)' }} />
+
+                <div className="absolute top-4 left-4">
+                    <span className="px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] rounded-full"
+                        style={{ background: `${accent}18`, color: accent, border: `1px solid ${accent}35` }}>
+                        {item.category}
+                    </span>
                 </div>
 
                 {isExternal && (
-                    <div className="absolute top-4 right-4 px-3 py-1.5 bg-pure-white/10 border border-white/20 backdrop-blur-md text-pure-white text-[10px] font-black rounded-full uppercase tracking-wider">Live ↗</div>
+                    <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-white/50 border border-white/10">
+                        Live ↗
+                    </div>
                 )}
+
+                <div className="absolute bottom-4 left-4 flex flex-wrap gap-1.5">
+                    {item.tags.map((tag, i) => (
+                        <span key={tag}
+                            className="px-2.5 py-1 text-[10px] font-bold rounded-full text-white/70 border border-white/10 uppercase tracking-wider transition-all duration-300"
+                            style={{
+                                opacity: hovered ? 1 : 0,
+                                transform: hovered ? 'translateY(0)' : 'translateY(6px)',
+                                transitionDelay: `${i * 50}ms`,
+                                background: 'rgba(0,0,0,0.5)',
+                                backdropFilter: 'blur(8px)',
+                                willChange: 'transform, opacity'
+                            }}>
+                            {tag}
+                        </span>
+                    ))}
+                </div>
             </div>
 
-            <div className="relative bg-deep-black/95 backdrop-blur-md p-6 border-t-2 border-orange-vibrant/20 group-hover:border-orange-vibrant/50 transition-all duration-500 z-10">
-                <div className="absolute inset-0 bg-gradient-to-t from-orange-vibrant/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative">
-                    <div className="flex items-center gap-2 mb-3">
-                        <span className="w-2 h-2 rounded-full bg-orange-vibrant animate-pulse" />
-                        <span className="text-orange-vibrant text-xs font-bold uppercase tracking-widest">{item.category}</span>
-                    </div>
-                    <h4 className="text-xl font-heading font-bold leading-tight text-pure-white group-hover:text-orange-vibrant transition-colors duration-300 line-clamp-2 mb-4">{item.title}</h4>
-                    
-                    <div className="flex gap-5 pt-4 border-t border-orange-vibrant/20 group-hover:border-orange-vibrant/40 transition-colors flex-wrap">
-                        {Object.entries(item.metrics).slice(0, 3).map(([key, val], i) => (
-                            <div key={key} className="transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500" style={{ transitionDelay: `${i * 80}ms` }}>
-                                <div className="text-cream font-bold text-sm md:text-base">{val}</div>
-                                <div className="text-pure-white/50 text-[10px] uppercase tracking-widest">{key}</div>
-                            </div>
-                        ))}
-                    </div>
+            <div className="flex-1 flex flex-col p-6 pt-5">
+                <h4 className="text-lg font-black leading-snug text-white mb-4 transition-colors duration-300"
+                    style={{ color: hovered ? '#fff' : 'rgba(255,255,255,0.88)' }}>
+                    {item.title}
+                </h4>
+
+                <div className="flex gap-5 flex-wrap mb-5">
+                    {Object.entries(item.metrics).slice(0, 3).map(([key, val], i) => (
+                        <div key={key} className="transition-all duration-300"
+                            style={{ opacity: 1, transform: hovered ? 'translateY(-2px)' : 'translateY(0)', transitionDelay: `${i * 40}ms` }}>
+                            <div className="text-lg font-black leading-none mb-0.5" style={{ color: accent }}>{val}</div>
+                            <div className="text-[10px] uppercase tracking-widest text-white/30 font-semibold">{key}</div>
+                        </div>
+                    ))}
                 </div>
-                <div className="absolute bottom-6 right-6">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-vibrant to-orange-600 flex items-center justify-center text-deep-black font-bold text-lg shadow-2xl shadow-orange-vibrant/50 group-hover:rotate-45 transition-all duration-500">
-                        {isExternal ? '↗' : '→'}
+
+                <div className="h-px mb-5 transition-all duration-500"
+                    style={{ background: hovered ? `linear-gradient(90deg, ${accent}40, transparent)` : 'rgba(255,255,255,0.05)' }} />
+
+                <div className="mt-auto flex items-center justify-between">
+                    <span className="text-[11px] uppercase tracking-[0.18em] font-black transition-colors duration-300"
+                        style={{ color: hovered ? accent : 'rgba(255,255,255,0.2)' }}>
+                        {isExternal ? 'Visit Live' : 'View Project'}
+                    </span>
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-400"
+                        style={{
+                            background: hovered ? accent : 'rgba(255,255,255,0.05)',
+                            transform: hovered ? 'rotate(45deg) scale(1.1)' : 'rotate(0deg) scale(1)',
+                            boxShadow: hovered ? `0 0 20px ${accent}60` : 'none',
+                            willChange: 'transform, box-shadow'
+                        }}>
+                        <svg className="w-4 h-4 transition-colors duration-300"
+                            style={{ color: hovered ? '#000' : 'rgba(255,255,255,0.4)' }}
+                            fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path d="M7 17L17 7M17 7H7M17 7V17" />
+                        </svg>
                     </div>
                 </div>
             </div>
-            
-            <div className="absolute top-0 right-0 w-20 h-20 opacity-10 group-hover:opacity-30 transition-opacity duration-500"><svg viewBox="0 0 100 100" className="text-orange-vibrant"><path d="M 0 0 L 100 0 L 100 100 Z" fill="currentColor" /></svg></div>
-            <div className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-orange-vibrant to-cream w-0 group-hover:w-full transition-all duration-700" />
         </div>
     );
 
     return isExternal ? (
-        <GSAPTilt><a href={dest} target="_blank" rel="noopener noreferrer" className="block outline-none">{inner}</a></GSAPTilt>
+        <GSAPTilt>
+            <a href={dest} target="_blank" rel="noopener noreferrer" className="block outline-none">{inner}</a>
+        </GSAPTilt>
     ) : (
-        <GSAPTilt><Link to={dest} className="block outline-none">{inner}</Link></GSAPTilt>
+        <GSAPTilt>
+            <Link to={dest} className="block outline-none">{inner}</Link>
+        </GSAPTilt>
     );
 });
 ProjectCard.displayName = 'ProjectCard';
 
-// ─── Filter Button ─────────────────────────────────────────────────────────────
-const CategoryButton = memo(({ cat, isActive, onClick, count }) => {
-    const btnRef = useRef(null);
-    useMagneticEffect(btnRef, 0.15);
+const FilterTab = memo(({ cat, isActive, onClick, count }) => {
+    const ref = useRef(null);
+    useMagnetic(ref, 0.15);
+    const accent = CAT_COLORS[cat] || '#FF570F';
     return (
-        <button ref={btnRef} onClick={onClick} className={`relative px-6 py-2.5 text-xs font-bold uppercase tracking-widest rounded-xl border-2 transition-all duration-300 overflow-hidden group ${isActive ? 'bg-orange-vibrant border-orange-vibrant text-deep-black shadow-lg shadow-orange-vibrant/40' : 'border-orange-vibrant/30 text-text-muted hover:border-orange-vibrant hover:text-orange-vibrant'}`}>
-            <span className="absolute inset-0 bg-gradient-to-r from-orange-vibrant to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <span className="relative z-10 flex items-center gap-2">
-                {cat}
-                {count != null && <span className={`px-2 py-0.5 rounded-full text-[10px] ${isActive ? 'bg-deep-black/20' : 'bg-orange-vibrant/10'}`}>{count}</span>}
-            </span>
-            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <button ref={ref} onClick={onClick}
+            className="relative px-5 py-2 text-[11px] font-black uppercase tracking-[0.18em] rounded-full transition-all duration-300 overflow-hidden"
+            style={{
+                background: isActive ? accent : 'rgba(255,255,255,0.04)',
+                color: isActive ? '#000' : 'rgba(255,255,255,0.45)',
+                border: `1px solid ${isActive ? accent : 'rgba(255,255,255,0.08)'}`,
+                boxShadow: isActive ? `0 0 30px ${accent}40` : 'none',
+                willChange: 'transform'
+            }}>
+            {cat}
+            {count != null && (
+                <span className="ml-2 text-[9px] opacity-60">{count}</span>
+            )}
         </button>
     );
 });
-CategoryButton.displayName = 'CategoryButton';
+FilterTab.displayName = 'FilterTab';
 
-// ─── Pagination Button ─────────────────────────────────────────────────────────
-const PaginationButton = memo(({ onClick, disabled, isActive, label, children }) => {
-    const btnRef = useRef(null);
-    useMagneticEffect(btnRef, 0.25);
+const PageBtn = memo(({ onClick, disabled, isActive, children, label }) => {
+    const ref = useRef(null);
+    useMagnetic(ref, 0.2);
     return (
-        <button ref={btnRef} onClick={onClick} disabled={disabled} aria-label={label} aria-current={isActive ? 'page' : undefined} className={`relative w-12 h-12 rounded-xl border-2 flex items-center justify-center font-bold text-sm transition-all duration-300 overflow-hidden group ${disabled ? 'border-white/5 text-white/20 cursor-not-allowed' : isActive ? 'bg-orange-vibrant border-orange-vibrant text-deep-black shadow-lg shadow-orange-vibrant/40 scale-105' : 'border-orange-vibrant/30 text-pure-white hover:bg-orange-vibrant hover:text-deep-black hover:border-orange-vibrant'}`}>
-            {!disabled && !isActive && <span className="absolute inset-0 rounded-xl bg-orange-vibrant opacity-0 group-hover:opacity-20 transition-opacity" />}
-            <span className="relative z-10">{children}</span>
+        <button ref={ref} onClick={onClick} disabled={disabled} aria-label={label}
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-sm font-black transition-all duration-300"
+            style={{
+                background: isActive ? '#FF570F' : disabled ? 'transparent' : 'rgba(255,255,255,0.04)',
+                color: isActive ? '#000' : disabled ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.6)',
+                border: `1px solid ${isActive ? '#FF570F' : disabled ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.08)'}`,
+                boxShadow: isActive ? '0 0 24px #FF570F50' : 'none',
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                willChange: 'transform'
+            }}>
+            {children}
         </button>
     );
 });
-PaginationButton.displayName = 'PaginationButton';
+PageBtn.displayName = 'PageBtn';
 
 const AllProjects = () => {
-    const gridRef = useRef(null);
     const sectionRef = useRef(null);
+    const headerRef = useRef(null);
     const [activeCategory, setActiveCategory] = useState('All');
     const [currentPage, setCurrentPage] = useState(1);
 
-    const filtered = activeCategory === 'All' ? projectsData : projectsData.filter((p) => p.category === activeCategory);
+    const filtered = activeCategory === 'All' ? projectsData : projectsData.filter(p => p.category === activeCategory);
     const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const visibleProjects = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -210,13 +346,16 @@ const AllProjects = () => {
     useEffect(() => { setCurrentPage(1); }, [activeCategory]);
 
     useEffect(() => {
-        const ctx = gsap.context(() => {
-            gsap.from('.proj-card', { y: 60, opacity: 0, scale: 0.95, duration: 0.8, stagger: 0.1, ease: 'power3.out', scrollTrigger: { trigger: gridRef.current, start: 'top 85%', once: true } });
-        }, sectionRef);
+        let ctx = gsap.context(() => {
+            gsap.fromTo('.hdr-item',
+                { opacity: 0, y: 30 },
+                { opacity: 1, y: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out',
+                  scrollTrigger: { trigger: headerRef.current, start: 'top 85%', once: true } 
+                }
+            );
+        }, headerRef);
         return () => ctx.revert();
     }, []);
-
-    useEffect(() => { gsap.fromTo('.proj-card', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, stagger: 0.08, ease: 'power3.out' }); }, [currentPage, activeCategory]);
 
     const goTo = (page) => {
         if (page < 1 || page > totalPages) return;
@@ -232,48 +371,106 @@ const AllProjects = () => {
     };
 
     return (
-        <section ref={sectionRef} className="relative py-24 bg-deep-black text-white min-h-screen scroll-mt-24 overflow-hidden">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.02)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
-            <div className="relative max-w-[1440px] mx-auto px-6">
-                
-                <div className="text-center mb-16">
-                    <div className="inline-flex items-center gap-2 px-5 py-2 border border-orange-vibrant/30 bg-orange-vibrant/8 rounded-full mb-6 backdrop-blur-sm">
-                        <div className="w-1.5 h-1.5 rounded-full bg-orange-vibrant animate-pulse shadow-lg shadow-orange-vibrant" />
-                        <span className="text-orange-vibrant text-xs font-bold uppercase tracking-[0.2em]">Real Accounts · Real Numbers · No Projections</span>
+        <section ref={sectionRef} className="relative min-h-screen bg-[#09090b] text-white overflow-hidden scroll-mt-24">
+            
+            <div className="absolute top-0 right-0 w-[900px] h-[900px] rounded-full blur-[180px] opacity-[0.035] pointer-events-none"
+                style={{ background: 'radial-gradient(circle, #FF570F 0%, transparent 65%)', transform: 'translateZ(0)' }} />
+            <div className="absolute bottom-1/3 left-0 w-[600px] h-[600px] rounded-full blur-[150px] opacity-[0.025] pointer-events-none"
+                style={{ background: 'radial-gradient(circle, #FDE87A 0%, transparent 65%)', transform: 'translateZ(0)' }} />
+
+            <div className="absolute inset-0 pointer-events-none"
+                style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+
+            <div ref={headerRef} className="relative pt-24 pb-16 px-6 max-w-7xl mx-auto">
+                <div className="hdr-item opacity-0 flex items-center gap-3 mb-8">
+                    <div className="h-px w-8 bg-[#FF570F]" />
+                    <span className="text-[11px] font-black uppercase tracking-[0.28em] text-[#FF570F]">
+                        Real Accounts · Real Numbers · No Projections
+                    </span>
+                </div>
+
+                <div className="hdr-item opacity-0 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-12">
+                    <div>
+                        <h2 className="text-[clamp(2.8rem,8vw,6rem)] font-black leading-[0.95] tracking-tight">
+                            <span className="text-white">Projects</span>
+                            <br />
+                            <span style={{
+                                background: 'linear-gradient(135deg, #FF570F 0%, #FDE87A 100%)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                backgroundClip: 'text'
+                            }}>We'veBuilt.</span>
+                        </h2>
                     </div>
-                    <h2 className="text-5xl md:text-7xl font-heading font-black leading-tight mb-6 perspective-1000">
-                        <span style={{ background: 'linear-gradient(135deg, #FF570F 0%, #FDE87A 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Work We've Done</span>
-                    </h2>
-                    <p className="text-text-muted text-lg max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-white/40 text-base leading-relaxed max-w-xs lg:text-right">
                         Every number is from a live account. Dashboard screenshots available on request.
                     </p>
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-4 mb-16">
-                    {CATEGORIES.map((cat) => (
-                        <CategoryButton key={cat} cat={cat} isActive={activeCategory === cat} onClick={() => setActiveCategory(cat)} count={cat !== 'All' ? projectsData.filter((p) => p.category === cat).length : null} /> 
+                <Marquee />
+
+                <div className="hdr-item opacity-0 grid grid-cols-2 md:grid-cols-4 gap-3 mt-10 mb-14">
+                    {[
+                        { v: '$683K+', l: 'Meta/Month' },
+                        { v: '14', l: 'Projects' },
+                        { v: '$2.7M+', l: 'Amazon Sales' },
+                        { v: '600%', l: 'Peak ROAS' },
+                    ].map((s, i) => (
+                        <div key={i} className="py-4 px-5 rounded-xl text-center"
+                            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                            <div className="text-2xl font-black text-white mb-0.5">{s.v}</div>
+                            <div className="text-[10px] uppercase tracking-widest text-white/25 font-bold">{s.l}</div>
+                        </div>
                     ))}
                 </div>
 
-                <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-                    {visibleProjects.length > 0 ? (
-                        visibleProjects.map((item) => <ProjectCard key={item.id} item={item} />)
-                    ) : (
-                        <div className="col-span-3 text-center py-32 bg-deep-black/50 rounded-3xl border border-white/5 backdrop-blur-sm">
-                            <div className="text-6xl mb-4 opacity-50">📊</div>
-                            <p className="text-text-muted text-lg uppercase tracking-widest font-bold">No projects in this category yet</p>
-                        </div>
-                    )}
+                <div className="hdr-item opacity-0 flex flex-wrap gap-2.5 justify-center">
+                    {CATEGORIES.map(cat => (
+                        <FilterTab
+                            key={cat} cat={cat} isActive={activeCategory === cat}
+                            onClick={() => setActiveCategory(cat)}
+                            count={cat !== 'All' ? projectsData.filter(p => p.category === cat).length : null}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            <div className="relative px-6 max-w-7xl mx-auto pb-24">
+                <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-3">
+                        <div className="h-4 w-[2px] rounded-full" style={{ background: CAT_COLORS[activeCategory] }} />
+                        <span className="text-[11px] font-black uppercase tracking-[0.2em]"
+                            style={{ color: CAT_COLORS[activeCategory] }}>
+                            {activeCategory === 'All' ? `All Projects` : activeCategory}
+                        </span>
+                        <span className="text-[11px] text-white/20 font-bold">— {filtered.length} items</span>
+                    </div>
+                    <span className="text-[11px] text-white/20 uppercase tracking-widest font-bold">
+                        {startIndex + 1}–{Math.min(startIndex + ITEMS_PER_PAGE, filtered.length)} of {filtered.length}
+                    </span>
                 </div>
 
-                {totalPages > 1 && (
-                    <div className="flex justify-center items-center gap-3 flex-wrap mb-8">
-                        <PaginationButton onClick={() => goTo(currentPage - 1)} disabled={currentPage === 1} label="Previous">←</PaginationButton>
-                        {pageNumbers().map((num) => <PaginationButton key={num} onClick={() => goTo(num)} isActive={num === currentPage} label={`Page ${num}`}>{num}</PaginationButton>)}
-                        <PaginationButton onClick={() => goTo(currentPage + 1)} disabled={currentPage === totalPages} label="Next">→</PaginationButton>
+                {visibleProjects.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {visibleProjects.map((item, index) => (
+                            <ProjectCard key={`${item.id}-${currentPage}-${activeCategory}`} item={item} index={index} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-40 rounded-2xl" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+                        <p className="text-white/20 text-sm uppercase tracking-[0.25em] font-black">No projects in this category yet</p>
                     </div>
                 )}
-                <p className="text-center text-text-muted text-xs uppercase tracking-widest">Showing {startIndex + 1}–{Math.min(startIndex + ITEMS_PER_PAGE, filtered.length)} of {filtered.length} projects</p>
+
+                {totalPages > 1 && (
+                    <div className="flex justify-center items-center gap-2 mt-16">
+                        <PageBtn onClick={() => goTo(currentPage - 1)} disabled={currentPage === 1} label="Previous">←</PageBtn>
+                        {pageNumbers().map(num => (
+                            <PageBtn key={num} onClick={() => goTo(num)} isActive={num === currentPage} label={`Page ${num}`}>{num}</PageBtn>
+                        ))}
+                        <PageBtn onClick={() => goTo(currentPage + 1)} disabled={currentPage === totalPages} label="Next">→</PageBtn>
+                    </div>
+                )}
             </div>
         </section>
     );

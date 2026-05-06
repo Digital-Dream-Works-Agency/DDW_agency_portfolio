@@ -43,7 +43,7 @@ const GSAPTilt = ({ children, className }) => {
             const rect = el.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width - 0.5;
             const y = (e.clientY - rect.top) / rect.height - 0.5;
-            xTo(x * 8); // Adjusted for smoother professional feel
+            xTo(x * 8); 
             yTo(-y * 8); 
         };
         const handleMouseLeave = () => { xTo(0); yTo(0); };
@@ -121,6 +121,7 @@ const TechCoreVisual = () => (
 );
 
 // ─── Stat Card Component ───────────────────────────────────────────────────────
+// Fix: Stats cards with optimized spacing and word breaks for smaller screens.
 const StatCard = ({ value, label }) => {
     const [inView, setInView] = useState(false);
     const cardRef = useRef(null);
@@ -149,13 +150,14 @@ const StatCard = ({ value, label }) => {
     }, [inView, numericValue, suffix]);
 
     return (
-        <GSAPTilt className="relative text-center p-6 rounded-2xl bg-gradient-to-br from-[#151a1d] to-[#0d1012] border-2 border-orange-vibrant/10 hover:border-orange-vibrant/40 transition-all duration-500 group overflow-hidden">
+        <GSAPTilt className="relative text-center p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-[#151a1d] to-[#0d1012] border-2 border-orange-vibrant/10 hover:border-orange-vibrant/40 transition-all duration-500 group overflow-hidden flex flex-col justify-center min-h-[120px]">
             <div ref={cardRef} className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl" />
             <div className="relative z-10">
-                <div ref={numRef} className="text-4xl font-black mb-2 bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">
+                {/* break-words is essential here so long numbers don't overflow the card. Text is also slightly smaller. */}
+<div ref={numRef} className="text-xl md:text-2xl lg:text-3xl font-black mb-1 sm:mb-2 bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent whitespace-nowrap">
                     0{suffix}
                 </div>
-                <div className="text-[10px] text-text-muted uppercase tracking-widest group-hover:text-orange-vibrant transition-colors">
+                <div className="text-[9px] sm:text-[10px] text-text-muted uppercase tracking-widest group-hover:text-orange-vibrant transition-colors mt-1">
                     {label}
                 </div>
             </div>
@@ -295,21 +297,23 @@ const AboutPage = () => {
             <Navbar />
             <PageHeader title="About DDW" breadcrumb="About" subtitle="Florida LLC. Offices in Florida and Rome. We manage $683K+/month in Meta spend, $2.7M+ in Amazon sales, and ship live SaaS products — all on retainer." />
 
-            <section ref={sectionRef} className="relative py-20 md:py-32 bg-deep-black overflow-hidden">
+<section ref={sectionRef} className="relative py-20 md:py-32 bg-deep-black overflow-hidden isolate">
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.02)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
                 <div ref={prlx1Ref} className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-orange-vibrant/10 rounded-full blur-[150px] animate-pulse pointer-events-none" />
 
                 <div className="relative z-10 max-w-7xl mx-auto px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
-                        <div className="fade-up space-y-8">
+                        {/* Fix: Adding relative z-20 to the text column to ensure it always stacks on top of visual bleed. */}
+                        <div className="fade-up space-y-8 relative z-20">
                             <div>
                                 <span className="inline-block px-6 py-2.5 border-2 border-orange-vibrant/40 bg-orange-vibrant/10 text-orange-vibrant text-xs font-bold uppercase tracking-[0.25em] rounded-full mb-6 backdrop-blur-sm">
                                     <span className="inline-block w-2 h-2 bg-orange-vibrant rounded-full mr-2 animate-pulse" /> Our Story
                                 </span>
-                                <h2 ref={headingRef} className="about-main-heading text-4xl md:text-5xl lg:text-6xl font-heading font-black text-pure-white mb-6 leading-tight perspective-[1000px]">
-                                    Florida LLC.{' '}
-                                    <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent inline-block">Two Offices.</span>
-                                </h2>
+<h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-black mb-6 leading-tight">
+    <span className="text-pure-white">Florida LLC.</span>{' '}
+    <br></br>
+    <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">Two Offices.</span>
+</h2>
                             </div>
                             <div className="space-y-6 text-base md:text-lg text-pure-white/70 leading-relaxed">
                                 <p>Digital Dream Works is a Florida LLC with offices in Florida and Rome. We serve US and EU clients across digital marketing, AI, and custom software — all on retainer.</p>
@@ -317,7 +321,7 @@ const AboutPage = () => {
                                 <p>Our clients don't come to us for one-off projects. They come when the stakes are real — when they need a team that builds the infrastructure, runs the accounts, and stays accountable month over month.</p>
                                 <p className="text-orange-vibrant font-bold text-lg">Retainer-only. One team. US + EU markets.</p>
                             </div>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-8 border-t-2 border-orange-vibrant/20">
+<div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-8 border-t-2 border-orange-vibrant/20">
                                 <StatCard value="683K+" label="Meta $/month" />
                                 <StatCard value="7" label="Service Areas" />
                                 <StatCard value="2" label="Offices" />
@@ -326,7 +330,8 @@ const AboutPage = () => {
                         </div>
 
                         {/* ─── REPLACED THE EMPTY BOXES WITH HIGH-TECH BENTO GRID ─── */}
-                        <div className="fade-up">
+                        {/* Fix: This entire bento grid will now stack below the text column on larger screens. */}
+                        <div className="fade-up relative z-10">
                             <div className="grid grid-cols-2 gap-6">
                                 {/* Top Wide Box: Global Reach */}
                                 <GSAPTilt className="col-span-2 relative aspect-[16/10] rounded-3xl overflow-hidden border-2 border-[#FF570F]/20 shadow-2xl group bg-gradient-to-br from-[#0a0c0e] to-[#111418]">
