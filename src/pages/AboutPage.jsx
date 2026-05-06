@@ -43,8 +43,8 @@ const GSAPTilt = ({ children, className }) => {
             const rect = el.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width - 0.5;
             const y = (e.clientY - rect.top) / rect.height - 0.5;
-            xTo(x * 12);
-            yTo(-y * 12); 
+            xTo(x * 8); // Adjusted for smoother professional feel
+            yTo(-y * 8); 
         };
         const handleMouseLeave = () => { xTo(0); yTo(0); };
 
@@ -55,6 +55,70 @@ const GSAPTilt = ({ children, className }) => {
 
     return <div ref={tiltRef} className={className} style={{ transformPerspective: 1000 }}>{children}</div>;
 };
+
+// ─── Modern Tech Visual Components ─────────────────────────────────────────────
+
+const GlobalRadarVisual = () => (
+    <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+        {/* Radar Rings */}
+        <div className="absolute w-[120%] h-[120%] border border-[#FF570F]/5 rounded-full" />
+        <div className="absolute w-[80%] h-[80%] border border-[#FF570F]/10 rounded-full" />
+        <div className="absolute w-[40%] h-[40%] border border-[#FF570F]/20 rounded-full animate-[spin_10s_linear_infinite]" style={{ borderTopColor: 'transparent', borderLeftColor: 'transparent' }} />
+        
+        {/* Sweeping Line */}
+        <div className="absolute top-1/2 left-1/2 w-[50%] h-0.5 bg-gradient-to-r from-transparent to-[#FF570F]/40 origin-left animate-[spin_4s_linear_infinite]" />
+        
+        {/* Connection Arch */}
+        <svg className="absolute inset-0 w-full h-full z-10 opacity-30" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M 30,60 Q 50,20 70,40" fill="none" stroke="#FF570F" strokeWidth="0.5" strokeDasharray="2 2" className="animate-[dash_20s_linear_infinite]" />
+        </svg>
+
+        {/* Node 1: Florida */}
+        <div className="absolute top-[60%] left-[30%] w-2.5 h-2.5 bg-[#FF570F] rounded-full shadow-[0_0_10px_#FF570F] z-20">
+            <div className="absolute inset-0 rounded-full bg-[#FF570F] animate-ping opacity-50" />
+            <span className="absolute top-4 -left-4 text-[9px] text-[#FF570F] font-mono font-bold tracking-widest uppercase">FL_USA</span>
+        </div>
+
+        {/* Node 2: Rome */}
+        <div className="absolute top-[40%] left-[70%] w-2 h-2 bg-white rounded-full shadow-[0_0_10px_white] z-20">
+            <div className="absolute inset-0 rounded-full bg-white animate-ping opacity-50" style={{ animationDelay: '1s' }} />
+            <span className="absolute top-4 -left-4 text-[9px] text-white font-mono font-bold tracking-widest uppercase">RM_ITA</span>
+        </div>
+    </div>
+);
+
+const DataFlowVisual = () => (
+    <div className="absolute inset-0 flex items-end justify-between p-8 gap-2 opacity-60 group-hover:opacity-100 transition-opacity duration-500">
+        {[40, 70, 45, 90, 60, 85].map((height, i) => (
+            <div key={i} className="relative w-full bg-white/5 rounded-t-sm overflow-hidden" style={{ height: '100%' }}>
+                <div 
+                    className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[#FF570F]/20 to-[#FF570F]" 
+                    style={{ 
+                        height: `${height}%`, 
+                        animation: `pulseHeight ${2 + i * 0.5}s ease-in-out infinite alternate` 
+                    }} 
+                />
+            </div>
+        ))}
+        <style>{`
+            @keyframes pulseHeight {
+                0% { transform: scaleY(0.8); transform-origin: bottom; }
+                100% { transform: scaleY(1.1); transform-origin: bottom; }
+            }
+        `}</style>
+    </div>
+);
+
+const TechCoreVisual = () => (
+    <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+        <div className="relative w-32 h-32 flex items-center justify-center">
+            <div className="absolute inset-0 border border-white/10 rounded-full animate-[spin_8s_linear_infinite]" style={{ borderStyle: 'dashed' }} />
+            <div className="absolute inset-2 border-2 border-[#FF570F]/20 rounded-full animate-[spin_6s_linear_infinite_reverse]" style={{ borderTopColor: 'transparent' }} />
+            <div className="absolute inset-6 border border-white/20 rounded-full animate-[spin_4s_linear_infinite]" style={{ borderBottomColor: 'transparent', borderRightColor: 'transparent' }} />
+            <div className="absolute w-2 h-2 bg-[#FF570F] rounded-full shadow-[0_0_15px_#FF570F] animate-pulse" />
+        </div>
+    </div>
+);
 
 // ─── Stat Card Component ───────────────────────────────────────────────────────
 const StatCard = ({ value, label }) => {
@@ -205,8 +269,8 @@ const AboutPage = () => {
             
             // Native Parallax Backgrounds
             gsap.to(prlx1Ref.current, { yPercent: 30, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
-            gsap.to(prlx2Ref.current, { yPercent: -30, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
-            gsap.to(prlx3Ref.current, { yPercent: 20, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
+            if(prlx2Ref.current) gsap.to(prlx2Ref.current, { yPercent: -30, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
+            if(prlx3Ref.current) gsap.to(prlx3Ref.current, { yPercent: 20, ease: "none", scrollTrigger: { trigger: sectionRef.current, scrub: true }});
         }, sectionRef);
         return () => ctx.revert();
     }, []);
@@ -261,17 +325,40 @@ const AboutPage = () => {
                             </div>
                         </div>
 
+                        {/* ─── REPLACED THE EMPTY BOXES WITH HIGH-TECH BENTO GRID ─── */}
                         <div className="fade-up">
                             <div className="grid grid-cols-2 gap-6">
-                                <GSAPTilt className="col-span-2 relative aspect-[16/10] rounded-3xl overflow-hidden border-2 border-orange-vibrant/20 shadow-2xl group">
-                                    <div className="w-full h-full bg-gradient-to-br from-[#0e1012] to-[#080808]"><div className="w-full h-full opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '20px 20px' }} /></div>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-deep-black/60 to-transparent" />
+                                {/* Top Wide Box: Global Reach */}
+                                <GSAPTilt className="col-span-2 relative aspect-[16/10] rounded-3xl overflow-hidden border-2 border-[#FF570F]/20 shadow-2xl group bg-gradient-to-br from-[#0a0c0e] to-[#111418]">
+                                    <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+                                    <GlobalRadarVisual />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c0e] via-transparent to-transparent pointer-events-none" />
+                                    <div className="absolute bottom-6 left-6 z-30">
+                                        <p className="text-[#FF570F] text-xs font-mono font-bold tracking-widest uppercase mb-1">Global Infrastructure</p>
+                                        <p className="text-white text-sm">US & EU Endpoints Active</p>
+                                    </div>
                                 </GSAPTilt>
-                                <GSAPTilt className="relative aspect-square rounded-2xl overflow-hidden border-2 border-orange-vibrant/10 group">
-                                    <div className="w-full h-full bg-gradient-to-br from-[#0e1012] to-[#080808]"><div className="w-full h-full opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '20px 20px' }} /></div>
+                                
+                                {/* Bottom Left Box: Data Metrics */}
+                                <GSAPTilt className="relative aspect-square rounded-2xl overflow-hidden border-2 border-[#FF570F]/10 group bg-gradient-to-br from-[#0a0c0e] to-[#111418]">
+                                    <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+                                    <DataFlowVisual />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c0e]/80 via-transparent to-transparent pointer-events-none" />
+                                    <div className="absolute bottom-6 left-6 z-30">
+                                        <p className="text-[#FF570F] text-[10px] font-mono font-bold tracking-widest uppercase mb-1">Data Flow</p>
+                                        <p className="text-white/80 text-xs">$2.7M+ Processed</p>
+                                    </div>
                                 </GSAPTilt>
-                                <GSAPTilt className="relative aspect-square rounded-2xl overflow-hidden border-2 border-orange-vibrant/10 group">
-                                    <div className="w-full h-full bg-gradient-to-br from-[#0e1012] to-[#080808]"><div className="w-full h-full opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '20px 20px' }} /></div>
+                                
+                                {/* Bottom Right Box: AI Core */}
+                                <GSAPTilt className="relative aspect-square rounded-2xl overflow-hidden border-2 border-[#FF570F]/10 group bg-gradient-to-br from-[#0a0c0e] to-[#111418]">
+                                    <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+                                    <TechCoreVisual />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0c0e]/80 via-transparent to-transparent pointer-events-none" />
+                                    <div className="absolute bottom-6 left-6 z-30">
+                                        <p className="text-[#FF570F] text-[10px] font-mono font-bold tracking-widest uppercase mb-1">AI Logic</p>
+                                        <p className="text-white/80 text-xs">Custom Architecture</p>
+                                    </div>
                                 </GSAPTilt>
                             </div>
                         </div>
