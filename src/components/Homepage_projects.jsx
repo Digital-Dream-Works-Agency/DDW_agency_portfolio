@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Real DDW client results — all numbers from live ad accounts and dashboards
 const featuredProjects = [
     {
         id: 'meta-eu-fashion',
@@ -94,41 +93,131 @@ const featuredProjects = [
     },
 ];
 
+// ─── Abstract Dashboard Visual (for no-image cards) ───────────────────────────
+const MetricsDashboard = ({ project }) => {
+    const bars = [55, 80, 40, 95, 65, 100, 45, 75, 60, 88];
+    return (
+        <div className="absolute inset-0 flex items-center justify-center p-10">
+            <div className="w-full h-full max-w-sm mx-auto relative">
+                {/* Glow */}
+                <div className="absolute inset-0 bg-orange-vibrant/5 rounded-2xl blur-3xl" />
+                {/* Dashboard card */}
+                <div className="relative w-full h-full rounded-2xl border border-white/8 bg-[#0d0d0f] overflow-hidden flex flex-col p-6">
+                    {/* Top bar */}
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex gap-1.5">
+                            <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                            <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                            <div className="w-2.5 h-2.5 rounded-full bg-orange-vibrant/40" />
+                        </div>
+                        <span className="text-[9px] font-mono text-white/25 uppercase tracking-widest">{project.category}</span>
+                    </div>
+                    {/* Primary metric */}
+                    <div className="mb-6">
+                        <div className="text-4xl font-black text-orange-vibrant mb-1">{project.metrics[0]?.value}</div>
+                        <div className="text-[10px] text-white/30 uppercase tracking-widest">{project.metrics[0]?.label}</div>
+                    </div>
+                    {/* Bar chart */}
+                    <div className="flex-1 flex items-end gap-1.5">
+                        {bars.map((h, i) => (
+                            <div key={i} className="flex-1 flex flex-col justify-end" style={{ height: '100%' }}>
+                                <div
+                                    className="w-full rounded-t-sm"
+                                    style={{
+                                        height: `${h}%`,
+                                        background: i === bars.indexOf(Math.max(...bars))
+                                            ? 'linear-gradient(to top, #FF570F, #FDE87A)'
+                                            : 'rgba(255,87,15,0.2)',
+                                    }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                    {/* Bottom metrics row */}
+                    <div className="mt-4 pt-4 border-t border-white/5 flex gap-4">
+                        {project.metrics.slice(1).map((m, i) => (
+                            <div key={i}>
+                                <div className="text-sm font-black text-white/80">{m.value}</div>
+                                <div className="text-[9px] text-white/25 uppercase tracking-wider">{m.label}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// ─── Featured Hero Card ───────────────────────────────────────────────────────
 const HeroProjectCard = ({ project }) => {
     const [imageLoaded, setImageLoaded] = useState(false);
     const dest = project.url || '/projects';
     const isExternal = !!project.url;
 
     const inner = (
-        <div className="relative h-[600px] rounded-3xl overflow-hidden border-2 border-orange-vibrant/20 hover:border-orange-vibrant/50 transition-all duration-700 group">
+        <div className="group relative h-[560px] md:h-[620px] rounded-2xl overflow-hidden border border-orange-vibrant/20 hover:border-orange-vibrant/40 transition-all duration-700 bg-[#080809] cursor-pointer">
+
+            {/* Background */}
             <div className="absolute inset-0">
-                {!imageLoaded && <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/20 to-deep-black animate-pulse" />}
-                {project.img
-                    ? <img src={project.img} alt={project.title} loading="eager" onLoad={() => setImageLoaded(true)} className={`w-full h-full object-cover object-top transition-all duration-1000 group-hover:scale-105 ${imageLoaded ? 'opacity-40' : 'opacity-0'}`} />
-                    : <div className="absolute inset-0 bg-gradient-to-br from-[#0e1012] to-[#080808]">
-                        <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-                      </div>
-                }
-                <div className="absolute inset-0 bg-gradient-to-t from-deep-black via-deep-black/70 to-deep-black/30" />
-            </div>
-            <div className="relative h-full flex flex-col justify-end p-10 md:p-12">
-                <div className="flex flex-wrap gap-2 mb-6">
-                    {project.tags.map(tag => (
-                        <span key={tag} className="px-4 py-1.5 bg-orange-vibrant/20 backdrop-blur-sm border border-orange-vibrant/40 text-orange-vibrant text-xs font-bold rounded-full">{tag}</span>
-                    ))}
-                </div>
-                <div className="text-orange-vibrant text-sm font-bold uppercase tracking-[0.2em] mb-3">{project.category}</div>
-                <h3 className="text-4xl md:text-5xl font-heading font-black text-pure-white mb-4 group-hover:text-orange-vibrant transition-colors duration-300">{project.title}</h3>
-                <p className="text-pure-white/80 text-lg leading-relaxed mb-8 max-w-2xl">{project.description}</p>
-                <div className="flex flex-wrap gap-8">
-                    {project.metrics.map((metric, i) => (
-                        <div key={i}>
-                            <div className="text-3xl font-black bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">{metric.value}</div>
-                            <div className="text-text-muted text-xs uppercase tracking-wider mt-1">{metric.label}</div>
+                {project.img ? (
+                    <>
+                        {!imageLoaded && <div className="absolute inset-0 bg-[#0d0d0f]" />}
+                        <img
+                            src={project.img} alt={project.title} loading="eager"
+                            onLoad={() => setImageLoaded(true)}
+                            className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.03] ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#080809] via-[#080809]/70 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#080809] via-transparent to-transparent" />
+                    </>
+                ) : (
+                    <>
+                        {/* Subtle grid */}
+                        <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'linear-gradient(rgba(255,87,15,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,87,15,1) 1px, transparent 1px)', backgroundSize: '48px 48px' }} />
+                        {/* Right side dashboard */}
+                        <div className="absolute right-0 top-0 bottom-0 w-1/2 hidden md:block">
+                            <MetricsDashboard project={project} />
                         </div>
-                    ))}
+                        {/* Fade overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#080809] via-[#080809]/85 to-transparent md:w-3/4 w-full" />
+                    </>
+                )}
+            </div>
+
+            {/* Content */}
+            <div className="relative h-full flex flex-col justify-between p-10 md:p-14">
+                {/* Top */}
+                <div className="flex items-start justify-between">
+                    <div className="flex flex-wrap gap-2">
+                        {project.tags.map(tag => (
+                            <span key={tag} className="px-3 py-1 bg-white/5 border border-white/10 text-white/50 text-[10px] font-bold rounded-full uppercase tracking-widest">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+                    <div className="w-10 h-10 rounded-full border border-orange-vibrant/30 flex items-center justify-center text-orange-vibrant text-sm group-hover:bg-orange-vibrant group-hover:text-deep-black group-hover:border-orange-vibrant transition-all duration-300 flex-shrink-0 ml-4">
+                        ↗
+                    </div>
                 </div>
-                <div className="absolute top-10 right-10 w-16 h-16 rounded-full bg-orange-vibrant flex items-center justify-center text-deep-black font-bold text-2xl group-hover:scale-110 group-hover:rotate-45 transition-all duration-500 shadow-2xl shadow-orange-vibrant/50">→</div>
+
+                {/* Bottom */}
+                <div className="max-w-lg">
+                    <div className="text-orange-vibrant text-[11px] font-bold uppercase tracking-[0.25em] mb-3">{project.category}</div>
+                    <h3 className="text-4xl md:text-5xl font-heading font-black text-pure-white mb-4 leading-tight group-hover:text-orange-vibrant transition-colors duration-300">
+                        {project.title}
+                    </h3>
+                    <p className="text-white/55 text-base leading-relaxed mb-8 max-w-md">{project.description}</p>
+                    <div className="flex flex-wrap gap-10">
+                        {project.metrics.map((metric, i) => (
+                            <div key={i}>
+                                <div className="text-2xl md:text-3xl font-black bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">
+                                    {metric.value}
+                                </div>
+                                <div className="text-white/35 text-[10px] uppercase tracking-widest mt-1">{metric.label}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -138,6 +227,7 @@ const HeroProjectCard = ({ project }) => {
         : <Link to={dest}>{inner}</Link>;
 };
 
+// ─── Grid Project Card ────────────────────────────────────────────────────────
 const ProjectCard = ({ project }) => {
     const [imageLoaded, setImageLoaded] = useState(false);
     const cardRef = useRef(null);
@@ -146,94 +236,176 @@ const ProjectCard = ({ project }) => {
 
     useEffect(() => {
         gsap.fromTo(cardRef.current,
-            { y: 60, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: cardRef.current, start: 'top 85%' } }
+            { y: 40, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.75, ease: 'power3.out', scrollTrigger: { trigger: cardRef.current, start: 'top 88%', once: true } }
         );
     }, []);
 
     const inner = (
-        <div className="group block relative h-[480px] rounded-3xl overflow-hidden border-2 border-orange-vibrant/10 hover:border-orange-vibrant/40 transition-all duration-700 hover:-translate-y-2">
+        <div className="group relative h-[420px] rounded-2xl overflow-hidden border border-white/6 hover:border-orange-vibrant/30 transition-all duration-500 bg-[#080809] cursor-pointer">
+
+            {/* Background */}
             <div className="absolute inset-0">
-                {!imageLoaded && <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/10 to-deep-black animate-pulse" />}
-                {project.img
-                    ? <img src={project.img} alt={project.title} loading="lazy" onLoad={() => setImageLoaded(true)} className={`w-full h-full object-cover object-top transition-all duration-1000 group-hover:scale-105 ${imageLoaded ? 'opacity-35' : 'opacity-0'}`} />
-                    : <div className="absolute inset-0 bg-gradient-to-br from-[#0e1012] to-[#080808]">
-                        <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-                      </div>
-                }
-                <div className="absolute inset-0 bg-gradient-to-t from-deep-black via-deep-black/50 to-transparent" />
-            </div>
-            <div className="relative h-full flex flex-col justify-end p-8">
-                <div className="text-orange-vibrant text-xs font-bold uppercase tracking-[0.2em] mb-3">{project.category}</div>
-                <h4 className="text-2xl font-heading font-bold text-pure-white mb-3 group-hover:text-orange-vibrant transition-colors duration-300">{project.title}</h4>
-                <p className="text-pure-white/70 text-sm leading-relaxed mb-6 line-clamp-2">{project.description}</p>
-                <div className="flex gap-6 pt-4 border-t border-orange-vibrant/20 flex-wrap">
-                    {project.metrics.map((metric, i) => (
-                        <div key={i}>
-                            <div className="text-xl font-black text-orange-vibrant">{metric.value}</div>
-                            <div className="text-text-muted text-[10px] uppercase tracking-wider">{metric.label}</div>
+                {project.img ? (
+                    <>
+                        {!imageLoaded && <div className="absolute inset-0 bg-[#0d0d0f]" />}
+                        <img
+                            src={project.img} alt={project.title} loading="lazy"
+                            onLoad={() => setImageLoaded(true)}
+                            className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.04] ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#080809] via-[#080809]/60 to-transparent" />
+                    </>
+                ) : (
+                    <>
+                        <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'linear-gradient(rgba(255,87,15,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,87,15,1) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+                        {/* Compact dashboard right side */}
+                        <div className="absolute right-6 top-6 bottom-6 w-[140px] opacity-60 group-hover:opacity-90 transition-opacity duration-500">
+                            <div className="w-full h-full rounded-xl border border-white/6 bg-white/[0.02] p-4 flex flex-col">
+                                <div className="text-[9px] font-mono text-white/20 uppercase tracking-widest mb-3">{project.category}</div>
+                                <div className="text-lg font-black text-orange-vibrant mb-1">{project.metrics[0]?.value}</div>
+                                <div className="text-[8px] text-white/20 uppercase mb-4">{project.metrics[0]?.label}</div>
+                                <div className="flex-1 flex items-end gap-1">
+                                    {[50, 80, 35, 100, 60, 85, 45].map((h, i) => (
+                                        <div key={i} className="flex-1 rounded-t-sm"
+                                            style={{
+                                                height: `${h}%`,
+                                                background: i === 3 ? 'rgba(255,87,15,0.7)' : 'rgba(255,255,255,0.06)',
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
                         </div>
-                    ))}
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#080809] via-[#080809]/80 to-transparent" />
+                    </>
+                )}
+            </div>
+
+            {/* Hover glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/0 to-orange-vibrant/8 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+            {/* Content */}
+            <div className="relative h-full flex flex-col justify-between p-7">
+                {/* Top */}
+                <div className="flex items-center justify-between">
+                    <span className="text-orange-vibrant text-[10px] font-bold uppercase tracking-[0.2em]">{project.category}</span>
+                    <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/30 text-xs group-hover:border-orange-vibrant/50 group-hover:text-orange-vibrant transition-all duration-300">
+                        ↗
+                    </div>
                 </div>
-                <div className="absolute top-8 right-8 w-12 h-12 rounded-full bg-orange-vibrant/20 backdrop-blur-sm border border-orange-vibrant/40 flex items-center justify-center text-orange-vibrant font-bold text-xl opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500">↗</div>
+
+                {/* Bottom */}
+                <div>
+                    <h4 className="text-xl md:text-2xl font-heading font-bold text-pure-white mb-2 group-hover:text-orange-vibrant transition-colors duration-300 leading-tight">
+                        {project.title}
+                    </h4>
+                    <p className="text-white/45 text-sm leading-relaxed mb-5 line-clamp-2">{project.description}</p>
+                    <div className="flex flex-wrap gap-6 pt-4 border-t border-white/5">
+                        {project.metrics.map((metric, i) => (
+                            <div key={i}>
+                                <div className="text-lg font-black text-orange-vibrant">{metric.value}</div>
+                                <div className="text-white/25 text-[9px] uppercase tracking-wider mt-0.5">{metric.label}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     );
 
     return isExternal
-        ? <a ref={cardRef} href={dest} target="_blank" rel="noopener noreferrer">{inner}</a>
-        : <div ref={cardRef}><Link to={dest}>{inner}</Link></div>;
+        ? <a ref={cardRef} href={dest} target="_blank" rel="noopener noreferrer" className="block w-full">{inner}</a>
+        : <div ref={cardRef} className="block w-full"><Link to={dest} className="block w-full">{inner}</Link></div>;
 };
 
+// ─── Main Section ─────────────────────────────────────────────────────────────
 const HomeProjects = () => {
     const sectionRef = useRef(null);
     const heroProjectRef = useRef(null);
-    const labelRef = useRef(null);
-    const heroProject = featuredProjects.find((p) => p.featured);
-    const gridProjects = featuredProjects.filter((p) => !p.featured);
+    const heroProject = featuredProjects.find(p => p.featured);
+    const gridProjects = featuredProjects.filter(p => !p.featured);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            gsap.from('.section-header', { y: 50, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' } });
-            gsap.from(labelRef.current, { scale: 0.9, opacity: 0, duration: 0.5, ease: 'back.out(1.7)', scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' } });
-            if (heroProjectRef.current) gsap.from(heroProjectRef.current, { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: heroProjectRef.current, start: 'top 85%' } });
+            gsap.from('.hp-badge', {
+                opacity: 0, y: 16, duration: 0.6, ease: 'power2.out',
+                scrollTrigger: { trigger: sectionRef.current, start: 'top 82%', once: true },
+            });
+            gsap.from('.hp-heading', {
+                opacity: 0, y: 28, duration: 0.8, ease: 'power3.out', delay: 0.1,
+                scrollTrigger: { trigger: sectionRef.current, start: 'top 82%', once: true },
+            });
+            gsap.from('.hp-sub', {
+                opacity: 0, y: 20, duration: 0.7, ease: 'power2.out', delay: 0.2,
+                scrollTrigger: { trigger: sectionRef.current, start: 'top 82%', once: true },
+            });
+            gsap.from('.hp-cta', {
+                opacity: 0, x: 20, duration: 0.6, ease: 'power2.out', delay: 0.25,
+                scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', once: true },
+            });
+            if (heroProjectRef.current) {
+                gsap.from(heroProjectRef.current, {
+                    opacity: 0, y: 32, duration: 0.9, ease: 'power3.out',
+                    scrollTrigger: { trigger: heroProjectRef.current, start: 'top 88%', once: true },
+                });
+            }
         }, sectionRef);
         return () => ctx.revert();
     }, []);
 
     return (
         <section ref={sectionRef} className="relative py-24 md:py-32 bg-deep-black overflow-hidden">
-            <div className="absolute inset-0 opacity-20 pointer-events-none">
-                <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-orange-vibrant/30 rounded-full blur-[150px]" />
-            </div>
+            {/* Subtle ambient glow */}
+            <div className="absolute top-0 right-1/3 w-[500px] h-[500px] bg-orange-vibrant/8 rounded-full blur-[160px] pointer-events-none" />
 
             <div className="relative z-10 max-w-7xl mx-auto px-6">
-                <div className="section-header flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
+
+                {/* Header */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8">
                     <div className="max-w-2xl">
-                        <div ref={labelRef} className="inline-block mb-6">
-                            <span className="px-6 py-2.5 border-2 border-orange-vibrant/30 text-orange-vibrant text-xs font-bold uppercase tracking-[0.25em] rounded-full">• Real Accounts. Real Numbers.</span>
+                        <div className="hp-badge inline-flex items-center gap-2 px-4 py-1.5 border border-orange-vibrant/30 bg-orange-vibrant/8 rounded-full mb-6">
+                            <div className="w-1.5 h-1.5 rounded-full bg-orange-vibrant animate-pulse" />
+                            <span className="text-orange-vibrant text-[11px] font-bold uppercase tracking-[0.18em]">Real Accounts. Real Numbers.</span>
                         </div>
-                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-black mb-4 leading-tight text-pure-white">
-                            What We've <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">Actually Built</span>
+                        <h2 className="hp-heading text-4xl md:text-5xl lg:text-6xl font-heading font-black text-pure-white leading-tight mb-4">
+                            What We've{' '}
+                            <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">
+                                Actually Built
+                            </span>
                         </h2>
-                        <p className="text-pure-white/70 text-base md:text-lg leading-relaxed">Every number below is from a live account. Dashboard screenshots available. No estimates, no projections.</p>
+                        <p className="hp-sub text-white/50 text-base md:text-lg leading-relaxed max-w-lg">
+                            Every number below is from a live account. Dashboard screenshots available. No estimates, no projections.
+                        </p>
                     </div>
-                    <Link to="/projects" className="group flex-shrink-0 inline-flex items-center gap-3 px-8 py-4 bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-wider hover:bg-cream transition-all duration-300 shadow-lg shadow-orange-vibrant/30">
+                    <Link
+                        to="/projects"
+                        className="hp-cta group flex-shrink-0 inline-flex items-center gap-3 px-7 py-3.5 border border-orange-vibrant/40 text-orange-vibrant text-xs font-bold uppercase tracking-wider hover:bg-orange-vibrant hover:text-deep-black transition-all duration-300"
+                    >
                         See All Work
-                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                        <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
                     </Link>
                 </div>
 
+                {/* Hero project */}
                 {heroProject && (
-                    <div ref={heroProjectRef} className="mb-8">
+                    <div ref={heroProjectRef} className="mb-6">
                         <HeroProjectCard project={heroProject} />
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {gridProjects.map((project) => (
-                        <ProjectCard key={project.id} project={project} />
-                    ))}
+                {/* Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {gridProjects.map((project, index) => {
+                        const isLastOdd = gridProjects.length % 2 !== 0 && index === gridProjects.length - 1;
+                        return (
+                            <div key={project.id} className={isLastOdd ? 'md:col-span-2' : ''}>
+                                <ProjectCard project={project} />
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </section>
