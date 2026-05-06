@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Data (Emojis Replaced with High-End SVGs) ────────────────────────────────
+// ─── Data (New Content with Custom SVGs) ───────────────────────────────────────
 const caseStudies = [
     {
         client: 'Mathfel',
@@ -195,7 +195,8 @@ const ResultCard = ({ result, accent }) => (
         <div className="text-3xl md:text-4xl font-black mb-1 relative z-10" style={{ color: accent }}>
             <GSAPCounter display={result.display} />
         </div>
-        <div className="text-xs text-pure-white/50 uppercase tracking-wider relative z-10">{result.label}</div>
+        <div className="text-sm font-bold text-pure-white mt-2 relative z-10">{result.label}</div>
+        <div className="text-xs text-pure-white/40 mt-1 relative z-10">{result.sub}</div>
     </div>
 );
 
@@ -317,7 +318,6 @@ const SectionHeader = () => {
     }, []);
 
     return (
-        // FIX: Replaced mt-10/pt-10 with standard margin to prevent overlap
         <div ref={headerRef} className="text-center max-w-3xl mx-auto mb-20 relative z-20">
             <div className="header-elem opacity-0 translate-y-5 inline-block mb-6" style={{ visibility: 'hidden' }}>
                 <span className="px-6 py-2.5 border-2 border-orange-vibrant/30 text-orange-vibrant text-xs font-bold uppercase tracking-[0.25em] rounded-full bg-orange-vibrant/10 backdrop-blur-sm shadow-lg shadow-orange-vibrant/10">
@@ -359,7 +359,6 @@ const CaseStudies = () => {
     }, []);
 
     return (
-        // FIX: Explicitly added pt-32 (padding-top) to ensure spacing from previous section
         <section ref={sectionRef} id="case-studies" className="relative pt-32 pb-24 overflow-hidden bg-deep-black">
             
             <div ref={prlx1Ref} className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full blur-[140px] opacity-10 pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,87,15,0.08) 0%, transparent 70%)' }} />

@@ -1,5 +1,3 @@
-// src/components/Collaborate.jsx
-// No stock photography — abstract gradient with call-to-action
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -7,6 +5,7 @@ import SplitType from 'split-type';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// ─── Magnetic Hook ─────────────────────────────────────────────────────────────
 const useMagneticEffect = (ref, strength = 0.2) => {
     useEffect(() => {
         const el = ref.current;
@@ -25,7 +24,7 @@ const useMagneticEffect = (ref, strength = 0.2) => {
     }, [strength]);
 };
 
-// Abstract brand visual: no stock photos, pure CSS + SVG
+// ─── Abstract Visual (No Images) ───────────────────────────────────────────────
 const AbstractCTAVisual = () => {
     const ref = useRef(null);
     useEffect(() => {
@@ -37,7 +36,7 @@ const AbstractCTAVisual = () => {
         return () => ctx.revert();
     }, []);
     return (
-        <div ref={ref} className="relative w-64 h-64 mx-auto flex items-center justify-center hidden lg:flex">
+        <div ref={ref} className="relative w-64 h-64 mx-auto items-center justify-center hidden lg:flex">
             <div className="cta-orb-a absolute inset-0 rounded-full bg-gradient-to-br from-[#FF570F]/25 to-[#630D00]/15 blur-[50px]" />
             <div className="cta-orb-b absolute inset-[20%] rounded-full bg-gradient-to-tr from-[#FDE87A]/20 to-[#EE7D1D]/15 blur-[30px]" />
             <div className="cta-ring absolute inset-[5%] rounded-full border border-dashed border-orange-vibrant/25" />
@@ -52,6 +51,7 @@ const AbstractCTAVisual = () => {
     );
 };
 
+// ─── Data ──────────────────────────────────────────────────────────────────────
 const agendaItems = [
     {
         num: '01',
@@ -70,6 +70,7 @@ const agendaItems = [
     },
 ];
 
+// ─── Main Component ────────────────────────────────────────────────────────────
 const Collaborate = () => {
     const sectionRef = useRef(null);
     const headingRef = useRef(null);
@@ -98,43 +99,43 @@ const Collaborate = () => {
     }, []);
 
     return (
-        <section ref={sectionRef} className="relative py-28 px-6 overflow-hidden bg-[#080808]">
-            {/* Abstract background */}
+        <section ref={sectionRef} className="relative py-28 px-6 overflow-hidden bg-deep-black">
+            {/* Background effects */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.02)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,black,transparent)]" />
-            <div className="absolute top-0 right-0 w-[500px] h-[400px] bg-[#FF570F]/6 blur-[120px] rounded-full" />
-            <div className="absolute bottom-0 left-0 w-[400px] h-[300px] bg-[#630D00]/10 blur-[100px] rounded-full" />
+            <div className="absolute top-0 right-0 w-[500px] h-[400px] bg-orange-vibrant/10 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[300px] bg-[#630D00]/15 blur-[100px] rounded-full pointer-events-none" />
 
             <div className="max-w-7xl mx-auto relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
                     {/* Left: Copy */}
                     <div>
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-orange-vibrant/30 bg-orange-vibrant/8 rounded-full mb-8">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-orange-vibrant/30 bg-orange-vibrant/8 rounded-full mb-8 backdrop-blur-sm">
                             <div className="w-1.5 h-1.5 rounded-full bg-orange-vibrant animate-pulse" />
                             <span className="text-orange-vibrant text-[11px] font-bold uppercase tracking-[0.18em]">Discovery call</span>
                         </div>
 
-                        <h2 ref={headingRef} className="text-3xl md:text-4xl lg:text-5xl font-heading font-black text-pure-white leading-[1.08] mb-6">
-                            Every month with the wrong team is budget that{' '}
+                        <h2 ref={headingRef} className="text-4xl md:text-5xl lg:text-6xl font-heading font-black text-pure-white leading-[1.08] mb-6">
+                            Every month with the wrong team is budget that <br/>
                             <span className="bg-gradient-to-br from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">doesn&rsquo;t compound.</span>
                         </h2>
 
-                        <p className="collab-sub text-pure-white/55 text-base md:text-lg leading-relaxed mb-3 max-w-lg">
+                        <p className="collab-sub text-pure-white/70 text-base md:text-lg leading-relaxed mb-4 max-w-lg">
                             At $50K/month in ad spend, a 1x improvement in ROAS is worth more than the retainer costs in a year. There&rsquo;s one thing we say on every first call that most agencies won&rsquo;t. It usually tells you in 10 minutes whether we&rsquo;re worth your time.
                         </p>
-                        <p className="collab-sub text-pure-white/40 text-sm leading-relaxed mb-10 max-w-lg">
+                        <p className="collab-sub text-pure-white/50 text-sm leading-relaxed mb-10 max-w-lg font-bold">
                             Book 20 minutes. Here&rsquo;s what happens on the call:
                         </p>
 
-                        <div className="space-y-6 mb-10">
+                        <div className="space-y-6 mb-12">
                             {agendaItems.map((item) => (
                                 <div key={item.num} className="agenda-item flex gap-5">
-                                    <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border border-orange-vibrant/30 bg-orange-vibrant/10">
-                                        <span className="text-orange-vibrant font-mono text-xs font-bold">{item.num}</span>
+                                    <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center border border-orange-vibrant/30 bg-orange-vibrant/10 shadow-md">
+                                        <span className="text-orange-vibrant font-mono text-sm font-bold">{item.num}</span>
                                     </div>
                                     <div>
-                                        <h3 className="text-pure-white font-semibold text-sm mb-1">{item.title}</h3>
-                                        <p className="text-pure-white/45 text-sm leading-relaxed">{item.desc}</p>
+                                        <h3 className="text-pure-white font-bold text-base mb-1">{item.title}</h3>
+                                        <p className="text-pure-white/60 text-sm leading-relaxed">{item.desc}</p>
                                     </div>
                                 </div>
                             ))}
@@ -143,14 +144,14 @@ const Collaborate = () => {
                         <a ref={ctaBtnRef}
                             href="https://calendly.com/digi-dreamworks/onboarding-call"
                             target="_blank" rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-8 py-4 bg-orange-vibrant text-deep-black font-bold text-xs uppercase tracking-wider hover:bg-cream transition-colors duration-300 shadow-lg shadow-orange-vibrant/25 group">
+                            className="inline-flex items-center gap-2 px-8 py-4 bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-wider hover:bg-cream transition-colors duration-300 shadow-xl shadow-orange-vibrant/25 group">
                             Book the 20-Minute Call
-                            <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                         </a>
                     </div>
 
                     {/* Right: Abstract visual */}
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center h-full">
                         <AbstractCTAVisual />
                     </div>
                 </div>
