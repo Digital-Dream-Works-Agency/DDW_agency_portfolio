@@ -129,9 +129,9 @@ const AnimatedStat = ({ value, label }) => {
         return () => ctx.revert();
     }, []);
     return (
-        <div ref={ref} style={{ opacity: 0 }} className="text-center px-6 py-3 relative">
-            <div className="text-2xl font-black text-white tracking-tight mb-0.5">{value}</div>
-            <div className="text-[10px] uppercase tracking-[0.22em] text-white/30 font-bold">{label}</div>
+        <div ref={ref} style={{ opacity: 0 }} className="text-center px-4 sm:px-6 py-3 relative">
+            <div className="text-xl sm:text-2xl font-black text-white tracking-tight mb-0.5">{value}</div>
+            <div className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.22em] text-white/30 font-bold">{label}</div>
         </div>
     );
 };
@@ -140,18 +140,18 @@ const AnimatedStat = ({ value, label }) => {
 const clients = ['Stripe', 'Vercel', 'Linear', 'Notion', 'Figma', 'Loom', 'Clerk', 'PlanetScale'];
 
 const LogoMarquee = () => (
-    <div className="relative overflow-hidden py-6 border-t border-b border-white/[0.05]">
-        <div className="absolute left-0 top-0 h-full w-24 z-10 pointer-events-none"
+    <div className="relative overflow-hidden py-4 sm:py-6 border-t border-b border-white/[0.05]">
+        <div className="absolute left-0 top-0 h-full w-16 sm:w-24 z-10 pointer-events-none"
             style={{ background: 'linear-gradient(to right, #09090b, transparent)' }} />
-        <div className="absolute right-0 top-0 h-full w-24 z-10 pointer-events-none"
+        <div className="absolute right-0 top-0 h-full w-16 sm:w-24 z-10 pointer-events-none"
             style={{ background: 'linear-gradient(to left, #09090b, transparent)' }} />
-        <div className="flex gap-12 items-center"
+        <div className="flex gap-8 sm:gap-12 items-center"
             style={{
                 animation: 'marquee 28s linear infinite',
                 width: 'max-content',
             }}>
             {[...clients, ...clients].map((c, i) => (
-                <span key={i} className="text-white/15 text-sm font-black uppercase tracking-[0.2em] whitespace-nowrap select-none hover:text-white/35 transition-colors duration-300">
+                <span key={i} className="text-white/15 text-xs sm:text-sm font-black uppercase tracking-[0.18em] sm:tracking-[0.2em] whitespace-nowrap select-none hover:text-white/35 transition-colors duration-300">
                     {c}
                 </span>
             ))}
@@ -175,9 +175,11 @@ const BorderBeamCard = ({ children, accent, className = '' }) => {
         const beam = beamRef.current;
         if (!card || !beam) return;
 
+        // Disable on touch devices
+        if (window.matchMedia('(hover: none)').matches) return;
+
         let progress = Math.random();
         let raf;
-        let active = false;
 
         const animate = () => {
             progress = (progress + 0.003) % 1;
@@ -193,10 +195,8 @@ const BorderBeamCard = ({ children, accent, className = '' }) => {
             raf = requestAnimationFrame(animate);
         };
 
-        const onEnter = () => { active = true; animate(); };
-        const onLeave = () => { active = false; cancelAnimationFrame(raf); beam.style.opacity = '0'; };
+        const onLeave = () => { cancelAnimationFrame(raf); beam.style.opacity = '0'; };
 
-        // passive animation on scroll-in too
         const observer = new IntersectionObserver(([e]) => {
             if (e.isIntersecting) { beam.style.opacity = '0.7'; animate(); }
             else { cancelAnimationFrame(raf); beam.style.opacity = '0'; }
@@ -214,7 +214,6 @@ const BorderBeamCard = ({ children, accent, className = '' }) => {
 
     return (
         <div ref={cardRef} className={`relative ${className}`}>
-            {/* Border beam dot */}
             <div
                 ref={beamRef}
                 className="absolute w-3 h-3 rounded-full pointer-events-none z-20 transition-opacity duration-500"
@@ -238,7 +237,8 @@ const SpotlightCard = ({ children, accent, className = '' }) => {
 
     useEffect(() => {
         const card = ref.current;
-        if (!card) return;
+        if (!card || window.matchMedia('(hover: none)').matches) return;
+
         const onMove = (e) => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -264,9 +264,7 @@ const GSAPTilt = ({ children, className }) => {
     const ref = useRef(null);
     useEffect(() => {
         const el = ref.current;
-        if (!el) return;
-        // Skip tilt on touch devices
-        if (window.matchMedia('(hover: none)').matches) return;
+        if (!el || window.matchMedia('(hover: none)').matches) return;
 
         const xTo = gsap.quickTo(el, 'rotationY', { ease: 'power2.out', duration: 0.7 });
         const yTo = gsap.quickTo(el, 'rotationX', { ease: 'power2.out', duration: 0.7 });
@@ -339,7 +337,6 @@ const MagneticButton = ({ children, className, to, style, onMouseEnter, onMouseL
 const ServiceCard = ({ service, index }) => {
     const cardRef = useRef(null);
     const accent = ACCENTS[service.accentIndex];
-    const isLight = accent === '#FDE87A' || accent === '#FFFFFF';
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -358,7 +355,7 @@ const ServiceCard = ({ service, index }) => {
         <div ref={cardRef} style={{ opacity: 0, willChange: 'transform, opacity' }}>
             <GSAPTilt className="w-full">
                 <BorderBeamCard accent={accent}>
-                    <SpotlightCard accent={accent} className="group w-full rounded-2xl overflow-hidden transition-all duration-500"
+                    <SpotlightCard accent={accent} className="group w-full rounded-xl sm:rounded-2xl overflow-hidden transition-all duration-500"
                         style={{
                             background: 'linear-gradient(145deg, #111518 0%, #0c0e10 100%)',
                             border: `1px solid rgba(255,255,255,0.06)`,
@@ -367,8 +364,10 @@ const ServiceCard = ({ service, index }) => {
                             backfaceVisibility: 'hidden',
                         }}
                         onMouseEnter={e => {
-                            e.currentTarget.style.border = `1px solid ${accent}30`;
-                            e.currentTarget.style.boxShadow = `0 12px 50px rgba(0,0,0,0.45), 0 0 60px ${accent}0d`;
+                            if (window.matchMedia('(hover: hover)').matches) {
+                                e.currentTarget.style.border = `1px solid ${accent}30`;
+                                e.currentTarget.style.boxShadow = `0 12px 50px rgba(0,0,0,0.45), 0 0 60px ${accent}0d`;
+                            }
                         }}
                         onMouseLeave={e => {
                             e.currentTarget.style.border = '1px solid rgba(255,255,255,0.06)';
@@ -382,46 +381,46 @@ const ServiceCard = ({ service, index }) => {
                         <div className="flex flex-col lg:flex-row">
 
                             {/* LEFT: content */}
-                            <div className="flex-1 p-7 lg:p-10 relative overflow-hidden">
+                            <div className="flex-1 p-5 sm:p-7 lg:p-10 relative overflow-hidden">
                                 {/* Giant watermark number */}
-                                <div className="absolute bottom-0 right-0 text-[160px] font-black leading-none select-none pointer-events-none translate-x-4 translate-y-4 transition-all duration-700 group-hover:translate-x-2 group-hover:translate-y-2"
+                                <div className="hidden md:block absolute bottom-0 right-0 text-[160px] font-black leading-none select-none pointer-events-none translate-x-4 translate-y-4 transition-all duration-700 group-hover:translate-x-2 group-hover:translate-y-2"
                                     style={{ color: accent, opacity: 0.05, willChange: 'transform' }}>
                                     {service.number}
                                 </div>
 
                                 <div className="relative z-10">
                                     {/* Number badge + divider line */}
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="flex items-center gap-2.5 px-3 py-1 rounded-full"
+                                    <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                                        <div className="flex items-center gap-2 sm:gap-2.5 px-2.5 sm:px-3 py-1 rounded-full"
                                             style={{ background: `${accent}10`, border: `1px solid ${accent}20` }}>
                                             <span style={{ color: accent }} className="opacity-70">
                                                 {service.icon}
                                             </span>
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em]"
+                                            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.18em] sm:tracking-[0.2em]"
                                                 style={{ color: accent }}>{service.number}</span>
                                         </div>
                                         <div className="h-px flex-1"
                                             style={{ background: `linear-gradient(90deg, ${accent}30, transparent)` }} />
                                     </div>
 
-                                    <h3 className="text-2xl md:text-[1.85rem] font-black text-white leading-tight mb-1.5 tracking-tight">
+                                    <h3 className="text-xl sm:text-2xl md:text-[1.85rem] font-black text-white leading-tight mb-1.5 tracking-tight">
                                         {service.title}
                                     </h3>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.22em] mb-5"
+                                    <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.22em] mb-4 sm:mb-5"
                                         style={{ color: accent }}>
                                         {service.tagline}
                                     </p>
-                                    <p className="text-white/45 text-sm leading-relaxed mb-7 max-w-xl">
+                                    <p className="text-white/45 text-sm leading-relaxed mb-5 sm:mb-7 max-w-xl">
                                         {service.desc}
                                     </p>
 
                                     {/* Features grid */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
                                         {service.features.map((feat, i) => (
-                                            <div key={i} className="flex items-center gap-2.5 group/f">
+                                            <div key={i} className="flex items-center gap-2 sm:gap-2.5 group/f">
                                                 <span className="w-1 h-1 rounded-full flex-shrink-0 transition-all duration-300 group-hover/f:scale-[2]"
                                                     style={{ background: accent }} />
-                                                <span className="text-white/35 text-[13px] transition-colors duration-300 group-hover/f:text-white/65">
+                                                <span className="text-white/35 text-xs sm:text-[13px] transition-colors duration-300 group-hover/f:text-white/65">
                                                     {feat}
                                                 </span>
                                             </div>
@@ -431,30 +430,30 @@ const ServiceCard = ({ service, index }) => {
                             </div>
 
                             {/* RIGHT: meta panel */}
-                            <div className="lg:w-[260px] flex-shrink-0 flex flex-col justify-between p-7 lg:p-8 border-t lg:border-t-0 lg:border-l relative overflow-hidden"
+                            <div className="lg:w-[260px] flex-shrink-0 flex flex-col justify-between p-5 sm:p-7 lg:p-8 border-t lg:border-t-0 lg:border-l relative overflow-hidden"
                                 style={{ borderColor: 'rgba(255,255,255,0.04)', background: 'rgba(0,0,0,0.15)' }}>
 
                                 {/* Ambient glow */}
-                                <div className="absolute top-0 right-0 w-36 h-36 rounded-full blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+                                <div className="hidden lg:block absolute top-0 right-0 w-36 h-36 rounded-full blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
                                     style={{ background: accent, transform: 'translateZ(0)' }} />
 
-                                <div className="relative z-10 space-y-6">
+                                <div className="relative z-10 space-y-4 sm:space-y-6">
                                     <div>
-                                        <span className="text-[9px] font-black uppercase tracking-[0.25em] block mb-1.5"
+                                        <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.22em] sm:tracking-[0.25em] block mb-1 sm:mb-1.5"
                                             style={{ color: `${accent}60` }}>Deliverable</span>
-                                        <span className="text-white/80 text-sm font-bold block">{service.deliverable}</span>
+                                        <span className="text-white/80 text-xs sm:text-sm font-bold block">{service.deliverable}</span>
                                     </div>
                                     <div>
-                                        <span className="text-[9px] font-black uppercase tracking-[0.25em] block mb-1.5"
+                                        <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.22em] sm:tracking-[0.25em] block mb-1 sm:mb-1.5"
                                             style={{ color: `${accent}60` }}>Timeline</span>
-                                        <span className="text-white/80 text-sm font-bold block">{service.timeline}</span>
+                                        <span className="text-white/80 text-xs sm:text-sm font-bold block">{service.timeline}</span>
                                     </div>
                                 </div>
 
-                                <div className="relative z-10 mt-8 lg:mt-0">
+                                <div className="relative z-10 mt-6 lg:mt-0">
                                     <MagneticButton
                                         to="/contact"
-                                        className="flex items-center justify-between w-full px-5 py-3 rounded-xl text-[11px] font-black uppercase tracking-[0.15em] transition-all duration-250 overflow-hidden group/btn"
+                                        className="flex items-center justify-between w-full px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-[0.14em] sm:tracking-[0.15em] transition-all duration-250 overflow-hidden group/btn"
                                         style={{
                                             background: `${accent}10`,
                                             color: accent,
@@ -462,9 +461,11 @@ const ServiceCard = ({ service, index }) => {
                                             transform: 'translateZ(0)',
                                         }}
                                         onMouseEnter={e => {
-                                            e.currentTarget.style.background = accent;
-                                            e.currentTarget.style.color = '#000';
-                                            e.currentTarget.style.boxShadow = `0 0 28px ${accent}45`;
+                                            if (window.matchMedia('(hover: hover)').matches) {
+                                                e.currentTarget.style.background = accent;
+                                                e.currentTarget.style.color = '#000';
+                                                e.currentTarget.style.boxShadow = `0 0 28px ${accent}45`;
+                                            }
                                         }}
                                         onMouseLeave={e => {
                                             e.currentTarget.style.background = `${accent}10`;
@@ -473,7 +474,7 @@ const ServiceCard = ({ service, index }) => {
                                         }}
                                     >
                                         Start a Project
-                                        <svg className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1"
+                                        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover/btn:translate-x-1"
                                             fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                                             <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                         </svg>
@@ -488,13 +489,13 @@ const ServiceCard = ({ service, index }) => {
     );
 };
 
-// ─── Animated Beam (connecting line between sections) ────────────────────────
+// ─── Animated Beam ────────────────────────────────────────────────────────────
 const AnimatedBeam = ({ color = '#FF570F' }) => (
-    <div className="flex justify-center py-3 pointer-events-none select-none" aria-hidden>
-        <div className="relative w-px h-12">
+    <div className="flex justify-center py-2 sm:py-3 pointer-events-none select-none" aria-hidden>
+        <div className="relative w-px h-8 sm:h-12">
             <div className="absolute inset-0"
                 style={{ background: `linear-gradient(to bottom, transparent, ${color}40, transparent)` }} />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full"
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full"
                 style={{ background: color, opacity: 0.6, boxShadow: `0 0 8px ${color}` }} />
         </div>
     </div>
@@ -515,18 +516,18 @@ const SectionIntro = () => {
     }, []);
 
     return (
-        <div ref={ref} className="relative max-w-4xl mx-auto px-6 pt-16 pb-10 text-center">
+        <div ref={ref} className="relative max-w-4xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8 sm:pb-10 text-center">
             {/* Ambient blob */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] rounded-full blur-[120px] opacity-[0.06] pointer-events-none"
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[350px] sm:w-[500px] h-[180px] sm:h-[250px] rounded-full blur-[100px] sm:blur-[120px] opacity-[0.06] pointer-events-none"
                 style={{ background: 'radial-gradient(circle, #FF570F, transparent 70%)', transform: 'translateZ(0)' }} />
 
-            <div className="intro-el opacity-0 inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full mb-7"
+            <div className="intro-el opacity-0 inline-flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-1.5 rounded-full mb-5 sm:mb-7"
                 style={{ background: 'rgba(255,87,15,0.07)', border: '1px solid rgba(255,87,15,0.18)', willChange: 'transform, opacity' }}>
                 <span className="w-1.5 h-1.5 rounded-full bg-[#FF570F] animate-pulse" />
-                <span className="text-[#FF570F] text-[9px] font-black uppercase tracking-[0.28em]">What We Do</span>
+                <span className="text-[#FF570F] text-[8px] sm:text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.28em]">What We Do</span>
             </div>
 
-            <h2 className="intro-el opacity-0 text-[clamp(2.2rem,5.5vw,4rem)] font-black leading-[1.04] tracking-tight text-white mb-4"
+            <h2 className="intro-el opacity-0 text-[clamp(1.9rem,6vw,4rem)] font-black leading-[1.06] tracking-tight text-white mb-3 sm:mb-4"
                 style={{ willChange: 'transform, opacity' }}>
                 Solutions That Scale
                 <br />
@@ -540,23 +541,26 @@ const SectionIntro = () => {
                 </span>
             </h2>
 
-            <p className="intro-el opacity-0 text-white/35 text-base leading-relaxed max-w-lg mx-auto mb-10"
+            <p className="intro-el opacity-0 text-white/35 text-sm sm:text-base leading-relaxed max-w-lg mx-auto mb-8 sm:mb-10"
                 style={{ willChange: 'transform, opacity' }}>
                 From technical strategy to full-stack execution — we build systems that drive measurable growth.
             </p>
 
             {/* Stats strip */}
-            <div className="intro-el opacity-0 inline-flex items-center divide-x divide-white/[0.07] rounded-2xl overflow-hidden"
-                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', willChange: 'transform, opacity' }}>
-                {stats.map(({ value, label }) => (
-                    <AnimatedStat key={label} value={value} label={label} />
-                ))}
+            <div className="intro-el opacity-0 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4"
+                style={{ willChange: 'transform, opacity' }}>
+                <div className="inline-flex items-center divide-x divide-white/[0.07] rounded-xl sm:rounded-2xl overflow-hidden min-w-max"
+                    style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    {stats.map(({ value, label }) => (
+                        <AnimatedStat key={label} value={value} label={label} />
+                    ))}
+                </div>
             </div>
         </div>
     );
 };
 
-// ─── Bento Features Strip (below intro, above cards) ─────────────────────────
+// ─── Bento Features Strip ─────────────────────────────────────────────────────
 const BentoStrip = () => {
     const ref = useRef(null);
     useEffect(() => {
@@ -579,12 +583,12 @@ const BentoStrip = () => {
     ];
 
     return (
-        <div ref={ref} className="max-w-[1160px] mx-auto px-6 pb-8">
-            <div className="flex flex-wrap justify-center gap-2">
+        <div ref={ref} className="max-w-[1160px] mx-auto px-4 sm:px-6 pb-6 sm:pb-8">
+            <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
                 {items.map((item, i) => (
-                    <div key={i} className="bento-el opacity-0 flex items-center gap-2 px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-[0.18em] text-white/40 transition-colors duration-300 hover:text-white/70"
+                    <div key={i} className="bento-el opacity-0 flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[9.5px] sm:text-[11px] font-black uppercase tracking-[0.16em] sm:tracking-[0.18em] text-white/40 transition-colors duration-300 hover:text-white/70"
                         style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', willChange: 'transform, opacity' }}>
-                        <span className="text-[#FF570F] text-xs">{item.icon}</span>
+                        <span className="text-[#FF570F] text-[10px] sm:text-xs">{item.icon}</span>
                         {item.label}
                     </div>
                 ))}
@@ -610,21 +614,21 @@ const BottomCTA = () => {
     const [primaryHover, setPrimaryHover] = useState(false);
 
     return (
-        <section ref={ref} className="relative z-10 py-24 border-t border-white/[0.05]"
+        <section ref={ref} className="relative z-10 py-16 sm:py-24 border-t border-white/[0.05]"
             style={{ background: 'linear-gradient(180deg, transparent, rgba(15,16,18,0.9) 40%)' }}>
 
             {/* Dot pattern bg */}
             <div className="absolute inset-0 opacity-[0.015] pointer-events-none"
-                style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '32px 32px', transform: 'translateZ(0)' }} />
+                style={{ backgroundImage: 'radial-gradient(#FF570F 1px, transparent 1px)', backgroundSize: '28px 28px', transform: 'translateZ(0)' }} />
 
             {/* Glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full blur-[140px] opacity-[0.06] pointer-events-none"
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[450px] sm:w-[600px] h-[220px] sm:h-[300px] rounded-full blur-[120px] sm:blur-[140px] opacity-[0.06] pointer-events-none"
                 style={{ background: 'radial-gradient(circle, #FF570F, transparent 60%)' }} />
 
-            <div className="relative max-w-2xl mx-auto px-6 text-center">
-                <p className="cta-el opacity-0 text-[9px] font-black uppercase tracking-[0.32em] text-white/18 mb-5">Next step</p>
+            <div className="relative max-w-2xl mx-auto px-4 sm:px-6 text-center">
+                <p className="cta-el opacity-0 text-[8px] sm:text-[9px] font-black uppercase tracking-[0.3em] sm:tracking-[0.32em] text-white/18 mb-4 sm:mb-5">Next step</p>
 
-                <h3 className="cta-el opacity-0 text-4xl md:text-5xl font-black text-white mb-3 leading-[1.06] tracking-tight">
+                <h3 className="cta-el opacity-0 text-3xl sm:text-4xl md:text-5xl font-black text-white mb-2 sm:mb-3 leading-[1.06] tracking-tight">
                     Ready to Build
                     <br />
                     <span style={{
@@ -635,15 +639,14 @@ const BottomCTA = () => {
                     }}>Something Real?</span>
                 </h3>
 
-                <p className="cta-el opacity-0 text-white/30 text-sm mb-10 max-w-sm mx-auto leading-relaxed">
+                <p className="cta-el opacity-0 text-white/30 text-xs sm:text-sm mb-8 sm:mb-10 max-w-sm mx-auto leading-relaxed">
                     Book a free technical consultation to discuss your roadmap. No pitch. No fluff.
                 </p>
 
                 <div className="cta-el opacity-0 flex flex-col sm:flex-row items-center justify-center gap-3">
-                    {/* Shimmer primary button */}
                     <MagneticButton
                         to="/contact"
-                        className="group relative inline-flex items-center gap-3 px-9 py-4 text-black font-black text-[11px] uppercase tracking-[0.2em] rounded-full overflow-hidden transition-all duration-300"
+                        className="group relative inline-flex items-center gap-2.5 sm:gap-3 px-7 sm:px-9 py-3.5 sm:py-4 text-black font-black text-[10px] sm:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.2em] rounded-full overflow-hidden transition-all duration-300"
                         style={{
                             background: primaryHover ? '#FDE87A' : '#FF570F',
                             boxShadow: primaryHover
@@ -654,25 +657,24 @@ const BottomCTA = () => {
                         onMouseEnter={() => setPrimaryHover(true)}
                         onMouseLeave={() => setPrimaryHover(false)}
                     >
-                        {/* shimmer overlay */}
                         <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"
                             style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent)' }} />
                         Schedule Consultation
-                        <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                             <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
                     </MagneticButton>
 
                     <MagneticButton
                         to="/case-studies"
-                        className="inline-flex items-center gap-2.5 px-9 py-4 rounded-full text-[11px] font-black uppercase tracking-[0.2em] text-white/40 transition-all duration-300 hover:text-white/80"
+                        className="inline-flex items-center gap-2 sm:gap-2.5 px-7 sm:px-9 py-3.5 sm:py-4 rounded-full text-[10px] sm:text-[11px] font-black uppercase tracking-[0.18em] sm:tracking-[0.2em] text-white/40 transition-all duration-300 hover:text-white/80"
                         style={{ border: '1px solid rgba(255,255,255,0.07)', transform: 'translateZ(0)' }}
                     >
                         See Our Work
                     </MagneticButton>
                 </div>
 
-                <p className="cta-el opacity-0 text-white/12 text-[10px] uppercase tracking-widest mt-7 font-bold">
+                <p className="cta-el opacity-0 text-white/12 text-[9px] sm:text-[10px] uppercase tracking-widest mt-6 sm:mt-7 font-bold">
                     Response within 24 hours · No pitch · No fluff
                 </p>
             </div>
@@ -685,7 +687,7 @@ const ServicesPage = () => {
     useSeoMeta(SEO.services);
 
     return (
-        <main className="relative w-full bg-[#09090b] min-h-screen">
+        <main className="relative w-full bg-[#09090b] min-h-screen overflow-x-hidden">
             <Navbar />
             <PageHeader
                 title="Services"
@@ -693,46 +695,37 @@ const ServicesPage = () => {
                 subtitle="Enterprise-grade solutions built for businesses that cannot afford to fail."
             />
 
-            {/* Fixed background atmosphere — CSS only */}
+            {/* Fixed background atmosphere */}
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-0 right-0 w-[700px] h-[700px] rounded-full blur-[180px] opacity-[0.035]"
+                <div className="absolute top-0 right-0 w-[500px] sm:w-[700px] h-[500px] sm:h-[700px] rounded-full blur-[150px] sm:blur-[180px] opacity-[0.03] sm:opacity-[0.035]"
                     style={{ background: 'radial-gradient(circle, #FF570F, transparent 65%)', transform: 'translateZ(0)' }} />
-                <div className="absolute bottom-1/4 left-0 w-[500px] h-[500px] rounded-full blur-[150px] opacity-[0.02]"
+                <div className="absolute bottom-1/4 left-0 w-[400px] sm:w-[500px] h-[400px] sm:h-[500px] rounded-full blur-[130px] sm:blur-[150px] opacity-[0.018] sm:opacity-[0.02]"
                     style={{ background: 'radial-gradient(circle, #FDE87A, transparent 65%)', transform: 'translateZ(0)' }} />
-                {/* Subtle dot grid */}
-                <div className="absolute inset-0 opacity-[0.015]"
-                    style={{ backgroundImage: 'radial-gradient(rgba(255,87,15,0.7) 1px, transparent 1px)', backgroundSize: '36px 36px' }} />
+                <div className="absolute inset-0 opacity-[0.012] sm:opacity-[0.015]"
+                    style={{ backgroundImage: 'radial-gradient(rgba(255,87,15,0.7) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
             </div>
 
-            {/* Section intro */}
             <SectionIntro />
 
-            {/* Logo Marquee — social proof */}
-            <div className="relative z-10 max-w-[1160px] mx-auto px-0 mb-10">
-                <p className="text-center text-[9px] font-black uppercase tracking-[0.28em] text-white/15 mb-4">
+            <div className="relative z-10 max-w-[1160px] mx-auto px-0 mb-8 sm:mb-10">
+                <p className="text-center text-[8px] sm:text-[9px] font-black uppercase tracking-[0.25em] sm:tracking-[0.28em] text-white/15 mb-3 sm:mb-4">
                     Trusted by teams at
                 </p>
                 <LogoMarquee />
             </div>
 
-            {/* Bento pill strip */}
             <BentoStrip />
-
-            {/* Connector beam */}
             <AnimatedBeam color="#FF570F" />
 
-            {/* Cards */}
-            <section className="relative z-10 pb-8">
-                <div className="max-w-[1160px] mx-auto px-6 space-y-5">
+            <section className="relative z-10 pb-6 sm:pb-8">
+                <div className="max-w-[1160px] mx-auto px-4 sm:px-6 space-y-4 sm:space-y-5">
                     {servicesData.map((service, index) => (
                         <ServiceCard key={index} service={service} index={index} />
                     ))}
                 </div>
             </section>
 
-            {/* Bottom CTA */}
             <BottomCTA />
-
             <Footer />
         </main>
     );
