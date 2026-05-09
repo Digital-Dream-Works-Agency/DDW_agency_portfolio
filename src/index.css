@@ -126,3 +126,22 @@ html.lenis {
   align-items: center;
   justify-content: center;
 }
+/* ... aapka purana baqi CSS ... */
+
+    .hero-gradient-text {
+      background: linear-gradient(135deg, #FF570F, #FDE87A);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+
+    /* V.IMP: SplitType jab text ko todta hai, toh .char ko bhi gradient dena parta hai */
+    .hero-gradient-text .char {
+      background: linear-gradient(135deg, #FF570F, #FDE87A);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    }
