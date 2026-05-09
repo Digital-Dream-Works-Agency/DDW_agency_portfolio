@@ -1,179 +1,29 @@
 // src/components/Collaborate.jsx
-import { useEffect, useRef } from 'react';
+// DDW Agency — Discovery CTA Section | Premium GSAP + React JSX | Vite Compatible
+
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import SplitType from 'split-type';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Native GSAP Tilt Component ────────────────────────────────────────────────
-const GSAPTilt = ({ children, className }) => {
-  const tiltRef = useRef(null);
-
-  useEffect(() => {
-    const el = tiltRef.current;
-    if (!el) return;
-
-    const xTo = gsap.quickTo(el, 'rotationY', { ease: 'power2.out', duration: 0.5 });
-    const yTo = gsap.quickTo(el, 'rotationX', { ease: 'power2.out', duration: 0.5 });
-
-    const handleMouseMove = (e) => {
-      const rect = el.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width - 0.5;
-      const y = (e.clientY - rect.top) / rect.height - 0.5;
-      xTo(x * 8);
-      yTo(-y * 8);
-    };
-    const handleMouseLeave = () => { xTo(0); yTo(0); };
-
-    el.addEventListener('mousemove', handleMouseMove);
-    el.addEventListener('mouseleave', handleMouseLeave);
-    return () => {
-      el.removeEventListener('mousemove', handleMouseMove);
-      el.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, []);
-
-  return <div ref={tiltRef} className={className} style={{ transformPerspective: 1000 }}>{children}</div>;
+// ─── Brand Tokens ──────────────────────────────────────────────────────────────
+const B = {
+  orange:     '#FF570F',
+  orangeSoft: '#EE7D1D',
+  accent:     '#FDE87A',
+  bg:         '#080a0c',
+  bgCard:     '#0d1012',
+  bgCardAlt:  '#0a0c0e',
+  border:     'rgba(255,87,15,0.18)',
 };
 
-// ─── Magnetic Hook ─────────────────────────────────────────────────────────────
-const useMagneticEffect = (ref, strength = 0.3) => {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const xTo = gsap.quickTo(el, 'x', { duration: 0.4, ease: 'power2.out' });
-    const yTo = gsap.quickTo(el, 'y', { duration: 0.4, ease: 'power2.out' });
-
-    const onMove = (e) => {
-      const rect = el.getBoundingClientRect();
-      xTo((e.clientX - rect.left - rect.width / 2) * strength);
-      yTo((e.clientY - rect.top - rect.height / 2) * strength);
-    };
-    const onLeave = () => { xTo(0); yTo(0); };
-
-    el.addEventListener('mousemove', onMove);
-    el.addEventListener('mouseleave', onLeave);
-    return () => {
-      el.removeEventListener('mousemove', onMove);
-      el.removeEventListener('mouseleave', onLeave);
-    };
-  }, [strength]);
-};
-
-// ─── Magnetic Button ───────────────────────────────────────────────────────────
-const MagneticButton = ({ href, children }) => {
-  const ref = useRef(null);
-  useMagneticEffect(ref, 0.25);
-
-  return (
-    <a
-      ref={ref}
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="relative group inline-flex items-center gap-3 bg-orange-vibrant text-deep-black font-bold text-sm uppercase tracking-widest px-12 py-6 overflow-hidden shadow-2xl shadow-orange-vibrant/40 hover:shadow-cream/30 transition-shadow duration-500"
-    >
-      <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-      <span className="absolute inset-0 bg-cream scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" />
-      <span className="relative z-10 flex items-center gap-3">
-        {children}
-        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-          <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg>
-      </span>
-    </a>
-  );
-};
-
-// ─── Abstract Animated Visual (No Stock Images) ────────────────────────────────
-const AbstractCTAVisual = () => {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Orbiting dots
-      gsap.to('.orb-dot-1', { rotation: 360, duration: 8, repeat: -1, ease: 'none', transformOrigin: '50% 50%' });
-      gsap.to('.orb-dot-2', { rotation: -360, duration: 12, repeat: -1, ease: 'none', transformOrigin: '50% 50%' });
-      gsap.to('.orb-dot-3', { rotation: 360, duration: 18, repeat: -1, ease: 'none', transformOrigin: '50% 50%' });
-
-      // Glow pulse
-      gsap.to('.abs-glow-a', { scale: 1.25, opacity: 0.6, duration: 4, repeat: -1, yoyo: true, ease: 'power1.inOut' });
-      gsap.to('.abs-glow-b', { scale: 0.8, opacity: 0.4, duration: 6, repeat: -1, yoyo: true, ease: 'power1.inOut', delay: 1.5 });
-
-      // Center icon breathe
-      gsap.to('.abs-center', { scale: 1.06, duration: 3, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-
-      // Floating bars (data / analytics feel)
-      gsap.to('.bar-1', { scaleY: 0.4, duration: 1.2, repeat: -1, yoyo: true, ease: 'power1.inOut', transformOrigin: 'bottom' });
-      gsap.to('.bar-2', { scaleY: 0.6, duration: 1.6, repeat: -1, yoyo: true, ease: 'power1.inOut', transformOrigin: 'bottom', delay: 0.3 });
-      gsap.to('.bar-3', { scaleY: 0.3, duration: 1, repeat: -1, yoyo: true, ease: 'power1.inOut', transformOrigin: 'bottom', delay: 0.6 });
-      gsap.to('.bar-4', { scaleY: 0.7, duration: 1.4, repeat: -1, yoyo: true, ease: 'power1.inOut', transformOrigin: 'bottom', delay: 0.1 });
-      gsap.to('.bar-5', { scaleY: 0.5, duration: 1.8, repeat: -1, yoyo: true, ease: 'power1.inOut', transformOrigin: 'bottom', delay: 0.9 });
-    }, ref);
-    return () => ctx.revert();
-  }, []);
-
-  return (
-    <div ref={ref} className="relative w-full h-80 flex items-center justify-center select-none">
-      {/* Ambient glows */}
-      <div className="abs-glow-a absolute w-56 h-56 rounded-full bg-orange-vibrant/15 blur-[60px]" />
-      <div className="abs-glow-b absolute w-32 h-32 rounded-full bg-[#FDE87A]/10 blur-[40px]" />
-
-      {/* Outer orbit ring */}
-      <div className="orb-dot-3 absolute w-72 h-72 rounded-full border border-dashed border-orange-vibrant/15" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 0 }}>
-        <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,87,15,0.5)', marginTop: -4 }} />
-      </div>
-
-      {/* Mid orbit ring */}
-      <div className="orb-dot-2 absolute w-52 h-52 rounded-full border border-orange-vibrant/20" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: 0 }}>
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#FDE87A', marginRight: -3 }} />
-      </div>
-
-      {/* Inner orbit ring */}
-      <div className="orb-dot-1 absolute w-36 h-36 rounded-full border border-orange-vibrant/30" style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 0 }}>
-        <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#FF570F', marginBottom: -2.5 }} />
-      </div>
-
-      {/* Center card */}
-      <div className="abs-center relative z-10 w-28 h-28 rounded-2xl flex flex-col items-center justify-center bg-gradient-to-br from-[#1c1c1c] to-[#0d0d0d] border border-orange-vibrant/30 shadow-2xl shadow-orange-vibrant/20">
-        {/* Animated bars — analytics/ROAS feel */}
-        <div className="flex items-end gap-[3px] h-8 mb-2">
-          <div className="bar-1 w-2 bg-gradient-to-t from-orange-vibrant to-[#FDE87A] rounded-sm" style={{ height: '100%' }} />
-          <div className="bar-2 w-2 bg-gradient-to-t from-orange-vibrant to-[#FDE87A] rounded-sm" style={{ height: '80%' }} />
-          <div className="bar-3 w-2 bg-gradient-to-t from-orange-vibrant to-[#FDE87A] rounded-sm" style={{ height: '60%' }} />
-          <div className="bar-4 w-2 bg-gradient-to-t from-orange-vibrant to-[#FDE87A] rounded-sm" style={{ height: '90%' }} />
-          <div className="bar-5 w-2 bg-gradient-to-t from-orange-vibrant to-[#FDE87A] rounded-sm" style={{ height: '70%' }} />
-        </div>
-        <span className="text-[9px] font-bold text-orange-vibrant/70 uppercase tracking-widest">20 min</span>
-      </div>
-    </div>
-  );
-};
-
-// ─── Floating Stat Pill ────────────────────────────────────────────────────────
-const StatPill = ({ value, label, delay }) => {
-  const pillRef = useRef(null);
-  useEffect(() => {
-    gsap.to(pillRef.current, {
-      y: -10, duration: 2 + delay, repeat: -1, yoyo: true, ease: 'sine.inOut', delay,
-    });
-  }, [delay]);
-
-  return (
-    <div ref={pillRef} className="absolute bg-deep-black/80 backdrop-blur-md border border-orange-vibrant/30 rounded-2xl px-5 py-3 shadow-2xl shadow-orange-vibrant/10">
-      <div className="text-xl font-black text-orange-vibrant">{value}</div>
-      <div className="text-xs text-pure-white/50 uppercase tracking-wider">{label}</div>
-    </div>
-  );
-};
-
-// ─── Agenda Data (from new code) ───────────────────────────────────────────────
-const agendaItems = [
+// ─── Agenda Items ──────────────────────────────────────────────────────────────
+const AGENDA = [
   {
     num: '01',
-    title: "Look at what you're running",
-    desc: "We look at the actual account — spend, ROAS, structure, where the budget goes. Not a questionnaire. The real numbers.",
+    title: "'Look at what you're running'",
+    desc: 'We look at the actual account — spend, ROAS, structure, where the budget goes. Not a questionnaire. The real numbers.',
   },
   {
     num: '02',
@@ -187,148 +37,1019 @@ const agendaItems = [
   },
 ];
 
-// ─── Main Component ────────────────────────────────────────────────────────────
-const Collaborate = () => {
-  const sectionRef = useRef(null);
-  const headingRef = useRef(null);
-  const badgeRef = useRef(null);
-  const ctaRef = useRef(null);
-  const prlxGlowRef = useRef(null);
+// ─── Floating Stat Pills data ──────────────────────────────────────────────────
+const PILLS = [
+  { value: '600%',  label: 'Peak ROAS',     delay: 0,   pos: { top: -24,   left: -24  } },
+  { value: '$418K', label: 'EU Revenue',    delay: 0.5, pos: { bottom: -24, right: -24 } },
+  { value: '$0.09', label: 'CPC Achieved',  delay: 1.0, pos: { top: '42%', right: -32 } },
+];
 
-  // ── SplitType text reveal ──
-  useEffect(() => {
-    if (!headingRef.current) return;
-    const split = new SplitType(headingRef.current, { types: 'words' });
+// ─── Utility ───────────────────────────────────────────────────────────────────
+const isTouch = () =>
+  typeof window !== 'undefined' &&
+  (window.matchMedia('(max-width: 768px)').matches ||
+    navigator.maxTouchPoints > 0);
 
-    gsap.from(split.words, {
-      opacity: 0, y: 60, rotationX: -40, transformOrigin: 'top center',
-      stagger: 0.08, duration: 1, ease: 'power3.out',
-      scrollTrigger: { trigger: headingRef.current, start: 'top 80%' },
-    });
+// ─── Abstract CTA Visual ───────────────────────────────────────────────────────
+const AbstractCTAVisual = () => {
+  const containerRef = useRef(null);
+  const glowARef     = useRef(null);
+  const glowBRef     = useRef(null);
+  const ring1Ref     = useRef(null);
+  const ring2Ref     = useRef(null);
+  const ring3Ref     = useRef(null);
+  const centerRef    = useRef(null);
+  const barsRef      = useRef([]);
 
-    return () => split.revert();
-  }, []);
-
-  // ── Other animations ──
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(badgeRef.current, {
-        opacity: 0, x: -40, duration: 0.8, ease: 'power3.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' },
+      // Ambient glow pulse
+      gsap.to(glowARef.current, {
+        scale: 1.28, opacity: 0.65,
+        duration: 4, repeat: -1, yoyo: true, ease: 'power1.inOut',
       });
-      gsap.from(ctaRef.current, {
-        opacity: 0, y: 30, scale: 0.95, duration: 0.8, delay: 0.5, ease: 'back.out(1.7)',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 75%' },
-      });
-      gsap.from('.collab-sub', {
-        opacity: 0, y: 20, duration: 0.75, ease: 'power2.out',
-        scrollTrigger: { trigger: '.collab-sub', start: 'top 88%', once: true },
-      });
-      gsap.from('.agenda-item', {
-        opacity: 0, x: -24, duration: 0.65, stagger: 0.12, ease: 'power2.out',
-        scrollTrigger: { trigger: '.agenda-item', start: 'top 88%', once: true },
+      gsap.to(glowBRef.current, {
+        scale: 0.78, opacity: 0.38,
+        duration: 6, repeat: -1, yoyo: true, ease: 'power1.inOut', delay: 1.5,
       });
 
-      // Parallax glow
-      gsap.to(prlxGlowRef.current, {
-        yPercent: -30, ease: 'none',
-        scrollTrigger: { trigger: sectionRef.current, scrub: true },
+      // Orbiting rings
+      gsap.to(ring1Ref.current, {
+        rotation: 360, duration: 8,
+        repeat: -1, ease: 'none', transformOrigin: '50% 50%',
       });
-    }, sectionRef);
+      gsap.to(ring2Ref.current, {
+        rotation: -360, duration: 14,
+        repeat: -1, ease: 'none', transformOrigin: '50% 50%',
+      });
+      gsap.to(ring3Ref.current, {
+        rotation: 360, duration: 20,
+        repeat: -1, ease: 'none', transformOrigin: '50% 50%',
+      });
+
+      // Center breathe
+      gsap.to(centerRef.current, {
+        scale: 1.07, duration: 3,
+        repeat: -1, yoyo: true, ease: 'sine.inOut',
+      });
+
+      // Data bars
+      const barTimings = [1.2, 1.6, 1.0, 1.4, 1.8, 1.3];
+      const barDelays  = [0, 0.3, 0.6, 0.1, 0.9, 0.45];
+      const barScales  = [0.4, 0.6, 0.3, 0.7, 0.5, 0.45];
+
+      barsRef.current.forEach((bar, i) => {
+        if (!bar) return;
+        gsap.to(bar, {
+          scaleY: barScales[i],
+          duration: barTimings[i],
+          repeat: -1, yoyo: true,
+          ease: 'power1.inOut',
+          transformOrigin: 'bottom',
+          delay: barDelays[i],
+        });
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  const barHeights = ['100%', '80%', '60%', '90%', '70%', '85%'];
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative w-full h-full flex items-center justify-center select-none pointer-events-none"
+    >
+      {/* Ambient glows */}
+      <div
+        ref={glowARef}
+        className="absolute rounded-full"
+        style={{
+          width: 220, height: 220,
+          background: `radial-gradient(circle, ${B.orange}18 0%, transparent 70%)`,
+          filter: 'blur(50px)',
+        }}
+      />
+      <div
+        ref={glowBRef}
+        className="absolute rounded-full"
+        style={{
+          width: 130, height: 130,
+          background: `radial-gradient(circle, ${B.accent}14 0%, transparent 70%)`,
+          filter: 'blur(36px)',
+        }}
+      />
+
+      {/* Outer orbit ring */}
+      <div
+        ref={ring3Ref}
+        className="absolute rounded-full"
+        style={{
+          width: 280, height: 280,
+          border: `1px dashed ${B.orange}18`,
+          display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+        }}
+      >
+        <div style={{
+          width: 8, height: 8, borderRadius: '50%',
+          background: `${B.orange}60`, marginTop: -4,
+          boxShadow: `0 0 8px ${B.orange}`,
+        }} />
+      </div>
+
+      {/* Mid orbit ring */}
+      <div
+        ref={ring2Ref}
+        className="absolute rounded-full"
+        style={{
+          width: 200, height: 200,
+          border: `1px solid ${B.orange}22`,
+          display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+        }}
+      >
+        <div style={{
+          width: 6, height: 6, borderRadius: '50%',
+          background: B.accent, marginRight: -3,
+          boxShadow: `0 0 8px ${B.accent}80`,
+        }} />
+      </div>
+
+      {/* Inner orbit ring */}
+      <div
+        ref={ring1Ref}
+        className="absolute rounded-full"
+        style={{
+          width: 130, height: 130,
+          border: `1px solid ${B.orange}35`,
+          display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+        }}
+      >
+        <div style={{
+          width: 5, height: 5, borderRadius: '50%',
+          background: B.orange, marginBottom: -2.5,
+          boxShadow: `0 0 6px ${B.orange}`,
+        }} />
+      </div>
+
+      {/* Center node card */}
+      <div
+        ref={centerRef}
+        className="relative z-10 flex flex-col items-center justify-center rounded-2xl"
+        style={{
+          width: 110, height: 110,
+          background: `linear-gradient(135deg, #1c1c1c 0%, ${B.bgCardAlt} 100%)`,
+          border: `1px solid ${B.orange}30`,
+          boxShadow: `0 0 40px ${B.orange}18, 0 20px 60px rgba(0,0,0,0.55)`,
+        }}
+      >
+        {/* Animated data bars */}
+        <div className="flex items-end gap-[3px] mb-2" style={{ height: 32 }}>
+          {barHeights.map((h, i) => (
+            <div
+              key={i}
+              ref={(el) => (barsRef.current[i] = el)}
+              className="rounded-t-sm"
+              style={{
+                width: 6,
+                height: h,
+                background: `linear-gradient(to top, ${B.orange}, ${B.accent})`,
+              }}
+            />
+          ))}
+        </div>
+        <span
+          style={{
+            fontSize: 9,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.2em',
+            color: `${B.orange}90`,
+            fontFamily: 'Montserrat, sans-serif',
+          }}
+        >
+          20 min
+        </span>
+      </div>
+
+      {/* Dot grid overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none rounded-2xl"
+        style={{
+          backgroundImage: `radial-gradient(${B.orange}20 1px, transparent 1px)`,
+          backgroundSize: '20px 20px',
+          opacity: 0.4,
+          maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)',
+        }}
+      />
+    </div>
+  );
+};
+
+// ─── Browser Mockup Shell ──────────────────────────────────────────────────────
+const BrowserMockup = ({ children }) => (
+  <div
+    className="relative w-full h-full rounded-2xl overflow-hidden"
+    style={{
+      background: `linear-gradient(135deg, ${B.bgCard} 0%, ${B.bgCardAlt} 100%)`,
+      border: '1px solid rgba(255,255,255,0.06)',
+      boxShadow: `0 32px 80px rgba(0,0,0,0.65), 0 0 0 1px ${B.orange}0A`,
+    }}
+  >
+    {/* Title bar */}
+    <div
+      className="flex items-center gap-2 px-4 py-3 border-b"
+      style={{
+        borderColor: 'rgba(255,255,255,0.05)',
+        background: 'rgba(255,255,255,0.02)',
+      }}
+    >
+      <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#FF5F57' }} />
+      <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#FFBD2E' }} />
+      <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28C840' }} />
+      <div
+        className="flex-1 mx-3 flex items-center gap-2 px-3 rounded-md"
+        style={{
+          height: 20,
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.05)',
+        }}
+      >
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none"
+          stroke="rgba(255,255,255,0.2)" strokeWidth="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" />
+          <path d="M7 11V7a5 5 0 0110 0v4" />
+        </svg>
+        <span style={{
+          fontSize: 9,
+          color: 'rgba(255,255,255,0.22)',
+          fontFamily: 'Inter, sans-serif',
+        }}>
+          calendly.com/digi-dreamworks/onboarding-call
+        </span>
+      </div>
+    </div>
+    {children}
+  </div>
+);
+
+// ─── Floating Stat Pill ────────────────────────────────────────────────────────
+const StatPill = ({ value, label, delay, style: posStyle }) => {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    gsap.to(ref.current, {
+      y: -10, duration: 2 + delay * 0.5,
+      repeat: -1, yoyo: true,
+      ease: 'sine.inOut', delay,
+    });
+  }, [delay]);
+
+  return (
+    <div
+      ref={ref}
+      className="absolute z-20 rounded-xl"
+      style={{
+        padding: '10px 16px',
+        background: 'rgba(8,10,12,0.88)',
+        border: `1px solid ${B.orange}35`,
+        backdropFilter: 'blur(14px)',
+        boxShadow: `0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px ${B.orange}10`,
+        ...posStyle,
+      }}
+    >
+      <div
+        style={{
+          fontSize: 'clamp(16px, 2vw, 22px)',
+          fontWeight: 900,
+          color: B.orange,
+          letterSpacing: '-0.03em',
+          lineHeight: 1,
+          fontFamily: 'Montserrat, sans-serif',
+        }}
+      >
+        {value}
+      </div>
+      <div
+        style={{
+          fontSize: 9,
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.2em',
+          color: 'rgba(255,255,255,0.4)',
+          fontFamily: 'Montserrat, sans-serif',
+          marginTop: 3,
+        }}
+      >
+        {label}
+      </div>
+    </div>
+  );
+};
+
+// ─── Agenda Card ───────────────────────────────────────────────────────────────
+const AgendaCard = ({ item, index }) => {
+  const cardRef = useRef(null);
+  const touch   = useRef(isTouch());
+  const [spot, setSpot] = useState({ x: 50, y: 50, on: false });
+
+  const handleMouseMove = useCallback((e) => {
+    if (touch.current || !cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    setSpot({
+      x: ((e.clientX - rect.left) / rect.width)  * 100,
+      y: ((e.clientY - rect.top)  / rect.height) * 100,
+      on: true,
+    });
+    gsap.to(cardRef.current, {
+      rotationY: ((e.clientX - rect.left) / rect.width  - 0.5) * 10,
+      rotationX: -((e.clientY - rect.top)  / rect.height - 0.5) * 10,
+      transformPerspective: 900,
+      duration: 0.45, ease: 'power2.out',
+    });
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    if (touch.current || !cardRef.current) return;
+    gsap.to(cardRef.current, {
+      rotationY: 0, rotationX: 0,
+      duration: 0.6, ease: 'power3.out',
+    });
+    setSpot((s) => ({ ...s, on: false }));
+  }, []);
+
+  const accent = index === 0 ? B.orange : index === 1 ? B.orangeSoft : B.accent;
+
+  return (
+    <div
+      ref={cardRef}
+      className="agenda-item relative rounded-2xl border group overflow-hidden cursor-default"
+      style={{
+        background: `linear-gradient(135deg, ${B.bgCard} 0%, ${B.bgCardAlt} 100%)`,
+        borderColor: `${accent}18`,
+        willChange: 'transform',
+        transition: 'border-color 0.4s ease',
+        padding: 'clamp(18px, 2.5vw, 26px)',
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Spotlight */}
+      {spot.on && !touch.current && (
+        <div
+          className="absolute inset-0 pointer-events-none z-0"
+          style={{
+            background: `radial-gradient(260px circle at ${spot.x}% ${spot.y}%, ${accent}14 0%, transparent 65%)`,
+          }}
+        />
+      )}
+
+      {/* Top accent line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{
+          background: `linear-gradient(90deg, transparent, ${accent}45, transparent)`,
+        }}
+      />
+
+      {/* Hover bottom progress bar */}
+      <div
+        className="absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full rounded-full"
+        style={{
+          background: `linear-gradient(90deg, ${accent}, ${B.accent})`,
+          transition: 'width 0.7s ease',
+        }}
+      />
+
+      {/* Corner glow */}
+      <div
+        className="absolute -top-8 -right-8 w-28 h-28 rounded-full opacity-0 group-hover:opacity-100 pointer-events-none"
+        style={{
+          background: `radial-gradient(circle, ${accent}28 0%, transparent 70%)`,
+          filter: 'blur(20px)',
+          transition: 'opacity 0.5s ease',
+        }}
+      />
+
+      {/* Dot grid */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        style={{
+          backgroundImage: `radial-gradient(${accent} 1px, transparent 1px)`,
+          backgroundSize: '18px 18px',
+        }}
+      />
+
+      {/* Content */}
+      <div className="relative z-10 flex gap-4 sm:gap-5">
+        {/* Number badge */}
+        <div
+          className="flex-shrink-0 flex items-center justify-center rounded-xl font-mono font-bold"
+          style={{
+            width: 44, height: 44,
+            minWidth: 44,
+            background: `${accent}12`,
+            border: `1px solid ${accent}30`,
+            color: accent,
+            fontSize: 12,
+            letterSpacing: '0.05em',
+            fontFamily: 'Montserrat, sans-serif',
+          }}
+        >
+          {item.num}
+        </div>
+
+        <div>
+          <h3
+            className="font-bold mb-1.5 group-hover:text-white transition-colors duration-300"
+            style={{
+              fontSize: 'clamp(13px, 1.4vw, 15px)',
+              color: 'rgba(255,255,255,0.85)',
+              fontFamily: 'Montserrat, sans-serif',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            {item.title}
+          </h3>
+          <p
+            style={{
+              fontSize: 'clamp(12px, 1.2vw, 13px)',
+              color: 'rgba(255,255,255,0.42)',
+              lineHeight: 1.7,
+              fontFamily: 'Inter, sans-serif',
+            }}
+          >
+            {item.desc}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Magnetic CTA Button ───────────────────────────────────────────────────────
+const MagneticButton = ({ href, children }) => {
+  const btnRef = useRef(null);
+  const touch  = useRef(isTouch());
+  const xTo    = useRef(null);
+  const yTo    = useRef(null);
+
+  useEffect(() => {
+    if (touch.current || !btnRef.current) return;
+    xTo.current = gsap.quickTo(btnRef.current, 'x', { duration: 0.45, ease: 'power3.out' });
+    yTo.current = gsap.quickTo(btnRef.current, 'y', { duration: 0.45, ease: 'power3.out' });
+  }, []);
+
+  const handleMouseMove = useCallback((e) => {
+    if (touch.current || !btnRef.current) return;
+    const rect = btnRef.current.getBoundingClientRect();
+    xTo.current?.((e.clientX - (rect.left + rect.width  / 2)) * 0.3);
+    yTo.current?.((e.clientY - (rect.top  + rect.height / 2)) * 0.3);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    if (touch.current) return;
+    xTo.current?.(0);
+    yTo.current?.(0);
+  }, []);
+
+  return (
+    <a
+      ref={btnRef}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="relative inline-flex items-center justify-center gap-3 font-bold uppercase overflow-hidden group"
+      style={{
+        minHeight: 56,
+        padding: '16px 40px',
+        fontSize: 12,
+        letterSpacing: '0.18em',
+        fontFamily: 'Montserrat, sans-serif',
+        background: `linear-gradient(135deg, ${B.orange} 0%, ${B.orangeSoft} 100%)`,
+        color: B.bg,
+        borderRadius: 4,
+        boxShadow: `0 0 32px ${B.orange}35, 0 8px 32px rgba(0,0,0,0.4)`,
+        willChange: 'transform',
+        textDecoration: 'none',
+        transition: 'box-shadow 0.4s ease',
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Shimmer sweep */}
+      <span
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.25) 50%, transparent 65%)',
+          transform: 'translateX(-100%)',
+          transition: 'transform 0.75s ease',
+        }}
+      />
+      {/* Cream fill on hover */}
+      <span
+        aria-hidden
+        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100"
+        style={{
+          background: B.accent,
+          transition: 'opacity 0.45s ease',
+        }}
+      />
+      <span className="relative z-10">{children}</span>
+      <svg
+        className="relative z-10 transition-transform duration-300 group-hover:translate-x-1.5"
+        width="16" height="16" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" strokeWidth="2.5"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+      </svg>
+    </a>
+  );
+};
+
+// ─── Main Collaborate Section ──────────────────────────────────────────────────
+const Collaborate = () => {
+  const sectionRef   = useRef(null);
+  const badgeRef     = useRef(null);
+  const heading1Ref  = useRef(null);
+  const heading2Ref  = useRef(null);
+  const sub1Ref      = useRef(null);
+  const sub2Ref      = useRef(null);
+  const agendaRef    = useRef(null);
+  const ctaRef       = useRef(null);
+  const visualRef    = useRef(null);
+  const orb1Ref      = useRef(null);
+  const orb2Ref      = useRef(null);
+  const orb3Ref      = useRef(null);
+  const topLineRef   = useRef(null);
+  const botLineRef   = useRef(null);
+  const wordRefs     = useRef([]);
+
+  // Heading 1 words split manually (no SplitType dep issues)
+  const h1Words = ['Every', 'month', 'with', 'the', 'wrong', 'team', 'is', 'budget', 'that'];
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const ctx = gsap.context(() => {
+
+      // ── Parallax orbs ─────────────────────────────────────────────
+      gsap.to(orb1Ref.current, {
+        yPercent: -28, ease: 'none',
+        scrollTrigger: { trigger: section, scrub: 1.8 },
+      });
+      gsap.to(orb2Ref.current, {
+        yPercent: 22, ease: 'none',
+        scrollTrigger: { trigger: section, scrub: 1.4 },
+      });
+      gsap.to(orb3Ref.current, {
+        yPercent: -18, ease: 'none',
+        scrollTrigger: { trigger: section, scrub: 2 },
+      });
+
+      // ── Border lines reveal ────────────────────────────────────────
+      gsap.fromTo(
+        [topLineRef.current, botLineRef.current],
+        { scaleX: 0, opacity: 0 },
+        {
+          scaleX: 1, opacity: 1,
+          duration: 1.4, ease: 'power3.out', stagger: 0.1,
+          scrollTrigger: { trigger: section, start: 'top 90%', once: true },
+        }
+      );
+
+      // ── Badge ─────────────────────────────────────────────────────
+      gsap.fromTo(
+        badgeRef.current,
+        { opacity: 0, x: -32, filter: 'blur(4px)' },
+        {
+          opacity: 1, x: 0, filter: 'blur(0px)',
+          duration: 0.85, ease: 'power3.out',
+          scrollTrigger: { trigger: badgeRef.current, start: 'top 88%', once: true },
+        }
+      );
+
+      // ── Heading words ─────────────────────────────────────────────
+      const validWords = wordRefs.current.filter(Boolean);
+      if (validWords.length) {
+        gsap.fromTo(
+          validWords,
+          { opacity: 0, y: 52, rotationX: -38, skewX: 3 },
+          {
+            opacity: 1, y: 0, rotationX: 0, skewX: 0,
+            duration: 0.9, ease: 'power3.out', stagger: 0.07,
+            scrollTrigger: { trigger: heading1Ref.current, start: 'top 84%', once: true },
+          }
+        );
+      }
+
+      // ── Heading 2 gradient line ────────────────────────────────────
+      gsap.fromTo(
+        heading2Ref.current,
+        { opacity: 0, y: 36, skewX: 2 },
+        {
+          opacity: 1, y: 0, skewX: 0,
+          duration: 0.95, ease: 'power3.out', delay: 0.55,
+          scrollTrigger: { trigger: heading1Ref.current, start: 'top 84%', once: true },
+        }
+      );
+
+      // ── Sub copy ──────────────────────────────────────────────────
+      gsap.fromTo(
+        [sub1Ref.current, sub2Ref.current],
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1, y: 0,
+          duration: 0.8, ease: 'power3.out', stagger: 0.15,
+          scrollTrigger: { trigger: sub1Ref.current, start: 'top 88%', once: true },
+        }
+      );
+
+      // ── Agenda cards ──────────────────────────────────────────────
+      const cards = section.querySelectorAll('.agenda-item');
+      gsap.fromTo(
+        cards,
+        { opacity: 0, x: -28, scale: 0.97 },
+        {
+          opacity: 1, x: 0, scale: 1,
+          duration: 0.7, ease: 'power3.out', stagger: 0.13,
+          scrollTrigger: { trigger: agendaRef.current, start: 'top 86%', once: true },
+        }
+      );
+
+      // ── CTA button ────────────────────────────────────────────────
+      gsap.fromTo(
+        ctaRef.current,
+        { opacity: 0, y: 28, scale: 0.94 },
+        {
+          opacity: 1, y: 0, scale: 1,
+          duration: 0.85, ease: 'back.out(1.7)', delay: 0.1,
+          scrollTrigger: { trigger: ctaRef.current, start: 'top 92%', once: true },
+        }
+      );
+
+      // ── Visual panel ──────────────────────────────────────────────
+      gsap.fromTo(
+        visualRef.current,
+        { opacity: 0, x: 40, scale: 0.95 },
+        {
+          opacity: 1, x: 0, scale: 1,
+          duration: 1.1, ease: 'power3.out', delay: 0.2,
+          scrollTrigger: { trigger: visualRef.current, start: 'top 82%', once: true },
+        }
+      );
+
+    }, section);
+
     return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative py-32 w-full overflow-hidden bg-deep-black border-y border-orange-vibrant/20">
+    <section
+      ref={sectionRef}
+      className="relative w-full overflow-hidden"
+      style={{
+        background: B.bg,
+        padding: 'clamp(72px, 9vw, 128px) 0',
+      }}
+    >
+      {/* ── Injected styles ── */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
+        @keyframes ddwColPing {
+          0%   { transform: scale(1);    opacity: 0.45; }
+          80%  { transform: scale(1.55); opacity: 0;    }
+          100% { transform: scale(1.55); opacity: 0;    }
+        }
+        .ddw-word { display: inline-block; transform-style: preserve-3d; }
+        .ddw-agenda-shimmer:hover .ddw-shimmer-bar { width: 100%; }
+      `}</style>
 
-      {/* ── Animated grid overlay ── */}
+      {/* ── Top border ── */}
       <div
-        className="absolute inset-0 z-0 pointer-events-none opacity-30"
+        ref={topLineRef}
+        className="absolute top-0 left-0 right-0 h-px origin-left pointer-events-none"
         style={{
-          backgroundImage: 'linear-gradient(rgba(255,87,15,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,87,15,0.04) 1px, transparent 1px)',
-          backgroundSize: '50px 50px',
-          maskImage: 'radial-gradient(ellipse 70% 60% at 50% 50%, black, transparent)',
+          background: `linear-gradient(90deg, transparent, ${B.orange}40, ${B.accent}20, transparent)`,
+          opacity: 0,
         }}
       />
 
-      {/* ── Background glow blobs ── */}
-      <div ref={prlxGlowRef} className="absolute top-0 left-0 w-96 h-96 bg-orange-vibrant/8 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute top-0 right-0 w-[500px] h-[400px] bg-orange-vibrant/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[300px] bg-[#630D00]/15 blur-[100px] rounded-full pointer-events-none" />
+      {/* ── Bottom border ── */}
+      <div
+        ref={botLineRef}
+        className="absolute bottom-0 left-0 right-0 h-px origin-left pointer-events-none"
+        style={{
+          background: `linear-gradient(90deg, transparent, ${B.orange}25, transparent)`,
+          opacity: 0,
+        }}
+      />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      {/* ── Mesh grid overlay ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(255,87,15,0.032) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,87,15,0.032) 1px, transparent 1px)
+          `,
+          backgroundSize: '52px 52px',
+          maskImage: 'radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 100%)',
+          opacity: 0.5,
+        }}
+      />
 
-          {/* ── LEFT: Main Content ── */}
-          <div>
-            {/* Badge */}
-            <div ref={badgeRef} className="inline-flex items-center gap-3 px-6 py-3 border border-orange-vibrant/40 mb-10 backdrop-blur-sm bg-orange-vibrant/8 shadow-lg shadow-orange-vibrant/15">
-              <span className="w-2 h-2 rounded-full bg-orange-vibrant animate-pulse shadow-lg shadow-orange-vibrant/80" />
-              <span className="text-orange-vibrant text-xs font-bold tracking-[0.3em] uppercase">Discovery Call</span>
-              <span className="w-2 h-2 rounded-full bg-orange-vibrant animate-pulse shadow-lg shadow-orange-vibrant/80" />
+      {/* ── Atmospheric orbs ── */}
+      <div
+        ref={orb1Ref}
+        className="absolute pointer-events-none"
+        style={{
+          top: '-8%', left: '-6%',
+          width: 'clamp(280px, 40vw, 580px)',
+          height: 'clamp(280px, 40vw, 580px)',
+          background: `radial-gradient(circle, ${B.orange}10 0%, transparent 70%)`,
+          filter: 'blur(80px)',
+          borderRadius: '50%',
+        }}
+      />
+      <div
+        ref={orb2Ref}
+        className="absolute pointer-events-none"
+        style={{
+          bottom: '-6%', right: '-5%',
+          width: 'clamp(250px, 38vw, 540px)',
+          height: 'clamp(250px, 38vw, 540px)',
+          background: `radial-gradient(circle, ${B.orange}0D 0%, transparent 70%)`,
+          filter: 'blur(90px)',
+          borderRadius: '50%',
+        }}
+      />
+      <div
+        ref={orb3Ref}
+        className="absolute pointer-events-none"
+        style={{
+          top: '40%', right: '20%',
+          width: 'clamp(180px, 25vw, 360px)',
+          height: 'clamp(180px, 25vw, 360px)',
+          background: `radial-gradient(circle, ${B.accent}06 0%, transparent 70%)`,
+          filter: 'blur(70px)',
+          borderRadius: '50%',
+        }}
+      />
+
+      {/* ── Main container ── */}
+      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 md:px-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-20 items-center">
+
+          {/* ══════════════════════════════════════════════════════════
+              LEFT — Copy Column
+          ══════════════════════════════════════════════════════════ */}
+          <div className="flex flex-col">
+
+            {/* Eyebrow badge */}
+            <div
+              ref={badgeRef}
+              className="inline-flex items-center gap-2.5 self-start mb-8 rounded-full"
+              style={{
+                padding: '10px 20px',
+                border: `1px solid ${B.orange}35`,
+                background: `${B.orange}0A`,
+                backdropFilter: 'blur(10px)',
+                opacity: 0,
+              }}
+            >
+              <span
+                style={{
+                  width: 7, height: 7, borderRadius: '50%',
+                  background: B.orange,
+                  boxShadow: `0 0 10px ${B.orange}`,
+                  display: 'inline-block',
+                  animation: 'ddwColPing 2.5s ease-out infinite',
+                }}
+              />
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.28em',
+                  color: B.orange,
+                  fontFamily: 'Montserrat, sans-serif',
+                }}
+              >
+                Discovery Call
+              </span>
+              <span
+                style={{
+                  width: 7, height: 7, borderRadius: '50%',
+                  background: B.orange,
+                  boxShadow: `0 0 10px ${B.orange}`,
+                  display: 'inline-block',
+                  animation: 'ddwColPing 2.5s ease-out 1.2s infinite',
+                }}
+              />
             </div>
 
-            {/* Heading — new content, old SplitType animation */}
-            <h2 ref={headingRef} className="text-5xl md:text-6xl lg:text-7xl font-heading font-black leading-[1.05] mb-4 tracking-tight text-pure-white perspective-1000">
-              Every month with the wrong team is budget that
-            </h2>
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-heading font-black leading-[1.05] mb-10 tracking-tight" style={{ background: 'linear-gradient(135deg, #FF570F 0%, #FDE87A 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', display: 'block' }}>
+            {/* Heading line 1 — word-split */}
+            <div
+              ref={heading1Ref}
+              className="mb-2 overflow-visible"
+              style={{ perspective: '1000px' }}
+            >
+              <h2
+                className="font-black leading-[1.08] text-white"
+                style={{
+                  fontFamily: 'Montserrat, sans-serif',
+                  fontSize: 'clamp(28px, 4.5vw, 58px)',
+                  letterSpacing: '-0.03em',
+                }}
+              >
+                {h1Words.map((word, i) => (
+                  <React.Fragment key={i}>
+                    <span
+                      ref={(el) => (wordRefs.current[i] = el)}
+                      className="ddw-word"
+                      style={{ opacity: 0, marginRight: '0.3em' }}
+                    >
+                      {word}
+                    </span>
+                    {/* Line break after "team" */}
+                    {i === 5 && <br className="hidden sm:block" />}
+                  </React.Fragment>
+                ))}
+              </h2>
+            </div>
+
+            {/* Heading line 2 — gradient */}
+            <h2
+              ref={heading2Ref}
+              className="font-black leading-[1.08] mb-8"
+              style={{
+                fontFamily: 'Montserrat, sans-serif',
+                fontSize: 'clamp(28px, 4.5vw, 58px)',
+                letterSpacing: '-0.03em',
+                background: `linear-gradient(135deg, ${B.orange} 0%, ${B.accent} 100%)`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                opacity: 0,
+              }}
+            >
               doesn&rsquo;t compound.
             </h2>
 
-            {/* Sub copy — new content */}
-            <p className="collab-sub text-pure-white/60 text-lg leading-relaxed mb-4 max-w-lg">
-              At $50K/month in ad spend, a 1x improvement in ROAS is worth more than the retainer costs in a year. There&rsquo;s one thing we say on every first call that most agencies won&rsquo;t. It usually tells you in 10 minutes whether we&rsquo;re worth your time.
+            {/* Sub copy */}
+            <p
+              ref={sub1Ref}
+              style={{
+                fontFamily: 'Inter, sans-serif',
+                fontSize: 'clamp(14px, 1.5vw, 17px)',
+                lineHeight: 1.78,
+                color: 'rgba(255,255,255,0.52)',
+                maxWidth: 520,
+                marginBottom: 12,
+                opacity: 0,
+              }}
+            >
+              At $50K/month in ad spend, a 1x improvement in ROAS is worth more
+              than the retainer costs in a year. There&rsquo;s one thing we say on
+              every first call that most agencies won&rsquo;t. It usually tells you
+              in 10 minutes whether we&rsquo;re worth your time.
             </p>
-            <p className="collab-sub text-pure-white/50 text-sm leading-relaxed mb-10 max-w-lg font-bold">
+            <p
+              ref={sub2Ref}
+              className="font-bold"
+              style={{
+                fontFamily: 'Inter, sans-serif',
+                fontSize: 'clamp(12px, 1.2vw, 14px)',
+                lineHeight: 1.7,
+                color: 'rgba(255,255,255,0.38)',
+                maxWidth: 500,
+                marginBottom: 32,
+                opacity: 0,
+              }}
+            >
               Book 20 minutes. Here&rsquo;s what happens on the call:
             </p>
 
-            {/* Agenda items — new content */}
-            <div className="space-y-6 mb-12">
-              {agendaItems.map((item) => (
-                <div key={item.num} className="agenda-item flex gap-5">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center border border-orange-vibrant/30 bg-orange-vibrant/10 shadow-md">
-                    <span className="text-orange-vibrant font-mono text-sm font-bold">{item.num}</span>
-                  </div>
-                  <div>
-                    <h3 className="text-pure-white font-bold text-base mb-1">{item.title}</h3>
-                    <p className="text-pure-white/60 text-sm leading-relaxed">{item.desc}</p>
-                  </div>
-                </div>
+            {/* Agenda cards */}
+            <div
+              ref={agendaRef}
+              className="flex flex-col gap-3 mb-10"
+            >
+              {AGENDA.map((item, i) => (
+                <AgendaCard key={item.num} item={item} index={i} />
               ))}
             </div>
 
-            {/* CTA — old magnetic button, new label + URL */}
-            <div ref={ctaRef}>
+            {/* CTA block */}
+            <div
+              ref={ctaRef}
+              className="flex flex-col sm:flex-row items-start sm:items-center gap-4"
+              style={{ opacity: 0 }}
+            >
               <MagneticButton href="https://calendly.com/digi-dreamworks/onboarding-call">
                 Book the 20-Minute Call
               </MagneticButton>
+
+              {/* Trust micro-copy */}
+              <div className="flex flex-col gap-1">
+                {['No commitment · 20 minutes', 'Straight talk, not a pitch'].map((line, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <circle cx="6" cy="6" r="5.5" stroke={`${B.orange}50`} />
+                      <path d="M3.5 6l2 2 3-3" stroke={B.orange} strokeWidth="1.3"
+                        strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <span
+                      style={{
+                        fontSize: 11,
+                        color: 'rgba(255,255,255,0.32)',
+                        fontFamily: 'Inter, sans-serif',
+                        letterSpacing: '0.04em',
+                      }}
+                    >
+                      {line}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* ── RIGHT: Abstract Visual + Floating Stats (old layout, no stock image) ── */}
-          <div className="hidden lg:block relative h-80">
-            <GSAPTilt className="absolute inset-0">
+          {/* ══════════════════════════════════════════════════════════
+              RIGHT — Visual Panel (desktop only)
+          ══════════════════════════════════════════════════════════ */}
+          <div
+            ref={visualRef}
+            className="relative hidden lg:block"
+            style={{ height: 'clamp(360px, 45vw, 520px)', opacity: 0 }}
+          >
+            {/* Browser mockup */}
+            <BrowserMockup>
               <div
-                className="w-full h-full rounded-3xl border border-orange-vibrant/15 backdrop-blur-sm flex items-center justify-center relative overflow-hidden"
-                style={{ background: 'linear-gradient(135deg, rgba(255,87,15,0.05) 0%, rgba(10,10,10,0.8) 100%)' }}
+                className="relative overflow-hidden"
+                style={{
+                  height: 'calc(100% - 37px)',
+                  background: `radial-gradient(ellipse 70% 70% at 50% 50%, ${B.orange}07 0%, ${B.bg} 100%)`,
+                }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/5 to-transparent rounded-3xl" />
+                {/* Dot grid inside mockup */}
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    backgroundImage: `radial-gradient(${B.orange}22 1px, transparent 1px)`,
+                    backgroundSize: '22px 22px',
+                    opacity: 0.04,
+                  }}
+                />
                 <AbstractCTAVisual />
-              </div>
-            </GSAPTilt>
 
-            {/* Floating stat pills — kept from old code */}
-            <div className="collab-stat absolute -top-6 -left-6 z-20"><StatPill value="600%" label="Peak ROAS" delay={0} /></div>
-            <div className="collab-stat absolute -bottom-6 -right-6 z-20"><StatPill value="418K" label="Purchases" delay={0.4} /></div>
-            <div className="collab-stat absolute top-1/2 -right-10 z-20"><StatPill value="$0.09" label="CPC Achieved" delay={0.8} /></div>
+                {/* Watermark text inside mockup */}
+                <div
+                  className="absolute bottom-2 left-1/2 -translate-x-1/2 font-black pointer-events-none select-none whitespace-nowrap"
+                  style={{
+                    fontSize: 'clamp(40px, 6vw, 90px)',
+                    color: B.orange,
+                    opacity: 0.04,
+                    letterSpacing: '-0.04em',
+                    fontFamily: 'Montserrat, sans-serif',
+                  }}
+                >
+                  DDW
+                </div>
+              </div>
+            </BrowserMockup>
+
+            {/* Floating stat pills */}
+            {PILLS.map((pill) => (
+              <StatPill
+                key={pill.label}
+                value={pill.value}
+                label={pill.label}
+                delay={pill.delay}
+                style={pill.pos}
+              />
+            ))}
+
+            {/* Glow halo behind mockup */}
+            <div
+              className="absolute -z-10 rounded-3xl pointer-events-none"
+              style={{
+                inset: '-8%',
+                background: `radial-gradient(ellipse 55% 55% at 50% 50%, ${B.orange}14 0%, transparent 70%)`,
+                filter: 'blur(40px)',
+              }}
+            />
           </div>
 
         </div>
       </div>
-
-      <style jsx>{`.perspective-1000 { perspective: 1000px; }`}</style>
     </section>
   );
 };

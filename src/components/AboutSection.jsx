@@ -1,332 +1,1151 @@
 // src/components/AboutSection.jsx
-import { useEffect, useRef, useState } from 'react';
+// DDW Agency — About Section | Premium GSAP + React JSX | Vite Compatible
+
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Link } from 'react-router-dom';
-import SplitType from 'split-type';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Abstract Team Visual (new code) ──────────────────────────────────────────
-const AbstractTeamVisual = () => {
-    const ref = useRef(null);
-    useEffect(() => {
-        const ctx = gsap.context(() => {
-            gsap.to('.at-orb-1', { scale: 1.18, duration: 5, repeat: -1, yoyo: true, ease: 'power1.inOut' });
-            gsap.to('.at-orb-2', { scale: 0.82, duration: 7, repeat: -1, yoyo: true, ease: 'power1.inOut', delay: 2 });
-            gsap.to('.at-ring-a', { rotation: 360, duration: 25, repeat: -1, ease: 'none', transformOrigin: '50% 50%' });
-            gsap.to('.at-ring-b', { rotation: -360, duration: 18, repeat: -1, ease: 'none', transformOrigin: '50% 50%' });
-            gsap.to('.at-dot-1', { y: -8, duration: 2.5, repeat: -1, yoyo: true, ease: 'power1.inOut' });
-            gsap.to('.at-dot-2', { y: 6, duration: 3.2, repeat: -1, yoyo: true, ease: 'power1.inOut', delay: 1 });
-        }, ref);
-        return () => ctx.revert();
-    }, []);
-
-    return (
-        <div ref={ref} className="relative w-full max-w-[420px] aspect-square mx-auto flex items-center justify-center">
-            <div className="at-orb-1 absolute inset-0 rounded-full bg-gradient-to-br from-[#FF570F]/20 to-[#630D00]/15 blur-[70px]" />
-            <div className="at-orb-2 absolute inset-[20%] rounded-full bg-gradient-to-tr from-[#FDE87A]/18 to-[#EE7D1D]/12 blur-[45px]" />
-            <div className="at-ring-a absolute inset-[5%] rounded-full border border-dashed border-orange-vibrant/25" />
-            <div className="at-ring-b absolute inset-[20%] rounded-full border border-dotted border-cream/15" />
-            <div className="at-dot-1 absolute top-[10%] left-[50%] -translate-x-1/2 w-2 h-2 rounded-full bg-orange-vibrant shadow-lg shadow-orange-vibrant/60" />
-            <div className="absolute top-[35%] right-[8%] w-1.5 h-1.5 rounded-full bg-orange-soft opacity-70" />
-            <div className="at-dot-2 absolute bottom-[12%] left-[20%] w-2 h-2 rounded-full bg-cream/70 shadow-md" />
-            <div className="absolute bottom-[30%] right-[15%] w-1 h-1 rounded-full bg-orange-vibrant/60" />
-            <div className="relative z-10 w-32 h-32 rounded-2xl flex flex-col items-center justify-center bg-gradient-to-br from-[#1c1c1c] to-[#0d0d0d] border border-orange-vibrant/20 shadow-2xl shadow-orange-vibrant/10">
-                <svg width="36" height="36" viewBox="0 0 36 36" fill="none" className="mb-2">
-                    <rect x="3" y="3" width="13" height="13" rx="2" stroke="#FF570F" strokeWidth="1.4" />
-                    <rect x="20" y="3" width="13" height="13" rx="2" stroke="#EE7D1D" strokeWidth="1.4" />
-                    <rect x="3" y="20" width="13" height="13" rx="2" stroke="#EE7D1D" strokeWidth="1.4" />
-                    <rect x="20" y="20" width="13" height="13" rx="2" stroke="#FDE87A" strokeWidth="1.4" />
-                    <circle cx="18" cy="18" r="2.5" fill="#FF570F" />
-                </svg>
-                <span className="text-[8px] font-bold uppercase tracking-widest text-text-muted">DDW</span>
-            </div>
-            <div className="absolute top-[5%] left-[-8%] px-3 py-1.5 rounded-xl bg-[#111]/90 border border-orange-vibrant/25 backdrop-blur-sm shadow-lg hidden md:block">
-                <span className="text-[10px] font-bold text-orange-vibrant">7 Core Services</span>
-            </div>
-            <div className="absolute bottom-[10%] right-[-6%] px-3 py-1.5 rounded-xl bg-[#111]/90 border border-cream/20 backdrop-blur-sm shadow-lg hidden md:block">
-                <span className="text-[10px] font-bold text-cream">100% Retainer</span>
-            </div>
-        </div>
-    );
+// ─── Brand Tokens ──────────────────────────────────────────────────────────────
+const B = {
+  orange:    '#FF570F',
+  orangeSoft:'#EE7D1D',
+  accent:    '#FDE87A',
+  bg:        '#080a0c',
+  bgCard:    '#0d1012',
+  bgCardAlt: '#0a0c0e',
+  border:    'rgba(255,87,15,0.18)',
 };
 
-// ─── GSAP Counter (old code — prefix + decimals support) ──────────────────────
-const GSAPCounter = ({ end, prefix = '', suffix = '', duration = 2.5, start = false, decimals = 0 }) => {
-    const valRef = useRef(null);
-    useEffect(() => {
-        if (!start || !valRef.current) return;
-        const obj = { val: 0 };
-        gsap.to(obj, {
-            val: end, duration, ease: 'power2.out',
-            onUpdate: () => {
-                if (valRef.current) valRef.current.innerText = prefix + obj.val.toFixed(decimals) + suffix;
-            }
-        });
-    }, [end, start, prefix, suffix, duration, decimals]);
-    return <span ref={valRef}>{prefix}0{suffix}</span>;
-};
-
-// ─── GSAP Tilt (old code) ─────────────────────────────────────────────────────
-const GSAPTilt = ({ children, className }) => {
-    const tiltRef = useRef(null);
-    useEffect(() => {
-        const el = tiltRef.current;
-        if (!el) return;
-        const xTo = gsap.quickTo(el, 'rotationY', { ease: 'power2.out', duration: 0.5 });
-        const yTo = gsap.quickTo(el, 'rotationX', { ease: 'power2.out', duration: 0.5 });
-        const handleMouseMove = (e) => {
-            const rect = el.getBoundingClientRect();
-            xTo(((e.clientX - rect.left) / rect.width - 0.5) * 15);
-            yTo(-((e.clientY - rect.top) / rect.height - 0.5) * 15);
-        };
-        const handleMouseLeave = () => { xTo(0); yTo(0); };
-        el.addEventListener('mousemove', handleMouseMove);
-        el.addEventListener('mouseleave', handleMouseLeave);
-        return () => { el.removeEventListener('mousemove', handleMouseMove); el.removeEventListener('mouseleave', handleMouseLeave); };
-    }, []);
-    return <div ref={tiltRef} className={className} style={{ transformPerspective: 1000 }}>{children}</div>;
-};
-
-// ─── Magnetic Button (old code) ───────────────────────────────────────────────
-const MagneticButton = ({ to, children, variant = 'primary', className = '' }) => {
-    const btnRef = useRef(null);
-    useEffect(() => {
-        const el = btnRef.current;
-        if (!el) return;
-        const xTo = gsap.quickTo(el, 'x', { duration: 0.3, ease: 'power2.out' });
-        const yTo = gsap.quickTo(el, 'y', { duration: 0.3, ease: 'power2.out' });
-        const onMove = (e) => {
-            const rect = el.getBoundingClientRect();
-            xTo((e.clientX - rect.left - rect.width / 2) * 0.25);
-            yTo((e.clientY - rect.top - rect.height / 2) * 0.25);
-        };
-        const onLeave = () => { xTo(0); yTo(0); };
-        el.addEventListener('mousemove', onMove);
-        el.addEventListener('mouseleave', onLeave);
-        return () => { el.removeEventListener('mousemove', onMove); el.removeEventListener('mouseleave', onLeave); };
-    }, []);
-    const baseStyles = 'relative px-8 py-4 font-bold text-sm uppercase tracking-wider transition-all duration-500 overflow-hidden group inline-block';
-    const variants = {
-        primary: 'bg-orange-vibrant text-deep-black hover:bg-cream border-2 border-orange-vibrant',
-        secondary: 'border-2 border-orange-vibrant text-pure-white hover:bg-orange-vibrant hover:text-deep-black',
-    };
-    return (
-        <Link ref={btnRef} to={to} className={`${baseStyles} ${variants[variant]} ${className}`}>
-            <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-            <span className="absolute inset-0 scale-0 group-hover:scale-100 transition-transform duration-500 bg-orange-vibrant/20 rounded-full blur-xl" />
-            <span className="relative z-10 flex items-center gap-2">
-                {children}
-                <span className="transform group-hover:translate-x-1 transition-transform duration-300">→</span>
-            </span>
-        </Link>
-    );
-};
-
-// ─── Stat Card (old code UI) ──────────────────────────────────────────────────
-const StatCard = ({ stat, counterStart }) => {
-    return (
-        <GSAPTilt className="relative p-6 rounded-2xl border-2 border-orange-vibrant/20 bg-gradient-to-br from-deep-black via-deep-black to-orange-vibrant/5 hover:border-orange-vibrant/60 transition-all duration-500 overflow-hidden group h-full">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/0 to-orange-vibrant/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="absolute -top-10 -right-10 w-24 h-24 bg-orange-vibrant/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="relative z-10">
-                <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent mb-2">
-                    <GSAPCounter start={counterStart} end={stat.end} suffix={stat.suffix} />
-                </div>
-                <div className="text-sm text-pure-white font-bold uppercase tracking-widest mb-1 group-hover:text-orange-vibrant transition-colors duration-300">
-                    {stat.label}
-                </div>
-                <div className="text-xs text-text-muted">{stat.sub}</div>
-            </div>
-            <div className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-[#FF570F] to-[#FDE87A] w-0 group-hover:w-full transition-all duration-700" />
-        </GSAPTilt>
-    );
-};
-
-// ─── Floating Badge (old code) ────────────────────────────────────────────────
-const FloatingBadge = ({ value, label, position = 'top-left', startCounter }) => {
-    const badgeRef = useRef(null);
-    useEffect(() => {
-        gsap.to(badgeRef.current, { y: -10, duration: 2, repeat: -1, yoyo: true, ease: 'power1.inOut' });
-    }, []);
-    const positions = {
-        'top-left': '-top-6 -left-6',
-        'bottom-right': '-bottom-6 -right-6',
-    };
-    return (
-        <div ref={badgeRef} className={`absolute ${positions[position]} bg-gradient-to-br from-orange-vibrant to-orange-600 rounded-2xl p-6 shadow-2xl shadow-orange-vibrant/50 z-10 border-2 border-orange-vibrant/30`}>
-            <div className="text-5xl font-black text-deep-black mb-1">
-                {typeof value === 'string' ? value : <GSAPCounter start={startCounter} end={value} suffix="+" />}
-            </div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-deep-black/80 leading-tight">
-                {label.split(' ').map((word, i) => <div key={i}>{word}</div>)}
-            </div>
-            <div className="absolute inset-0 rounded-2xl border-2 border-orange-vibrant animate-ping opacity-20" />
-        </div>
-    );
-};
-
-// ─── Stats Data (new code content) ───────────────────────────────────────────
-const statsData = [
-    { end: 7,   suffix: '',   label: 'Core retainer services', sub: 'One team across all seven' },
-    { end: 100, suffix: '%',  label: 'Retainer engagements',   sub: 'No one-off projects, ever' },
-    { end: 2,   suffix: '',   label: 'Global markets',          sub: 'US and EU operations' },
-    { end: 24,  suffix: 'hr', label: 'Response SLA',           sub: 'For all active retainers' },
+// ─── Stats Data ────────────────────────────────────────────────────────────────
+const STATS = [
+  { end: 7,   suffix: '',    label: 'Core Services',       sub: 'One team across all seven'   },
+  { end: 100, suffix: '%',   label: 'Retainer Only',       sub: 'No one-off projects, ever'   },
+  { end: 2,   suffix: '',    label: 'Global Markets',      sub: 'US and EU operations'         },
+  { end: 24,  suffix: 'hr',  label: 'Response SLA',        sub: 'For all active retainers'    },
 ];
 
-// ─── Main Component ────────────────────────────────────────────────────────────
-const AboutSection = () => {
-    const sectionRef   = useRef(null);
-    const headingRef   = useRef(null);
-    const imageWrapperRef = useRef(null);
-    const parallax1Ref = useRef(null);
-    const parallax2Ref = useRef(null);
-    const [counterStart, setCounterStart] = useState(false);
+const PILLS = ['Florida, USA', 'Rome, Italy', 'Retainer-only', 'US + EU clients'];
 
-    useEffect(() => {
-        const ctx = gsap.context(() => {
+const TRUST = [
+  {
+    text: 'Award Winning',
+    icon: (
+      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round"
+          d="M16 4v12l-4-2-4 2V4M6 4h12M6 4c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2m12-6c1.1 0 2 .9 2 2v2c0 1.1-.9 2-2 2" />
+      </svg>
+    ),
+  },
+  {
+    text: 'Enterprise Security',
+    icon: (
+      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round"
+          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+    ),
+  },
+  {
+    text: 'Lightning Fast',
+    icon: (
+      <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    ),
+  },
+];
 
-            // Heading — old code heading-word style
-            gsap.from('.heading-word', {
-                y: 50, opacity: 0, rotationX: -90, stagger: 0.1, duration: 1, ease: 'power3.out',
-                scrollTrigger: { trigger: headingRef.current, start: 'top 80%' },
-            });
+// ─── Utility: is touch / mobile ────────────────────────────────────────────────
+const isTouchDevice = () =>
+  typeof window !== 'undefined' &&
+  (window.matchMedia('(max-width: 768px)').matches ||
+    'ontouchstart' in window ||
+    navigator.maxTouchPoints > 0);
 
-            // Left visual reveal + counter trigger — old code
-            // imageWrapperRef waali gsap.from line ko replace karo:
-gsap.from(imageWrapperRef.current, {
-    scale: 0.8, opacity: 0, duration: 1.5, ease: 'power3.out',
-    scrollTrigger: {
-        trigger: imageWrapperRef.current,
-        start: 'top 85%',
-        once: true,
-        onEnter: () => setCounterStart(true),
+// ─── GSAP Counter ─────────────────────────────────────────────────────────────
+const GSAPCounter = ({ end, suffix = '', duration = 2.2, active = false, decimals = 0 }) => {
+  const ref = useRef(null);
+  const animated = useRef(false);
+
+  useEffect(() => {
+    if (!active || animated.current || !ref.current) return;
+    animated.current = true;
+    const obj = { val: 0 };
+    gsap.to(obj, {
+      val: end,
+      duration,
+      ease: 'power2.out',
+      onUpdate: () => {
+        if (ref.current) ref.current.textContent = obj.val.toFixed(decimals) + suffix;
+      },
+    });
+  }, [active, end, suffix, duration, decimals]);
+
+  return (
+    <span ref={ref} style={{ fontFamily: 'Montserrat, sans-serif' }}>
+      0{suffix}
+    </span>
+  );
+};
+
+// ─── Abstract Team Visual ──────────────────────────────────────────────────────
+const AbstractTeamVisual = () => {
+  const containerRef = useRef(null);
+  const orb1Ref = useRef(null);
+  const orb2Ref = useRef(null);
+  const ringARef = useRef(null);
+  const ringBRef = useRef(null);
+  const dot1Ref = useRef(null);
+  const dot2Ref = useRef(null);
+  const barsRef = useRef([]);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.to(orb1Ref.current, { scale: 1.2, duration: 5, repeat: -1, yoyo: true, ease: 'power1.inOut' });
+      gsap.to(orb2Ref.current, { scale: 0.8, duration: 7, repeat: -1, yoyo: true, ease: 'power1.inOut', delay: 2 });
+      gsap.to(ringARef.current, { rotation: 360, duration: 24, repeat: -1, ease: 'none', transformOrigin: '50% 50%' });
+      gsap.to(ringBRef.current, { rotation: -360, duration: 16, repeat: -1, ease: 'none', transformOrigin: '50% 50%' });
+      gsap.to(dot1Ref.current, { y: -9, duration: 2.5, repeat: -1, yoyo: true, ease: 'power1.inOut' });
+      gsap.to(dot2Ref.current, { y: 7, duration: 3.2, repeat: -1, yoyo: true, ease: 'power1.inOut', delay: 1 });
+
+      // Animate data bars
+      barsRef.current.forEach((bar, i) => {
+        if (!bar) return;
+        gsap.to(bar, {
+          scaleY: gsap.utils.random(0.3, 1),
+          duration: gsap.utils.random(1.2, 2.5),
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+          delay: i * 0.18,
+        });
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  const barData = [30, 55, 45, 70, 40, 65, 50, 80];
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative w-full h-full flex items-center justify-center select-none pointer-events-none"
+    >
+      {/* Glowing orbs */}
+      <div
+        ref={orb1Ref}
+        className="absolute inset-0 rounded-full"
+        style={{
+          background: `radial-gradient(circle, ${B.orange}20 0%, transparent 70%)`,
+          filter: 'blur(60px)',
+        }}
+      />
+      <div
+        ref={orb2Ref}
+        className="absolute rounded-full"
+        style={{
+          inset: '20%',
+          background: `radial-gradient(circle, ${B.accent}18 0%, transparent 70%)`,
+          filter: 'blur(40px)',
+        }}
+      />
+
+      {/* Dashed orbiting rings */}
+      <div
+        ref={ringARef}
+        className="absolute rounded-full"
+        style={{
+          inset: '6%',
+          border: `1px dashed ${B.orange}28`,
+        }}
+      />
+      <div
+        ref={ringBRef}
+        className="absolute rounded-full"
+        style={{
+          inset: '22%',
+          border: `1px dotted rgba(255,255,255,0.1)`,
+        }}
+      />
+
+      {/* Orbit dots */}
+      <div
+        ref={dot1Ref}
+        className="absolute"
+        style={{
+          top: '9%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: 8,
+          height: 8,
+          borderRadius: '50%',
+          background: B.orange,
+          boxShadow: `0 0 12px 4px ${B.orange}70`,
+        }}
+      />
+      <div
+        className="absolute"
+        style={{
+          top: '34%',
+          right: '8%',
+          width: 6,
+          height: 6,
+          borderRadius: '50%',
+          background: B.orangeSoft,
+          opacity: 0.7,
+        }}
+      />
+      <div
+        ref={dot2Ref}
+        className="absolute"
+        style={{
+          bottom: '11%',
+          left: '20%',
+          width: 8,
+          height: 8,
+          borderRadius: '50%',
+          background: `${B.accent}BB`,
+          boxShadow: `0 0 10px 3px ${B.accent}40`,
+        }}
+      />
+      <div
+        className="absolute"
+        style={{
+          bottom: '28%',
+          right: '14%',
+          width: 5,
+          height: 5,
+          borderRadius: '50%',
+          background: `${B.orange}60`,
+        }}
+      />
+
+      {/* Pulsing data bars at bottom */}
+      <div
+        className="absolute flex items-end gap-1"
+        style={{ bottom: '12%', left: '50%', transform: 'translateX(-50%)' }}
+      >
+        {barData.map((h, i) => (
+          <div
+            key={i}
+            ref={(el) => (barsRef.current[i] = el)}
+            className="rounded-t-sm origin-bottom"
+            style={{
+              width: 4,
+              height: h * 0.45,
+              background:
+                i % 3 === 0
+                  ? B.orange
+                  : i % 3 === 1
+                  ? `${B.orangeSoft}60`
+                  : `${B.accent}40`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Center glowing node */}
+      <div
+        className="relative z-10 flex flex-col items-center justify-center rounded-2xl"
+        style={{
+          width: 120,
+          height: 120,
+          background: `linear-gradient(135deg, #1c1c1c 0%, ${B.bgCardAlt} 100%)`,
+          border: `1px solid ${B.orange}25`,
+          boxShadow: `0 0 40px ${B.orange}15, 0 20px 60px rgba(0,0,0,0.5)`,
+        }}
+      >
+        {/* DDW grid icon */}
+        <svg width="40" height="40" viewBox="0 0 36 36" fill="none" style={{ marginBottom: 6 }}>
+          <rect x="3"  y="3"  width="13" height="13" rx="2" stroke={B.orange}    strokeWidth="1.4" />
+          <rect x="20" y="3"  width="13" height="13" rx="2" stroke={B.orangeSoft} strokeWidth="1.4" />
+          <rect x="3"  y="20" width="13" height="13" rx="2" stroke={B.orangeSoft} strokeWidth="1.4" />
+          <rect x="20" y="20" width="13" height="13" rx="2" stroke={B.accent}     strokeWidth="1.4" />
+          <circle cx="18" cy="18" r="3" fill={B.orange} />
+        </svg>
+        <span
+          style={{
+            fontSize: 8,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.2em',
+            color: 'rgba(255,255,255,0.35)',
+            fontFamily: 'Montserrat, sans-serif',
+          }}
+        >
+          DDW
+        </span>
+      </div>
+
+      {/* Floating info chips — hidden on smallest screens */}
+      <div
+        className="absolute hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl"
+        style={{
+          top: '5%',
+          left: '-6%',
+          background: 'rgba(13,16,18,0.92)',
+          border: `1px solid ${B.orange}28`,
+          backdropFilter: 'blur(10px)',
+        }}
+      >
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: B.orange }} />
+        <span style={{ fontSize: 10, fontWeight: 700, color: B.orange, fontFamily: 'Montserrat, sans-serif' }}>
+          7 Core Services
+        </span>
+      </div>
+      <div
+        className="absolute hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl"
+        style={{
+          bottom: '8%',
+          right: '-5%',
+          background: 'rgba(13,16,18,0.92)',
+          border: `1px solid ${B.accent}28`,
+          backdropFilter: 'blur(10px)',
+        }}
+      >
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: B.accent }} />
+        <span style={{ fontSize: 10, fontWeight: 700, color: B.accent, fontFamily: 'Montserrat, sans-serif' }}>
+          100% Retainer
+        </span>
+      </div>
+    </div>
+  );
+};
+
+// ─── Browser Mockup Wrapper ────────────────────────────────────────────────────
+const BrowserMockup = ({ children, className = '' }) => (
+  <div
+    className={`relative rounded-2xl overflow-hidden ${className}`}
+    style={{
+      background: 'rgba(13,16,18,0.97)',
+      border: '1px solid rgba(255,255,255,0.07)',
+      boxShadow: `0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,87,15,0.08)`,
+      backdropFilter: 'blur(20px)',
+    }}
+  >
+    {/* Title bar */}
+    <div
+      className="flex items-center gap-2 px-4 py-3 border-b"
+      style={{ borderColor: 'rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}
+    >
+      {/* Traffic lights */}
+      <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#FF5F57' }} />
+      <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#FFBD2E' }} />
+      <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28C840' }} />
+      {/* URL bar */}
+      <div
+        className="flex-1 mx-4 flex items-center gap-2 px-3 py-1 rounded-md"
+        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+      >
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" />
+          <path d="M7 11V7a5 5 0 0110 0v4" />
+        </svg>
+        <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', fontFamily: 'Inter, sans-serif' }}>
+          ddwagency.com/about
+        </span>
+      </div>
+    </div>
+    {children}
+  </div>
+);
+
+// ─── Floating Stat Badge ───────────────────────────────────────────────────────
+const FloatingBadge = ({ value, label, accent, delay = 0, style = {} }) => {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    gsap.to(ref.current, {
+      y: -10,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: 'power1.inOut',
+      delay,
+    });
+  }, [delay]);
+
+  return (
+    <div
+      ref={ref}
+      className="absolute z-20 rounded-2xl p-4 sm:p-5"
+      style={{
+        background: `linear-gradient(135deg, ${accent} 0%, ${B.orangeSoft} 100%)`,
+        border: `2px solid ${accent}40`,
+        boxShadow: `0 16px 48px ${accent}40`,
+        ...style,
+      }}
+    >
+      <div
+        className="font-black leading-none mb-1"
+        style={{
+          fontSize: 'clamp(22px, 3vw, 32px)',
+          color: B.bg,
+          fontFamily: 'Montserrat, sans-serif',
+          letterSpacing: '-0.03em',
+        }}
+      >
+        {value}
+      </div>
+      <div
+        style={{
+          fontSize: 9,
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.18em',
+          color: `${B.bg}CC`,
+          fontFamily: 'Montserrat, sans-serif',
+          lineHeight: 1.4,
+        }}
+      >
+        {label}
+      </div>
+      {/* Ping ring */}
+      <div
+        className="absolute inset-0 rounded-2xl pointer-events-none"
+        style={{
+          border: `2px solid ${accent}`,
+          animation: 'ddwPing 2.5s ease-out infinite',
+          opacity: 0,
+        }}
+      />
+    </div>
+  );
+};
+
+// ─── Stat Card ─────────────────────────────────────────────────────────────────
+const StatCard = ({ stat, active, index }) => {
+  const cardRef = useRef(null);
+  const glowRef = useRef(null);
+  const isTouch = useRef(isTouchDevice());
+  const [spot, setSpot] = useState({ x: 50, y: 50, on: false });
+
+  // 3D tilt — desktop only
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (isTouch.current || !cardRef.current) return;
+      const rect = cardRef.current.getBoundingClientRect();
+      const dx = (e.clientX - rect.left) / rect.width - 0.5;
+      const dy = (e.clientY - rect.top) / rect.height - 0.5;
+      gsap.to(cardRef.current, {
+        rotationY: dx * 14,
+        rotationX: -dy * 14,
+        transformPerspective: 900,
+        duration: 0.4,
+        ease: 'power2.out',
+      });
+      setSpot({
+        x: ((e.clientX - rect.left) / rect.width) * 100,
+        y: ((e.clientY - rect.top) / rect.height) * 100,
+        on: true,
+      });
     },
-});
+    []
+  );
 
-            // Content reveal — old code
-            gsap.from('.about-content', {
-                y: 40, opacity: 0, duration: 1, stagger: 0.15, ease: 'power3.out',
-                scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' },
-            });
+  const handleMouseLeave = useCallback(() => {
+    if (isTouch.current || !cardRef.current) return;
+    gsap.to(cardRef.current, {
+      rotationY: 0, rotationX: 0,
+      duration: 0.6, ease: 'power3.out',
+    });
+    setSpot((s) => ({ ...s, on: false }));
+  }, []);
 
-            // Stats counter trigger — new code
-            ScrollTrigger.create({
-                trigger: '.about-stats-grid',
-                start: 'top 85%',
-                once: true,
-                onEnter: () => setCounterStart(true),
-            });
+  const accent = index % 2 === 0 ? B.orange : B.orangeSoft;
 
-            // Parallax glows — old code
-            gsap.to(parallax1Ref.current, { yPercent: 40, ease: 'none', scrollTrigger: { trigger: sectionRef.current, scrub: true } });
-            gsap.to(parallax2Ref.current, { yPercent: -40, ease: 'none', scrollTrigger: { trigger: sectionRef.current, scrub: true } });
+  return (
+    <div
+      ref={cardRef}
+      className="relative rounded-2xl overflow-hidden border group cursor-default min-h-[44px]"
+      style={{
+        background: `linear-gradient(135deg, ${B.bgCard} 0%, ${B.bgCardAlt} 100%)`,
+        borderColor: `${accent}20`,
+        willChange: 'transform',
+        transition: 'border-color 0.4s ease',
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Spotlight */}
+      {spot.on && !isTouch.current && (
+        <div
+          className="absolute inset-0 pointer-events-none z-0"
+          style={{
+            background: `radial-gradient(280px circle at ${spot.x}% ${spot.y}%, ${accent}16 0%, transparent 65%)`,
+          }}
+        />
+      )}
 
-        }, sectionRef);
-        return () => ctx.revert();
-    }, []);
+      {/* Corner glow */}
+      <div
+        className="absolute -top-8 -right-8 w-28 h-28 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+        style={{
+          background: `radial-gradient(circle, ${accent}30 0%, transparent 70%)`,
+          filter: 'blur(20px)',
+        }}
+      />
 
-    return (
-        <section id="about" ref={sectionRef} className="relative py-24 md:py-32 bg-deep-black overflow-hidden">
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,87,15,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,87,15,0.03)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
+      {/* Dot grid watermark */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        style={{
+          backgroundImage: `radial-gradient(${accent} 1px, transparent 1px)`,
+          backgroundSize: '18px 18px',
+        }}
+      />
 
-            {/* Parallax glows — old code sizes */}
-            <div ref={parallax1Ref} className="absolute top-0 right-0 w-[700px] h-[700px] bg-orange-vibrant/10 rounded-full blur-[200px] pointer-events-none" />
-            <div ref={parallax2Ref} className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-cream/5 rounded-full blur-[180px] pointer-events-none" />
+      {/* Watermark number */}
+      <div
+        className="absolute -bottom-2 -right-1 font-black pointer-events-none select-none leading-none"
+        style={{
+          fontSize: 'clamp(48px, 6vw, 80px)',
+          color: accent,
+          opacity: 0.05,
+          letterSpacing: '-0.04em',
+          fontFamily: 'Montserrat, sans-serif',
+        }}
+      >
+        {stat.end}{stat.suffix}
+      </div>
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+      {/* Bottom progress bar */}
+      <div
+        className="absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full transition-all duration-700 rounded-full"
+        style={{ background: `linear-gradient(90deg, ${accent}, ${B.accent})` }}
+      />
 
-                    {/* LEFT: Abstract Visual inside old tilt card frame + FloatingBadges */}
-                    <div className="lg:col-span-5 " ref={imageWrapperRef}>
-                        <div className="relative w-full max-w-md mx-auto lg:mx-0">
+      {/* Top accent line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{ background: `linear-gradient(90deg, transparent, ${accent}45, transparent)` }}
+      />
 
-                            <GSAPTilt className="relative aspect-square rounded-3xl overflow-hidden border-2 border-orange-vibrant/30 shadow-2xl shadow-orange-vibrant/20 group flex items-center justify-center"
-                                style={{ background: 'linear-gradient(135deg, rgba(255,87,15,0.05) 0%, rgba(10,10,10,0.95) 100%)' }}>
-                                <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/5 to-transparent" />
-                                <div className="absolute inset-0 bg-gradient-to-br from-orange-vibrant/0 to-orange-vibrant/15 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                <AbstractTeamVisual />
-                            </GSAPTilt>
+      {/* Content */}
+      <div className="relative z-10 p-5">
+        <div
+          className="font-black mb-1 leading-none"
+          style={{
+            fontSize: 'clamp(28px, 3.5vw, 42px)',
+            letterSpacing: '-0.03em',
+            background: `linear-gradient(135deg, ${accent} 0%, ${B.accent} 100%)`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            fontFamily: 'Montserrat, sans-serif',
+          }}
+        >
+          <GSAPCounter end={stat.end} suffix={stat.suffix} active={active} />
+        </div>
+        <div
+          className="font-bold uppercase mb-1 group-hover:text-white transition-colors duration-300"
+          style={{
+            fontSize: 10,
+            letterSpacing: '0.2em',
+            color: 'rgba(255,255,255,0.7)',
+            fontFamily: 'Montserrat, sans-serif',
+          }}
+        >
+          {stat.label}
+        </div>
+        <div
+          style={{
+            fontSize: 11,
+            color: 'rgba(255,255,255,0.35)',
+            fontFamily: 'Inter, sans-serif',
+          }}
+        >
+          {stat.sub}
+        </div>
+      </div>
+    </div>
+  );
+};
 
-                            {/* FloatingBadges — old code, new content */}
-                            <FloatingBadge value="7+" label="Core Services" position="top-left" startCounter={counterStart} />
-                            <FloatingBadge value={100} startCounter={counterStart} label="Retainer Only" position="bottom-right" />
+// ─── Magnetic CTA Button ───────────────────────────────────────────────────────
+const MagneticButton = ({ href, children, variant = 'primary' }) => {
+  const btnRef = useRef(null);
+  const isTouch = useRef(isTouchDevice());
+  const xTo = useRef(null);
+  const yTo = useRef(null);
 
-                            <div className="absolute -z-10 inset-0 bg-gradient-to-br from-orange-vibrant/20 to-transparent rounded-3xl blur-2xl transform scale-105" />
-                        </div>
-                    </div>
+  useEffect(() => {
+    if (isTouch.current || !btnRef.current) return;
+    xTo.current = gsap.quickTo(btnRef.current, 'x', { duration: 0.45, ease: 'power3.out' });
+    yTo.current = gsap.quickTo(btnRef.current, 'y', { duration: 0.45, ease: 'power3.out' });
+  }, []);
 
-                    {/* RIGHT: Content — old UI, new copy */}
-                    <div className="lg:col-span-7 space-y-8">
+  const handleMouseMove = useCallback((e) => {
+    if (isTouch.current || !btnRef.current) return;
+    const rect = btnRef.current.getBoundingClientRect();
+    xTo.current?.((e.clientX - (rect.left + rect.width  / 2)) * 0.3);
+    yTo.current?.((e.clientY - (rect.top  + rect.height / 2)) * 0.3);
+  }, []);
 
-                        <span className="about-content inline-block px-6 py-2.5 border-2 border-orange-vibrant/40 bg-orange-vibrant/10 text-orange-vibrant text-xs font-bold uppercase tracking-[0.25em] rounded-full backdrop-blur-sm">
-                            Who We Are
-                        </span>
+  const handleMouseLeave = useCallback(() => {
+    if (isTouch.current) return;
+    xTo.current?.(0);
+    yTo.current?.(0);
+  }, []);
 
-                        {/* Heading — old heading-word spans, new content */}
-                        <h2 ref={headingRef} className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-black text-pure-white leading-[1.1] perspective-1000">
-                            <span className="heading-word inline-block mr-3">Built</span>
-                            <span className="heading-word inline-block mr-3">by</span>
-                            <span className="heading-word inline-block">engineers.</span>
-                            <br />
-                            <span className="heading-word inline-block mr-3 bg-gradient-to-r from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">Not</span>
-                            <span className="heading-word inline-block bg-gradient-to-r from-[#FF570F] to-[#FDE87A] bg-clip-text text-transparent">marketers.</span>
-                        </h2>
+  const isPrimary = variant === 'primary';
 
-                        {/* Body copy — new content */}
-                        <p className="about-content text-pure-white/70 text-base md:text-lg leading-relaxed max-w-xl">
-                            Digital Dream Works is a cross-functional team operating from Florida and Rome. We build and maintain software systems and marketing infrastructure for US and EU clients on an ongoing retainer basis.
-                        </p>
-                        <p className="about-content text-pure-white/50 text-sm leading-relaxed max-w-xl">
-                            Every engagement is a retainer. The team that scopes the work is the team that maintains it. No handing off to juniors. No re-onboarding every six months.
-                        </p>
+  return (
+    <a
+      ref={btnRef}
+      href={isPrimary ? '/about' : '/contact'}
+      className="relative inline-flex items-center justify-center gap-2 font-bold uppercase overflow-hidden group"
+      style={{
+        minHeight: 52,
+        padding: '14px 32px',
+        borderRadius: 12,
+        fontSize: 12,
+        letterSpacing: '0.16em',
+        fontFamily: 'Montserrat, sans-serif',
+        background: isPrimary
+          ? `linear-gradient(135deg, ${B.orange} 0%, ${B.orangeSoft} 100%)`
+          : 'transparent',
+        color: isPrimary ? B.bg : '#fff',
+        border: `2px solid ${isPrimary ? 'transparent' : B.orange}`,
+        boxShadow: isPrimary ? `0 0 28px ${B.orange}30` : 'none',
+        transition: 'box-shadow 0.4s ease, background 0.4s ease',
+        willChange: 'transform',
+        textDecoration: 'none',
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Shimmer sweep */}
+      <span
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.22) 50%, transparent 65%)',
+          transform: 'translateX(-100%)',
+          transition: 'transform 0.8s ease',
+        }}
+        aria-hidden
+      />
+      {/* Hover fill for secondary */}
+      {!isPrimary && (
+        <span
+          className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+          style={{ background: `${B.orange}18` }}
+          aria-hidden
+        />
+      )}
+      <span className="relative z-10">{children}</span>
+      <svg
+        className="relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+        width="14" height="14" viewBox="0 0 16 16" fill="none"
+      >
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2"
+          strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </a>
+  );
+};
 
-                        {/* Location pills — new content */}
-                        <div className="about-content flex flex-wrap gap-3 pt-2">
-                            {['Florida, USA', 'Rome, Italy', 'Retainer-only', 'US + EU clients'].map((pill) => (
-                                <div key={pill} className="flex items-center gap-2 px-4 py-2 rounded-full border border-orange-vibrant/20 bg-orange-vibrant/5 hover:border-orange-vibrant/50 transition-colors">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-orange-vibrant" />
-                                    <span className="text-pure-white/80 text-xs font-bold tracking-wider">{pill}</span>
-                                </div>
-                            ))}
-                        </div>
+// ─── Main About Section ────────────────────────────────────────────────────────
+const AboutSection = () => {
+  const sectionRef      = useRef(null);
+  const headingRef      = useRef(null);
+  const visualWrapRef   = useRef(null);
+  const orb1Ref         = useRef(null);
+  const orb2Ref         = useRef(null);
+  const lineRef         = useRef(null);
+  const eyebrowRef      = useRef(null);
+  const bodyRef         = useRef(null);
+  const body2Ref        = useRef(null);
+  const pillsRef        = useRef(null);
+  const statsRef        = useRef(null);
+  const ctaRef          = useRef(null);
+  const trustRef        = useRef(null);
+  const wordRefs        = useRef([]);
+  const [counterActive, setCounterActive] = useState(false);
 
-                        {/* Stat cards — old card UI, new content data */}
-                        <div className="about-stats-grid about-content grid grid-cols-2 gap-4 pt-4">
-                            {statsData.map((stat, i) => (
-                                <div key={i} className="h-full">
-                                    <StatCard stat={stat} counterStart={counterStart} />
-                                </div>
-                            ))}
-                        </div>
+  // heading words
+  const headingWords = [
+    { text: 'Built by',      gradient: false },
+    { text: 'engineers.',   gradient: false },
+    { text: 'Not',          gradient: true  },
+    { text: 'marketers.',   gradient: true  },
+  ];
 
-                        {/* CTAs — old MagneticButton, new labels */}
-                        <div className="about-content flex flex-col sm:flex-row gap-4 pt-8">
-                            <MagneticButton to="/about" variant="primary">Read Our Story</MagneticButton>
-                            <MagneticButton to="/contact" variant="secondary">Work With Us</MagneticButton>
-                        </div>
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
 
-                        {/* Trust badges — old SVG icons */}
-                        <div className="about-content flex flex-wrap gap-6 pt-6 border-t border-orange-vibrant/20">
-                            {[
-                                { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 4v12l-4-2-4 2V4M6 4h12M6 4c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2m12-6c1.1 0 2 .9 2 2v2c0 1.1-.9 2-2 2" /></svg>, text: 'Award Winning' },
-                                { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>, text: 'Enterprise Security' },
-                                { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>, text: 'Lightning Fast' },
-                            ].map((item, i) => (
-                                <div key={i} className="flex items-center gap-2 text-text-muted group">
-                                    <span className="group-hover:scale-125 transition-transform duration-300">{item.icon}</span>
-                                    <span className="text-xs uppercase tracking-wider group-hover:text-orange-vibrant transition-colors">{item.text}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+    const ctx = gsap.context(() => {
+
+      // ── Orb parallax (scrub) ──────────────────────────────────────
+      gsap.to(orb1Ref.current, {
+        yPercent: 35,
+        ease: 'none',
+        scrollTrigger: { trigger: section, scrub: 1.5 },
+      });
+      gsap.to(orb2Ref.current, {
+        yPercent: -30,
+        ease: 'none',
+        scrollTrigger: { trigger: section, scrub: 1.5 },
+      });
+
+      // ── Top line reveal ───────────────────────────────────────────
+      gsap.fromTo(
+        lineRef.current,
+        { scaleX: 0, opacity: 0 },
+        {
+          scaleX: 1, opacity: 1, duration: 1.2, ease: 'power3.out',
+          scrollTrigger: { trigger: section, start: 'top 90%', once: true },
+        }
+      );
+
+      // ── Eyebrow ───────────────────────────────────────────────────
+      gsap.fromTo(
+        eyebrowRef.current,
+        { opacity: 0, y: 18, filter: 'blur(4px)' },
+        {
+          opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.8, ease: 'power3.out',
+          scrollTrigger: { trigger: eyebrowRef.current, start: 'top 88%', once: true },
+        }
+      );
+
+      // ── Heading words stagger ─────────────────────────────────────
+      gsap.fromTo(
+        wordRefs.current.filter(Boolean),
+        { opacity: 0, y: 44, rotationX: -35, skewX: 3 },
+        {
+          opacity: 1, y: 0, rotationX: 0, skewX: 0,
+          duration: 0.9, ease: 'power3.out', stagger: 0.1,
+          scrollTrigger: { trigger: headingRef.current, start: 'top 84%', once: true },
+        }
+      );
+
+      // ── Body paragraphs ───────────────────────────────────────────
+      gsap.fromTo(
+        [bodyRef.current, body2Ref.current],
+        { opacity: 0, y: 28 },
+        {
+          opacity: 1, y: 0, duration: 0.85, ease: 'power3.out', stagger: 0.15,
+          scrollTrigger: { trigger: bodyRef.current, start: 'top 88%', once: true },
+        }
+      );
+
+      // ── Pills row ─────────────────────────────────────────────────
+      gsap.fromTo(
+        pillsRef.current,
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1, y: 0, duration: 0.75, ease: 'power3.out', delay: 0.1,
+          scrollTrigger: { trigger: pillsRef.current, start: 'top 90%', once: true },
+        }
+      );
+
+      // ── Stats grid ────────────────────────────────────────────────
+      gsap.fromTo(
+        statsRef.current,
+        { opacity: 0, y: 32 },
+        {
+          opacity: 1, y: 0, duration: 0.85, ease: 'power3.out',
+          scrollTrigger: {
+            trigger: statsRef.current,
+            start: 'top 86%',
+            once: true,
+            onEnter: () => setCounterActive(true),
+          },
+        }
+      );
+
+      // ── CTA + Trust ───────────────────────────────────────────────
+      gsap.fromTo(
+        [ctaRef.current, trustRef.current],
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.15,
+          scrollTrigger: { trigger: ctaRef.current, start: 'top 92%', once: true },
+        }
+      );
+
+      // ── Visual panel ──────────────────────────────────────────────
+      gsap.fromTo(
+        visualWrapRef.current,
+        { opacity: 0, x: -32, scale: 0.96 },
+        {
+          opacity: 1, x: 0, scale: 1, duration: 1.1, ease: 'power3.out',
+          scrollTrigger: { trigger: visualWrapRef.current, start: 'top 85%', once: true },
+        }
+      );
+
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section
+      id="about"
+      ref={sectionRef}
+      className="relative w-full overflow-hidden"
+      style={{ background: B.bg, padding: 'clamp(72px, 9vw, 128px) 0' }}
+    >
+      {/* ── Injected styles ── */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
+        @keyframes ddwPing {
+          0%   { transform: scale(1);   opacity: 0.4; }
+          80%  { transform: scale(1.5); opacity: 0; }
+          100% { transform: scale(1.5); opacity: 0; }
+        }
+        .ddw-about-word { display: inline-block; transform-style: preserve-3d; }
+        .ddw-pill-hover:hover { border-color: ${B.orange}60 !important; }
+        .ddw-trust-item:hover .ddw-trust-icon { transform: scale(1.25); }
+        .ddw-trust-item:hover .ddw-trust-text { color: ${B.orange}; }
+      `}</style>
+
+      {/* ── Mesh grid background ── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(255,87,15,0.035) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,87,15,0.035) 1px, transparent 1px)
+          `,
+          backgroundSize: '54px 54px',
+          maskImage: 'radial-gradient(ellipse 75% 70% at 50% 50%, black 20%, transparent 100%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 75% 70% at 50% 50%, black 20%, transparent 100%)',
+        }}
+      />
+
+      {/* ── Atmospheric orbs ── */}
+      <div
+        ref={orb1Ref}
+        className="absolute pointer-events-none"
+        style={{
+          top: '-5%', right: '-8%',
+          width: 'clamp(320px, 45vw, 700px)',
+          height: 'clamp(320px, 45vw, 700px)',
+          background: `radial-gradient(circle, ${B.orange}12 0%, transparent 70%)`,
+          filter: 'blur(90px)',
+          borderRadius: '50%',
+        }}
+      />
+      <div
+        ref={orb2Ref}
+        className="absolute pointer-events-none"
+        style={{
+          bottom: '-5%', left: '-8%',
+          width: 'clamp(280px, 40vw, 600px)',
+          height: 'clamp(280px, 40vw, 600px)',
+          background: `radial-gradient(circle, ${B.accent}0C 0%, transparent 70%)`,
+          filter: 'blur(100px)',
+          borderRadius: '50%',
+        }}
+      />
+
+      {/* ── Top rule ── */}
+      <div
+        ref={lineRef}
+        className="absolute top-0 left-0 right-0 h-px origin-left"
+        style={{
+          background: `linear-gradient(90deg, transparent, ${B.orange}35, ${B.accent}20, transparent)`,
+          opacity: 0,
+        }}
+      />
+
+      {/* ── Content wrapper ── */}
+      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 md:px-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 xl:gap-20 items-center">
+
+          {/* ════════════════════════════════════════════════════════
+              LEFT — Visual Panel
+          ════════════════════════════════════════════════════════ */}
+          <div
+            ref={visualWrapRef}
+            className="lg:col-span-5 flex justify-center lg:justify-start"
+            style={{ opacity: 0 }}
+          >
+            <div className="relative w-full" style={{ maxWidth: 460 }}>
+
+              {/* Browser mockup housing the abstract visual */}
+              <BrowserMockup>
+                <div
+                  className="relative flex items-center justify-center"
+                  style={{
+                    height: 'clamp(280px, 40vw, 420px)',
+                    background: `radial-gradient(ellipse 70% 70% at 50% 50%, ${B.orange}08 0%, ${B.bg} 100%)`,
+                  }}
+                >
+                  {/* Dot grid inside mockup */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      backgroundImage: `radial-gradient(${B.orange}28 1px, transparent 1px)`,
+                      backgroundSize: '22px 22px',
+                      opacity: 0.035,
+                    }}
+                  />
+                  <AbstractTeamVisual />
                 </div>
+              </BrowserMockup>
+
+              {/* Floating badges */}
+              <FloatingBadge
+                value="7+"
+                label="Core Services"
+                accent={B.orange}
+                delay={0}
+                style={{ top: -20, left: -20 }}
+              />
+              <FloatingBadge
+                value="100%"
+                label="Retainer Only"
+                accent={B.orangeSoft}
+                delay={0.8}
+                style={{ bottom: -20, right: -20 }}
+              />
+
+              {/* Glow behind mockup */}
+              <div
+                className="absolute -z-10 rounded-3xl pointer-events-none"
+                style={{
+                  inset: '-5%',
+                  background: `radial-gradient(ellipse 60% 60% at 50% 50%, ${B.orange}18 0%, transparent 70%)`,
+                  filter: 'blur(30px)',
+                }}
+              />
+            </div>
+          </div>
+
+          {/* ════════════════════════════════════════════════════════
+              RIGHT — Copy + Stats + CTAs
+          ════════════════════════════════════════════════════════ */}
+          <div className="lg:col-span-7 flex flex-col gap-7">
+
+            {/* Eyebrow */}
+            <div
+              ref={eyebrowRef}
+              className="inline-flex items-center gap-2.5 self-start px-5 py-2.5 rounded-full border"
+              style={{
+                borderColor: `${B.orange}30`,
+                background: `${B.orange}0A`,
+                opacity: 0,
+              }}
+            >
+              <span
+                style={{
+                  width: 6, height: 6, borderRadius: '50%',
+                  background: B.orange,
+                  boxShadow: `0 0 8px ${B.orange}`,
+                  display: 'inline-block',
+                }}
+              />
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.24em',
+                  color: B.orange,
+                  fontFamily: 'Montserrat, sans-serif',
+                }}
+              >
+                Who We Are
+              </span>
             </div>
 
-            <style jsx>{`.perspective-1000 { perspective: 1000px; }`}</style>
-        </section>
-    );
+            {/* Heading */}
+            <h2
+              ref={headingRef}
+              className="leading-[1.08]"
+              style={{
+                fontFamily: 'Montserrat, sans-serif',
+                fontWeight: 900,
+                letterSpacing: '-0.03em',
+                fontSize: 'clamp(32px, 5vw, 64px)',
+                perspective: '1000px',
+              }}
+            >
+              {/* Line 1 */}
+              <span className="block mb-1">
+                {['Built by', 'engineers.'].map((word, i) => (
+                  <span
+                    key={i}
+                    ref={(el) => (wordRefs.current[i] = el)}
+                    className="ddw-about-word mr-3 text-white"
+                    style={{ opacity: 0 }}
+                  >
+                    {word}
+                  </span>
+                ))}
+              </span>
+              {/* Line 2 — gradient */}
+              <span className="block">
+                {['Not', 'marketers.'].map((word, i) => (
+                  <span
+                    key={i}
+                    ref={(el) => (wordRefs.current[i + 2] = el)}
+                    className="ddw-about-word mr-3"
+                    style={{
+                      opacity: 0,
+                      background: `linear-gradient(135deg, ${B.orange} 0%, ${B.accent} 100%)`,
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}
+                  >
+                    {word}
+                  </span>
+                ))}
+              </span>
+            </h2>
+
+            {/* Body copy */}
+            <p
+              ref={bodyRef}
+              style={{
+                fontFamily: 'Inter, sans-serif',
+                fontSize: 'clamp(14px, 1.5vw, 17px)',
+                lineHeight: 1.75,
+                color: 'rgba(255,255,255,0.55)',
+                maxWidth: 540,
+                opacity: 0,
+              }}
+            >
+              Digital Dream Works is a cross-functional team operating from Florida
+              and Rome. We build and maintain software systems and marketing
+              infrastructure for US and EU clients on an ongoing retainer basis.
+            </p>
+            <p
+              ref={body2Ref}
+              style={{
+                fontFamily: 'Inter, sans-serif',
+                fontSize: 'clamp(13px, 1.3vw, 15px)',
+                lineHeight: 1.75,
+                color: 'rgba(255,255,255,0.35)',
+                maxWidth: 520,
+                opacity: 0,
+              }}
+            >
+              Every engagement is a retainer. The team that scopes the work is the
+              team that maintains it — no handing off to juniors, no re-onboarding
+              every six months.
+            </p>
+
+            {/* Location pills */}
+            <div
+              ref={pillsRef}
+              className="flex flex-wrap gap-2.5"
+              style={{ opacity: 0 }}
+            >
+              {PILLS.map((pill) => (
+                <div
+                  key={pill}
+                  className="ddw-pill-hover flex items-center gap-2 rounded-full border transition-all duration-300 cursor-default"
+                  style={{
+                    padding: '8px 16px',
+                    borderColor: `${B.orange}20`,
+                    background: `${B.orange}08`,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 6, height: 6, borderRadius: '50%',
+                      background: B.orange, flexShrink: 0,
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      letterSpacing: '0.14em',
+                      textTransform: 'uppercase',
+                      color: 'rgba(255,255,255,0.7)',
+                      fontFamily: 'Montserrat, sans-serif',
+                    }}
+                  >
+                    {pill}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Stats grid */}
+            <div
+              ref={statsRef}
+              className="grid grid-cols-2 gap-3 sm:gap-4"
+              style={{ opacity: 0 }}
+            >
+              {STATS.map((stat, i) => (
+                <StatCard key={i} stat={stat} active={counterActive} index={i} />
+              ))}
+            </div>
+
+            {/* CTAs */}
+            <div
+              ref={ctaRef}
+              className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2"
+              style={{ opacity: 0 }}
+            >
+              <MagneticButton href="/about" variant="primary">
+                Read Our Story
+              </MagneticButton>
+              <MagneticButton href="/contact" variant="secondary">
+                Work With Us
+              </MagneticButton>
+            </div>
+
+            {/* Trust badges */}
+            <div
+              ref={trustRef}
+              className="flex flex-wrap gap-5 sm:gap-7 pt-5 border-t"
+              style={{
+                borderColor: `${B.orange}18`,
+                opacity: 0,
+              }}
+            >
+              {TRUST.map((item, i) => (
+                <div
+                  key={i}
+                  className="ddw-trust-item flex items-center gap-2 cursor-default"
+                  style={{ color: 'rgba(255,255,255,0.35)' }}
+                >
+                  <span
+                    className="ddw-trust-icon transition-transform duration-300"
+                    style={{ color: 'rgba(255,255,255,0.35)' }}
+                  >
+                    {item.icon}
+                  </span>
+                  <span
+                    className="ddw-trust-text transition-colors duration-300"
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.2em',
+                      fontFamily: 'Montserrat, sans-serif',
+                    }}
+                  >
+                    {item.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Bottom rule ── */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-px pointer-events-none"
+        style={{
+          background: `linear-gradient(90deg, transparent, ${B.orange}18, transparent)`,
+        }}
+      />
+    </section>
+  );
 };
 
 export default AboutSection;
