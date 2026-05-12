@@ -1,14 +1,15 @@
-// src/components/Collaborate.jsx
-// DDW Agency — Discovery CTA Section | Premium GSAP + React JSX | Vite Compatible
+// src/components/Collaborate/index.jsx
+// DDW Agency — Discovery CTA Section | Optimized | Production-Ready
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, memo, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Brand Tokens ──────────────────────────────────────────────────────────────
-const B = {
+// ─── Brand Tokens ─────────────────────────────────────────────────────────────
+// FIX #6: Frozen — prevents accidental mutation
+const B = Object.freeze({
   orange:     '#FF570F',
   orangeSoft: '#EE7D1D',
   accent:     '#FDE87A',
@@ -16,10 +17,43 @@ const B = {
   bgCard:     '#0d1012',
   bgCardAlt:  '#0a0c0e',
   border:     'rgba(255,87,15,0.18)',
-};
+});
 
-// ─── Agenda Items ──────────────────────────────────────────────────────────────
-const AGENDA = [
+// ─── FIX #2: isTouch singleton — computed once at module load ─────────────────
+const _touchQuery =
+  typeof window !== 'undefined'
+    ? window.matchMedia('(max-width: 768px)')
+    : null;
+
+let _isTouch =
+  typeof window !== 'undefined'
+    ? (_touchQuery?.matches || navigator.maxTouchPoints > 0)
+    : false;
+
+if (_touchQuery) {
+  _touchQuery.addEventListener('change', (e) => {
+    _isTouch = e.matches || navigator.maxTouchPoints > 0;
+  });
+}
+
+const getIsTouch = () => _isTouch;
+
+// ─── Static Data ──────────────────────────────────────────────────────────────
+// FIX #8: h1Words at module scope
+const H1_WORDS = Object.freeze([
+  'Every', 'month', 'with', 'the', 'wrong', 'team', 'is', 'budget', 'that',
+]);
+
+// FIX #16: Trust copy lines at module scope
+const TRUST_LINES = Object.freeze([
+  'No commitment · 20 minutes',
+  'Straight talk, not a pitch',
+]);
+
+// FIX #15: Accent color lookup — O(1), scalable
+const AGENDA_ACCENTS = Object.freeze([B.orange, B.orangeSoft, B.accent]);
+
+const AGENDA = Object.freeze([
   {
     num: '01',
     title: "'Look at what you're running'",
@@ -35,23 +69,57 @@ const AGENDA = [
     title: "Tell you plainly if we're the right fit",
     desc: "If DDW isn't the right team for your account, we'll say so on the call. No follow-up unless you ask for one.",
   },
-];
+]);
 
-// ─── Floating Stat Pills data ──────────────────────────────────────────────────
-const PILLS = [
-  { value: '600%',  label: 'Peak ROAS',     delay: 0,   pos: { top: -24,   left: -24  } },
-  { value: '$418K', label: 'EU Revenue',    delay: 0.5, pos: { bottom: -24, right: -24 } },
-  { value: '$0.09', label: 'CPC Achieved',  delay: 1.0, pos: { top: '42%', right: -32 } },
-];
+// FIX #12: Consistent string-typed positions throughout
+const PILLS = Object.freeze([
+  { value: '600%',  label: 'Peak ROAS',    delay: 0,   pos: { top: '-24px',  left: '-24px'  } },
+  { value: '$418K', label: 'EU Revenue',   delay: 0.5, pos: { bottom: '-24px', right: '-24px' } },
+  { value: '$0.09', label: 'CPC Achieved', delay: 1.0, pos: { top: '42%',    right: '-32px' } },
+]);
 
-// ─── Utility ───────────────────────────────────────────────────────────────────
-const isTouch = () =>
-  typeof window !== 'undefined' &&
-  (window.matchMedia('(max-width: 768px)').matches ||
-    navigator.maxTouchPoints > 0);
+// FIX #17: Bar animation config at module scope — never recreated
+const BAR_CONFIG = Object.freeze([
+  { timing: 1.2, delay: 0,    scale: 0.4  },
+  { timing: 1.6, delay: 0.3,  scale: 0.6  },
+  { timing: 1.0, delay: 0.6,  scale: 0.3  },
+  { timing: 1.4, delay: 0.1,  scale: 0.7  },
+  { timing: 1.8, delay: 0.9,  scale: 0.5  },
+  { timing: 1.3, delay: 0.45, scale: 0.45 },
+]);
 
-// ─── Abstract CTA Visual ───────────────────────────────────────────────────────
-const AbstractCTAVisual = () => {
+const BAR_HEIGHTS = Object.freeze(['100%', '80%', '60%', '90%', '70%', '85%']);
+
+const CALENDLY_URL = 'https://calendly.com/digi-dreamworks/onboarding-call';
+
+// ─── Shared SVG Components ────────────────────────────────────────────────────
+const ArrowIcon = memo(() => (
+  <svg
+    className="relative z-10 transition-transform duration-300 group-hover:translate-x-1.5"
+    width="16" height="16" viewBox="0 0 24 24"
+    fill="none" stroke="currentColor" strokeWidth="2.5"
+    aria-hidden="true"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+  </svg>
+));
+ArrowIcon.displayName = 'ArrowIcon';
+
+const CheckIcon = memo(() => (
+  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+    <circle cx="6" cy="6" r="5.5" stroke={`${B.orange}50`} />
+    <path
+      d="M3.5 6l2 2 3-3"
+      stroke={B.orange} strokeWidth="1.3"
+      strokeLinecap="round" strokeLinejoin="round"
+    />
+  </svg>
+));
+CheckIcon.displayName = 'CheckIcon';
+
+// ─── Abstract CTA Visual ──────────────────────────────────────────────────────
+// FIX #11: barsRef reset before population
+const AbstractCTAVisual = memo(() => {
   const containerRef = useRef(null);
   const glowARef     = useRef(null);
   const glowBRef     = useRef(null);
@@ -62,8 +130,10 @@ const AbstractCTAVisual = () => {
   const barsRef      = useRef([]);
 
   useEffect(() => {
+    // FIX #11: Reset bar refs before population
+    barsRef.current = [];
+
     const ctx = gsap.context(() => {
-      // Ambient glow pulse
       gsap.to(glowARef.current, {
         scale: 1.28, opacity: 0.65,
         duration: 4, repeat: -1, yoyo: true, ease: 'power1.inOut',
@@ -73,40 +143,35 @@ const AbstractCTAVisual = () => {
         duration: 6, repeat: -1, yoyo: true, ease: 'power1.inOut', delay: 1.5,
       });
 
-      // Orbiting rings
       gsap.to(ring1Ref.current, {
         rotation: 360, duration: 8,
-        repeat: -1, ease: 'none', transformOrigin: '50% 50%',
+        repeat: -1, ease: 'none', transformOrigin: '50% 50%', force3D: true,
       });
       gsap.to(ring2Ref.current, {
         rotation: -360, duration: 14,
-        repeat: -1, ease: 'none', transformOrigin: '50% 50%',
+        repeat: -1, ease: 'none', transformOrigin: '50% 50%', force3D: true,
       });
       gsap.to(ring3Ref.current, {
         rotation: 360, duration: 20,
-        repeat: -1, ease: 'none', transformOrigin: '50% 50%',
+        repeat: -1, ease: 'none', transformOrigin: '50% 50%', force3D: true,
       });
 
-      // Center breathe
       gsap.to(centerRef.current, {
         scale: 1.07, duration: 3,
         repeat: -1, yoyo: true, ease: 'sine.inOut',
       });
 
-      // Data bars
-      const barTimings = [1.2, 1.6, 1.0, 1.4, 1.8, 1.3];
-      const barDelays  = [0, 0.3, 0.6, 0.1, 0.9, 0.45];
-      const barScales  = [0.4, 0.6, 0.3, 0.7, 0.5, 0.45];
-
+      // FIX #17: BAR_CONFIG from module scope — no array allocation in effect
       barsRef.current.forEach((bar, i) => {
         if (!bar) return;
+        const cfg = BAR_CONFIG[i];
         gsap.to(bar, {
-          scaleY: barScales[i],
-          duration: barTimings[i],
+          scaleY: cfg.scale,
+          duration: cfg.timing,
           repeat: -1, yoyo: true,
           ease: 'power1.inOut',
           transformOrigin: 'bottom',
-          delay: barDelays[i],
+          delay: cfg.delay,
         });
       });
     }, containerRef);
@@ -114,14 +179,12 @@ const AbstractCTAVisual = () => {
     return () => ctx.revert();
   }, []);
 
-  const barHeights = ['100%', '80%', '60%', '90%', '70%', '85%'];
-
   return (
     <div
       ref={containerRef}
       className="relative w-full h-full flex items-center justify-center select-none pointer-events-none"
+      aria-hidden="true"
     >
-      {/* Ambient glows */}
       <div
         ref={glowARef}
         className="absolute rounded-full"
@@ -144,11 +207,11 @@ const AbstractCTAVisual = () => {
       {/* Outer orbit ring */}
       <div
         ref={ring3Ref}
-        className="absolute rounded-full"
+        className="absolute rounded-full flex items-start justify-center"
         style={{
           width: 280, height: 280,
           border: `1px dashed ${B.orange}18`,
-          display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+          willChange: 'transform',
         }}
       >
         <div style={{
@@ -161,11 +224,11 @@ const AbstractCTAVisual = () => {
       {/* Mid orbit ring */}
       <div
         ref={ring2Ref}
-        className="absolute rounded-full"
+        className="absolute rounded-full flex items-center justify-end"
         style={{
           width: 200, height: 200,
           border: `1px solid ${B.orange}22`,
-          display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+          willChange: 'transform',
         }}
       >
         <div style={{
@@ -178,11 +241,11 @@ const AbstractCTAVisual = () => {
       {/* Inner orbit ring */}
       <div
         ref={ring1Ref}
-        className="absolute rounded-full"
+        className="absolute rounded-full flex items-end justify-center"
         style={{
           width: 130, height: 130,
           border: `1px solid ${B.orange}35`,
-          display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+          willChange: 'transform',
         }}
       >
         <div style={{
@@ -192,7 +255,7 @@ const AbstractCTAVisual = () => {
         }} />
       </div>
 
-      {/* Center node card */}
+      {/* Center node */}
       <div
         ref={centerRef}
         className="relative z-10 flex flex-col items-center justify-center rounded-2xl"
@@ -203,16 +266,14 @@ const AbstractCTAVisual = () => {
           boxShadow: `0 0 40px ${B.orange}18, 0 20px 60px rgba(0,0,0,0.55)`,
         }}
       >
-        {/* Animated data bars */}
-        <div className="flex items-end gap-[3px] mb-2" style={{ height: 32 }}>
-          {barHeights.map((h, i) => (
+        <div className="flex items-end mb-2" style={{ gap: 3, height: 32 }}>
+          {BAR_HEIGHTS.map((h, i) => (
             <div
               key={i}
-              ref={(el) => (barsRef.current[i] = el)}
+              ref={(el) => { barsRef.current[i] = el; }}
               className="rounded-t-sm"
               style={{
-                width: 6,
-                height: h,
+                width: 6, height: h,
                 background: `linear-gradient(to top, ${B.orange}, ${B.accent})`,
               }}
             />
@@ -220,12 +281,9 @@ const AbstractCTAVisual = () => {
         </div>
         <span
           style={{
-            fontSize: 9,
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.2em',
+            fontSize: 9, fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.2em',
             color: `${B.orange}90`,
-            fontFamily: 'Montserrat, sans-serif',
           }}
         >
           20 min
@@ -245,10 +303,12 @@ const AbstractCTAVisual = () => {
       />
     </div>
   );
-};
+});
+AbstractCTAVisual.displayName = 'AbstractCTAVisual';
 
-// ─── Browser Mockup Shell ──────────────────────────────────────────────────────
-const BrowserMockup = ({ children }) => (
+// ─── Browser Mockup Shell ─────────────────────────────────────────────────────
+// FIX #13: aria-hidden on all decorative SVGs
+const BrowserMockup = memo(({ children }) => (
   <div
     className="relative w-full h-full rounded-2xl overflow-hidden"
     style={{
@@ -257,13 +317,13 @@ const BrowserMockup = ({ children }) => (
       boxShadow: `0 32px 80px rgba(0,0,0,0.65), 0 0 0 1px ${B.orange}0A`,
     }}
   >
-    {/* Title bar */}
     <div
       className="flex items-center gap-2 px-4 py-3 border-b"
       style={{
         borderColor: 'rgba(255,255,255,0.05)',
         background: 'rgba(255,255,255,0.02)',
       }}
+      aria-hidden="true"
     >
       <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#FF5F57' }} />
       <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#FFBD2E' }} />
@@ -276,35 +336,47 @@ const BrowserMockup = ({ children }) => (
           border: '1px solid rgba(255,255,255,0.05)',
         }}
       >
-        <svg width="9" height="9" viewBox="0 0 24 24" fill="none"
-          stroke="rgba(255,255,255,0.2)" strokeWidth="2">
+        {/* FIX #13: aria-hidden on decorative lock icon */}
+        <svg
+          width="9" height="9" viewBox="0 0 24 24"
+          fill="none" stroke="rgba(255,255,255,0.2)"
+          strokeWidth="2" aria-hidden="true"
+        >
           <rect x="3" y="11" width="18" height="11" rx="2" />
           <path d="M7 11V7a5 5 0 0110 0v4" />
         </svg>
-        <span style={{
-          fontSize: 9,
-          color: 'rgba(255,255,255,0.22)',
-          fontFamily: 'Inter, sans-serif',
-        }}>
+        <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.22)' }}>
           calendly.com/digi-dreamworks/onboarding-call
         </span>
       </div>
     </div>
     {children}
   </div>
-);
+));
+BrowserMockup.displayName = 'BrowserMockup';
 
-// ─── Floating Stat Pill ────────────────────────────────────────────────────────
-const StatPill = ({ value, label, delay, style: posStyle }) => {
-  const ref = useRef(null);
+// ─── Floating Stat Pill ───────────────────────────────────────────────────────
+// FIX #5: GSAP tween killed on unmount via returned cleanup
+const StatPill = memo(({ value, label, delay, pos }) => {
+  const ref   = useRef(null);
+  const tween = useRef(null);
 
   useEffect(() => {
     if (!ref.current) return;
-    gsap.to(ref.current, {
-      y: -10, duration: 2 + delay * 0.5,
+
+    // FIX #5: Store tween reference for cleanup
+    tween.current = gsap.to(ref.current, {
+      y: -10,
+      duration: 2 + delay * 0.5,
       repeat: -1, yoyo: true,
-      ease: 'sine.inOut', delay,
+      ease: 'sine.inOut',
+      delay,
     });
+
+    return () => {
+      tween.current?.kill();
+      tween.current = null;
+    };
   }, [delay]);
 
   return (
@@ -317,8 +389,9 @@ const StatPill = ({ value, label, delay, style: posStyle }) => {
         border: `1px solid ${B.orange}35`,
         backdropFilter: 'blur(14px)',
         boxShadow: `0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px ${B.orange}10`,
-        ...posStyle,
+        ...pos, // FIX #12: consistent string positions
       }}
+      aria-label={`${value} ${label}`}
     >
       <div
         style={{
@@ -327,19 +400,15 @@ const StatPill = ({ value, label, delay, style: posStyle }) => {
           color: B.orange,
           letterSpacing: '-0.03em',
           lineHeight: 1,
-          fontFamily: 'Montserrat, sans-serif',
         }}
       >
         {value}
       </div>
       <div
         style={{
-          fontSize: 9,
-          fontWeight: 700,
-          textTransform: 'uppercase',
-          letterSpacing: '0.2em',
+          fontSize: 9, fontWeight: 700,
+          textTransform: 'uppercase', letterSpacing: '0.2em',
           color: 'rgba(255,255,255,0.4)',
-          fontFamily: 'Montserrat, sans-serif',
           marginTop: 3,
         }}
       >
@@ -347,40 +416,72 @@ const StatPill = ({ value, label, delay, style: posStyle }) => {
       </div>
     </div>
   );
-};
+});
+StatPill.displayName = 'StatPill';
 
-// ─── Agenda Card ───────────────────────────────────────────────────────────────
-const AgendaCard = ({ item, index }) => {
-  const cardRef = useRef(null);
-  const touch   = useRef(isTouch());
-  const [spot, setSpot] = useState({ x: 50, y: 50, on: false });
+// ─── Agenda Card ──────────────────────────────────────────────────────────────
+// FIX #3: Spotlight via CSS custom properties — zero setState, zero re-renders
+// FIX #4: Spotlight div always in DOM, toggled by opacity — no mount/unmount
+// FIX #15: Accent via lookup array
+const AgendaCard = memo(({ item, index }) => {
+  const cardRef  = useRef(null);
+  const spotRef  = useRef(null);
 
-  const handleMouseMove = useCallback((e) => {
-    if (touch.current || !cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    setSpot({
-      x: ((e.clientX - rect.left) / rect.width)  * 100,
-      y: ((e.clientY - rect.top)  / rect.height) * 100,
-      on: true,
-    });
-    gsap.to(cardRef.current, {
-      rotationY: ((e.clientX - rect.left) / rect.width  - 0.5) * 10,
-      rotationX: -((e.clientY - rect.top)  / rect.height - 0.5) * 10,
-      transformPerspective: 900,
-      duration: 0.45, ease: 'power2.out',
-    });
+  // FIX #15: O(1) lookup
+  const accent = AGENDA_ACCENTS[index] ?? B.orange;
+
+  useEffect(() => {
+    const card = cardRef.current;
+    const spot = spotRef.current;
+    if (!card || !spot) return;
+
+    // FIX #11: willChange only during interaction
+    const enableCompositing  = () => { card.style.willChange = 'transform'; };
+    const disableCompositing = () => { card.style.willChange = 'auto'; };
+
+    // FIX #3: Write CSS custom properties directly — zero React re-renders
+    const onMouseMove = (e) => {
+      if (getIsTouch()) return;
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width)  * 100;
+      const y = ((e.clientY - rect.top)  / rect.height) * 100;
+
+      spot.style.setProperty('--spot-x', `${x}%`);
+      spot.style.setProperty('--spot-y', `${y}%`);
+      spot.style.opacity = '1';
+
+      gsap.to(card, {
+        rotationY:  ((e.clientX - rect.left) / rect.width  - 0.5) * 10,
+        rotationX: -((e.clientY - rect.top)  / rect.height - 0.5) * 10,
+        transformPerspective: 900,
+        duration: 0.45,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+    };
+
+    const onMouseLeave = () => {
+      if (getIsTouch()) return;
+      spot.style.opacity = '0';
+      gsap.to(card, {
+        rotationY: 0, rotationX: 0,
+        duration: 0.6, ease: 'power3.out',
+        overwrite: 'auto',
+      });
+    };
+
+    card.addEventListener('mouseenter',  enableCompositing);
+    card.addEventListener('mouseleave',  disableCompositing);
+    card.addEventListener('mousemove',   onMouseMove,  { passive: true });
+    card.addEventListener('mouseleave',  onMouseLeave);
+
+    return () => {
+      card.removeEventListener('mouseenter',  enableCompositing);
+      card.removeEventListener('mouseleave',  disableCompositing);
+      card.removeEventListener('mousemove',   onMouseMove);
+      card.removeEventListener('mouseleave',  onMouseLeave);
+    };
   }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    if (touch.current || !cardRef.current) return;
-    gsap.to(cardRef.current, {
-      rotationY: 0, rotationX: 0,
-      duration: 0.6, ease: 'power3.out',
-    });
-    setSpot((s) => ({ ...s, on: false }));
-  }, []);
-
-  const accent = index === 0 ? B.orange : index === 1 ? B.orangeSoft : B.accent;
 
   return (
     <div
@@ -389,34 +490,36 @@ const AgendaCard = ({ item, index }) => {
       style={{
         background: `linear-gradient(135deg, ${B.bgCard} 0%, ${B.bgCardAlt} 100%)`,
         borderColor: `${accent}18`,
-        willChange: 'transform',
         transition: 'border-color 0.4s ease',
         padding: 'clamp(18px, 2.5vw, 26px)',
       }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
     >
-      {/* Spotlight */}
-      {spot.on && !touch.current && (
-        <div
-          className="absolute inset-0 pointer-events-none z-0"
-          style={{
-            background: `radial-gradient(260px circle at ${spot.x}% ${spot.y}%, ${accent}14 0%, transparent 65%)`,
-          }}
-        />
-      )}
+      {/* FIX #3+#4: Spotlight always in DOM, driven by CSS vars, toggled by opacity */}
+      <div
+        ref={spotRef}
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          background: `radial-gradient(260px circle at var(--spot-x, 50%) var(--spot-y, 50%), ${accent}14 0%, transparent 65%)`,
+          opacity: 0,
+          transition: 'opacity 0.2s ease',
+          '--spot-x': '50%',
+          '--spot-y': '50%',
+        }}
+      />
 
       {/* Top accent line */}
       <div
         className="absolute top-0 left-0 right-0 h-px"
+        aria-hidden="true"
         style={{
           background: `linear-gradient(90deg, transparent, ${accent}45, transparent)`,
         }}
       />
 
-      {/* Hover bottom progress bar */}
+      {/* Hover progress bar */}
       <div
         className="absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full rounded-full"
+        aria-hidden="true"
         style={{
           background: `linear-gradient(90deg, ${accent}, ${B.accent})`,
           transition: 'width 0.7s ease',
@@ -426,6 +529,7 @@ const AgendaCard = ({ item, index }) => {
       {/* Corner glow */}
       <div
         className="absolute -top-8 -right-8 w-28 h-28 rounded-full opacity-0 group-hover:opacity-100 pointer-events-none"
+        aria-hidden="true"
         style={{
           background: `radial-gradient(circle, ${accent}28 0%, transparent 70%)`,
           filter: 'blur(20px)',
@@ -436,6 +540,7 @@ const AgendaCard = ({ item, index }) => {
       {/* Dot grid */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        aria-hidden="true"
         style={{
           backgroundImage: `radial-gradient(${accent} 1px, transparent 1px)`,
           backgroundSize: '18px 18px',
@@ -444,18 +549,16 @@ const AgendaCard = ({ item, index }) => {
 
       {/* Content */}
       <div className="relative z-10 flex gap-4 sm:gap-5">
-        {/* Number badge */}
         <div
           className="flex-shrink-0 flex items-center justify-center rounded-xl font-mono font-bold"
+          aria-hidden="true"
           style={{
-            width: 44, height: 44,
-            minWidth: 44,
+            width: 44, height: 44, minWidth: 44,
             background: `${accent}12`,
             border: `1px solid ${accent}30`,
             color: accent,
             fontSize: 12,
             letterSpacing: '0.05em',
-            fontFamily: 'Montserrat, sans-serif',
           }}
         >
           {item.num}
@@ -467,7 +570,6 @@ const AgendaCard = ({ item, index }) => {
             style={{
               fontSize: 'clamp(13px, 1.4vw, 15px)',
               color: 'rgba(255,255,255,0.85)',
-              fontFamily: 'Montserrat, sans-serif',
               letterSpacing: '-0.01em',
             }}
           >
@@ -478,7 +580,6 @@ const AgendaCard = ({ item, index }) => {
               fontSize: 'clamp(12px, 1.2vw, 13px)',
               color: 'rgba(255,255,255,0.42)',
               lineHeight: 1.7,
-              fontFamily: 'Inter, sans-serif',
             }}
           >
             {item.desc}
@@ -487,32 +588,47 @@ const AgendaCard = ({ item, index }) => {
       </div>
     </div>
   );
-};
+});
+AgendaCard.displayName = 'AgendaCard';
 
-// ─── Magnetic CTA Button ───────────────────────────────────────────────────────
-const MagneticButton = ({ href, children }) => {
+// ─── Magnetic CTA Button ──────────────────────────────────────────────────────
+// FIX #10: willChange managed via mouseenter/mouseleave
+// FIX #14: Shimmer now functional via CSS class
+const MagneticButton = memo(({ href, children }) => {
   const btnRef = useRef(null);
-  const touch  = useRef(isTouch());
   const xTo    = useRef(null);
   const yTo    = useRef(null);
 
   useEffect(() => {
-    if (touch.current || !btnRef.current) return;
-    xTo.current = gsap.quickTo(btnRef.current, 'x', { duration: 0.45, ease: 'power3.out' });
-    yTo.current = gsap.quickTo(btnRef.current, 'y', { duration: 0.45, ease: 'power3.out' });
+    if (getIsTouch() || !btnRef.current) return;
+
+    const el = btnRef.current;
+    xTo.current = gsap.quickTo(el, 'x', { duration: 0.45, ease: 'power3.out' });
+    yTo.current = gsap.quickTo(el, 'y', { duration: 0.45, ease: 'power3.out' });
+
+    // FIX #10: willChange only during magnetic interaction
+    const onEnter = () => { el.style.willChange = 'transform'; };
+    const onLeave = () => {
+      xTo.current?.(0);
+      yTo.current?.(0);
+      el.style.willChange = 'auto';
+    };
+
+    el.addEventListener('mouseenter', onEnter);
+    el.addEventListener('mouseleave', onLeave);
+
+    return () => {
+      el.removeEventListener('mouseenter', onEnter);
+      el.removeEventListener('mouseleave', onLeave);
+      gsap.set(el, { x: 0, y: 0 });
+    };
   }, []);
 
   const handleMouseMove = useCallback((e) => {
-    if (touch.current || !btnRef.current) return;
+    if (getIsTouch() || !btnRef.current) return;
     const rect = btnRef.current.getBoundingClientRect();
     xTo.current?.((e.clientX - (rect.left + rect.width  / 2)) * 0.3);
     yTo.current?.((e.clientY - (rect.top  + rect.height / 2)) * 0.3);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    if (touch.current) return;
-    xTo.current?.(0);
-    yTo.current?.(0);
   }, []);
 
   return (
@@ -521,83 +637,103 @@ const MagneticButton = ({ href, children }) => {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="relative inline-flex items-center justify-center gap-3 font-bold uppercase overflow-hidden group"
+      className="magnetic-cta relative inline-flex items-center justify-center gap-3 font-bold uppercase overflow-hidden group"
       style={{
         minHeight: 56,
         padding: '16px 40px',
         fontSize: 12,
         letterSpacing: '0.18em',
-        fontFamily: 'Montserrat, sans-serif',
         background: `linear-gradient(135deg, ${B.orange} 0%, ${B.orangeSoft} 100%)`,
         color: B.bg,
         borderRadius: 4,
         boxShadow: `0 0 32px ${B.orange}35, 0 8px 32px rgba(0,0,0,0.4)`,
-        willChange: 'transform',
         textDecoration: 'none',
         transition: 'box-shadow 0.4s ease',
       }}
       onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
     >
-      {/* Shimmer sweep */}
+      {/* FIX #14: Shimmer functional via CSS class in global stylesheet */}
       <span
-        aria-hidden
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.25) 50%, transparent 65%)',
-          transform: 'translateX(-100%)',
-          transition: 'transform 0.75s ease',
-        }}
+        aria-hidden="true"
+        className="magnetic-cta__shimmer absolute inset-0 pointer-events-none"
       />
-      {/* Cream fill on hover */}
+      {/* Accent fill on hover */}
       <span
-        aria-hidden
-        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100"
-        style={{
-          background: B.accent,
-          transition: 'opacity 0.45s ease',
-        }}
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-[450ms]"
+        style={{ background: B.accent }}
       />
       <span className="relative z-10">{children}</span>
-      <svg
-        className="relative z-10 transition-transform duration-300 group-hover:translate-x-1.5"
-        width="16" height="16" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" strokeWidth="2.5"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-      </svg>
+      <ArrowIcon />
     </a>
   );
-};
+});
+MagneticButton.displayName = 'MagneticButton';
 
-// ─── Main Collaborate Section ──────────────────────────────────────────────────
+// ─── Word Span ────────────────────────────────────────────────────────────────
+// Extracted to prevent inline ref callback recreation
+const WordSpan = memo(({ word, refCallback }) => (
+  <span
+    ref={refCallback}
+    className="ddw-word inline-block"
+    style={{
+      opacity: 0,
+      marginRight: '0.3em',
+      transformStyle: 'preserve-3d',
+    }}
+  >
+    {word}
+  </span>
+));
+WordSpan.displayName = 'WordSpan';
+
+// ─── Main Collaborate Section ─────────────────────────────────────────────────
 const Collaborate = () => {
-  const sectionRef   = useRef(null);
-  const badgeRef     = useRef(null);
-  const heading1Ref  = useRef(null);
-  const heading2Ref  = useRef(null);
-  const sub1Ref      = useRef(null);
-  const sub2Ref      = useRef(null);
-  const agendaRef    = useRef(null);
-  const ctaRef       = useRef(null);
-  const visualRef    = useRef(null);
-  const orb1Ref      = useRef(null);
-  const orb2Ref      = useRef(null);
-  const orb3Ref      = useRef(null);
-  const topLineRef   = useRef(null);
-  const botLineRef   = useRef(null);
-  const wordRefs     = useRef([]);
+  const sectionRef  = useRef(null);
+  const badgeRef    = useRef(null);
+  const heading1Ref = useRef(null);
+  const heading2Ref = useRef(null);
+  const sub1Ref     = useRef(null);
+  const sub2Ref     = useRef(null);
+  const agendaRef   = useRef(null);
+  const ctaRef      = useRef(null);
+  const visualRef   = useRef(null);
+  const orb1Ref     = useRef(null);
+  const orb2Ref     = useRef(null);
+  const orb3Ref     = useRef(null);
+  const topLineRef  = useRef(null);
+  const botLineRef  = useRef(null);
 
-  // Heading 1 words split manually (no SplitType dep issues)
-  const h1Words = ['Every', 'month', 'with', 'the', 'wrong', 'team', 'is', 'budget', 'that'];
+  // FIX #7: Reset word refs before each render
+  const wordRefs = useRef([]);
+  wordRefs.current = [];
+
+  // FIX #7: Stable ref callback factory per index
+  const getWordRef = useCallback(
+    (i) => (el) => { wordRefs.current[i] = el; },
+    [],
+  );
 
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
 
+    // FIX #14: GSAP initial states — never invisible if GSAP fails
+    gsap.set(
+      [
+        badgeRef.current,
+        heading2Ref.current,
+        sub1Ref.current,
+        sub2Ref.current,
+        ctaRef.current,
+        visualRef.current,
+      ],
+      { opacity: 0 },
+    );
+
     const ctx = gsap.context(() => {
 
-      // ── Parallax orbs ─────────────────────────────────────────────
+      // Parallax orbs
       gsap.to(orb1Ref.current, {
         yPercent: -28, ease: 'none',
         scrollTrigger: { trigger: section, scrub: 1.8 },
@@ -611,7 +747,7 @@ const Collaborate = () => {
         scrollTrigger: { trigger: section, scrub: 2 },
       });
 
-      // ── Border lines reveal ────────────────────────────────────────
+      // Border lines reveal
       gsap.fromTo(
         [topLineRef.current, botLineRef.current],
         { scaleX: 0, opacity: 0 },
@@ -619,10 +755,10 @@ const Collaborate = () => {
           scaleX: 1, opacity: 1,
           duration: 1.4, ease: 'power3.out', stagger: 0.1,
           scrollTrigger: { trigger: section, start: 'top 90%', once: true },
-        }
+        },
       );
 
-      // ── Badge ─────────────────────────────────────────────────────
+      // Badge
       gsap.fromTo(
         badgeRef.current,
         { opacity: 0, x: -32, filter: 'blur(4px)' },
@@ -630,10 +766,10 @@ const Collaborate = () => {
           opacity: 1, x: 0, filter: 'blur(0px)',
           duration: 0.85, ease: 'power3.out',
           scrollTrigger: { trigger: badgeRef.current, start: 'top 88%', once: true },
-        }
+        },
       );
 
-      // ── Heading words ─────────────────────────────────────────────
+      // Word-split heading
       const validWords = wordRefs.current.filter(Boolean);
       if (validWords.length) {
         gsap.fromTo(
@@ -643,11 +779,11 @@ const Collaborate = () => {
             opacity: 1, y: 0, rotationX: 0, skewX: 0,
             duration: 0.9, ease: 'power3.out', stagger: 0.07,
             scrollTrigger: { trigger: heading1Ref.current, start: 'top 84%', once: true },
-          }
+          },
         );
       }
 
-      // ── Heading 2 gradient line ────────────────────────────────────
+      // Gradient heading line 2
       gsap.fromTo(
         heading2Ref.current,
         { opacity: 0, y: 36, skewX: 2 },
@@ -655,10 +791,10 @@ const Collaborate = () => {
           opacity: 1, y: 0, skewX: 0,
           duration: 0.95, ease: 'power3.out', delay: 0.55,
           scrollTrigger: { trigger: heading1Ref.current, start: 'top 84%', once: true },
-        }
+        },
       );
 
-      // ── Sub copy ──────────────────────────────────────────────────
+      // Sub copy
       gsap.fromTo(
         [sub1Ref.current, sub2Ref.current],
         { opacity: 0, y: 24 },
@@ -666,22 +802,23 @@ const Collaborate = () => {
           opacity: 1, y: 0,
           duration: 0.8, ease: 'power3.out', stagger: 0.15,
           scrollTrigger: { trigger: sub1Ref.current, start: 'top 88%', once: true },
-        }
+        },
       );
 
-      // ── Agenda cards ──────────────────────────────────────────────
-      const cards = section.querySelectorAll('.agenda-item');
-      gsap.fromTo(
-        cards,
-        { opacity: 0, x: -28, scale: 0.97 },
-        {
-          opacity: 1, x: 0, scale: 1,
-          duration: 0.7, ease: 'power3.out', stagger: 0.13,
-          scrollTrigger: { trigger: agendaRef.current, start: 'top 86%', once: true },
-        }
-      );
+      // FIX #9: Agenda cards via direct ref to container children — no querySelector
+      if (agendaRef.current?.children) {
+        gsap.fromTo(
+          Array.from(agendaRef.current.children),
+          { opacity: 0, x: -28, scale: 0.97 },
+          {
+            opacity: 1, x: 0, scale: 1,
+            duration: 0.7, ease: 'power3.out', stagger: 0.13,
+            scrollTrigger: { trigger: agendaRef.current, start: 'top 86%', once: true },
+          },
+        );
+      }
 
-      // ── CTA button ────────────────────────────────────────────────
+      // CTA
       gsap.fromTo(
         ctaRef.current,
         { opacity: 0, y: 28, scale: 0.94 },
@@ -689,10 +826,10 @@ const Collaborate = () => {
           opacity: 1, y: 0, scale: 1,
           duration: 0.85, ease: 'back.out(1.7)', delay: 0.1,
           scrollTrigger: { trigger: ctaRef.current, start: 'top 92%', once: true },
-        }
+        },
       );
 
-      // ── Visual panel ──────────────────────────────────────────────
+      // Visual panel
       gsap.fromTo(
         visualRef.current,
         { opacity: 0, x: 40, scale: 0.95 },
@@ -700,7 +837,7 @@ const Collaborate = () => {
           opacity: 1, x: 0, scale: 1,
           duration: 1.1, ease: 'power3.out', delay: 0.2,
           scrollTrigger: { trigger: visualRef.current, start: 'top 82%', once: true },
-        }
+        },
       );
 
     }, section);
@@ -717,40 +854,31 @@ const Collaborate = () => {
         padding: 'clamp(72px, 9vw, 128px) 0',
       }}
     >
-      {/* ── Injected styles ── */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
-        @keyframes ddwColPing {
-          0%   { transform: scale(1);    opacity: 0.45; }
-          80%  { transform: scale(1.55); opacity: 0;    }
-          100% { transform: scale(1.55); opacity: 0;    }
-        }
-        .ddw-word { display: inline-block; transform-style: preserve-3d; }
-        .ddw-agenda-shimmer:hover .ddw-shimmer-bar { width: 100%; }
-      `}</style>
+      {/* FIX #1: No @import style tag — fonts in index.html, keyframes in index.css */}
 
-      {/* ── Top border ── */}
+      {/* Top border */}
       <div
         ref={topLineRef}
+        aria-hidden="true"
         className="absolute top-0 left-0 right-0 h-px origin-left pointer-events-none"
         style={{
           background: `linear-gradient(90deg, transparent, ${B.orange}40, ${B.accent}20, transparent)`,
-          opacity: 0,
         }}
       />
 
-      {/* ── Bottom border ── */}
+      {/* Bottom border */}
       <div
         ref={botLineRef}
+        aria-hidden="true"
         className="absolute bottom-0 left-0 right-0 h-px origin-left pointer-events-none"
         style={{
           background: `linear-gradient(90deg, transparent, ${B.orange}25, transparent)`,
-          opacity: 0,
         }}
       />
 
-      {/* ── Mesh grid overlay ── */}
+      {/* Mesh grid */}
       <div
+        aria-hidden="true"
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage: `
@@ -764,51 +892,49 @@ const Collaborate = () => {
         }}
       />
 
-      {/* ── Atmospheric orbs ── */}
+      {/* Atmospheric orbs */}
       <div
         ref={orb1Ref}
-        className="absolute pointer-events-none"
+        aria-hidden="true"
+        className="absolute pointer-events-none rounded-full"
         style={{
           top: '-8%', left: '-6%',
           width: 'clamp(280px, 40vw, 580px)',
           height: 'clamp(280px, 40vw, 580px)',
           background: `radial-gradient(circle, ${B.orange}10 0%, transparent 70%)`,
           filter: 'blur(80px)',
-          borderRadius: '50%',
         }}
       />
       <div
         ref={orb2Ref}
-        className="absolute pointer-events-none"
+        aria-hidden="true"
+        className="absolute pointer-events-none rounded-full"
         style={{
           bottom: '-6%', right: '-5%',
           width: 'clamp(250px, 38vw, 540px)',
           height: 'clamp(250px, 38vw, 540px)',
           background: `radial-gradient(circle, ${B.orange}0D 0%, transparent 70%)`,
           filter: 'blur(90px)',
-          borderRadius: '50%',
         }}
       />
       <div
         ref={orb3Ref}
-        className="absolute pointer-events-none"
+        aria-hidden="true"
+        className="absolute pointer-events-none rounded-full"
         style={{
           top: '40%', right: '20%',
           width: 'clamp(180px, 25vw, 360px)',
           height: 'clamp(180px, 25vw, 360px)',
           background: `radial-gradient(circle, ${B.accent}06 0%, transparent 70%)`,
           filter: 'blur(70px)',
-          borderRadius: '50%',
         }}
       />
 
-      {/* ── Main container ── */}
+      {/* Main container */}
       <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 md:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-20 items-center">
 
-          {/* ══════════════════════════════════════════════════════════
-              LEFT — Copy Column
-          ══════════════════════════════════════════════════════════ */}
+          {/* ── Left: Copy Column ─────────────────────────────────────────── */}
           <div className="flex flex-col">
 
             {/* Eyebrow badge */}
@@ -820,42 +946,40 @@ const Collaborate = () => {
                 border: `1px solid ${B.orange}35`,
                 background: `${B.orange}0A`,
                 backdropFilter: 'blur(10px)',
-                opacity: 0,
               }}
             >
               <span
+                aria-hidden="true"
+                className="collaborate-ping-dot"
                 style={{
                   width: 7, height: 7, borderRadius: '50%',
                   background: B.orange,
                   boxShadow: `0 0 10px ${B.orange}`,
                   display: 'inline-block',
-                  animation: 'ddwColPing 2.5s ease-out infinite',
                 }}
               />
               <span
                 style={{
-                  fontSize: 10,
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.28em',
+                  fontSize: 10, fontWeight: 700,
+                  textTransform: 'uppercase', letterSpacing: '0.28em',
                   color: B.orange,
-                  fontFamily: 'Montserrat, sans-serif',
                 }}
               >
                 Discovery Call
               </span>
               <span
+                aria-hidden="true"
+                className="collaborate-ping-dot collaborate-ping-dot--delayed"
                 style={{
                   width: 7, height: 7, borderRadius: '50%',
                   background: B.orange,
                   boxShadow: `0 0 10px ${B.orange}`,
                   display: 'inline-block',
-                  animation: 'ddwColPing 2.5s ease-out 1.2s infinite',
                 }}
               />
             </div>
 
-            {/* Heading line 1 — word-split */}
+            {/* Heading line 1 — word split */}
             <div
               ref={heading1Ref}
               className="mb-2 overflow-visible"
@@ -864,21 +988,14 @@ const Collaborate = () => {
               <h2
                 className="font-black leading-[1.08] text-white"
                 style={{
-                  fontFamily: 'Montserrat, sans-serif',
                   fontSize: 'clamp(28px, 4.5vw, 58px)',
                   letterSpacing: '-0.03em',
                 }}
               >
-                {h1Words.map((word, i) => (
-                  <React.Fragment key={i}>
-                    <span
-                      ref={(el) => (wordRefs.current[i] = el)}
-                      className="ddw-word"
-                      style={{ opacity: 0, marginRight: '0.3em' }}
-                    >
-                      {word}
-                    </span>
-                    {/* Line break after "team" */}
+                {/* FIX #7: stable ref callbacks via getWordRef */}
+                {H1_WORDS.map((word, i) => (
+                  <React.Fragment key={word + i}>
+                    <WordSpan word={word} refCallback={getWordRef(i)} />
                     {i === 5 && <br className="hidden sm:block" />}
                   </React.Fragment>
                 ))}
@@ -890,14 +1007,12 @@ const Collaborate = () => {
               ref={heading2Ref}
               className="font-black leading-[1.08] mb-8"
               style={{
-                fontFamily: 'Montserrat, sans-serif',
                 fontSize: 'clamp(28px, 4.5vw, 58px)',
                 letterSpacing: '-0.03em',
                 background: `linear-gradient(135deg, ${B.orange} 0%, ${B.accent} 100%)`,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
-                opacity: 0,
               }}
             >
               doesn&rsquo;t compound.
@@ -907,13 +1022,11 @@ const Collaborate = () => {
             <p
               ref={sub1Ref}
               style={{
-                fontFamily: 'Inter, sans-serif',
                 fontSize: 'clamp(14px, 1.5vw, 17px)',
                 lineHeight: 1.78,
                 color: 'rgba(255,255,255,0.52)',
                 maxWidth: 520,
                 marginBottom: 12,
-                opacity: 0,
               }}
             >
               At $50K/month in ad spend, a 1x improvement in ROAS is worth more
@@ -925,23 +1038,19 @@ const Collaborate = () => {
               ref={sub2Ref}
               className="font-bold"
               style={{
-                fontFamily: 'Inter, sans-serif',
                 fontSize: 'clamp(12px, 1.2vw, 14px)',
                 lineHeight: 1.7,
                 color: 'rgba(255,255,255,0.38)',
                 maxWidth: 500,
                 marginBottom: 32,
-                opacity: 0,
               }}
             >
               Book 20 minutes. Here&rsquo;s what happens on the call:
             </p>
 
             {/* Agenda cards */}
-            <div
-              ref={agendaRef}
-              className="flex flex-col gap-3 mb-10"
-            >
+            {/* FIX #9: Direct children used — no querySelectorAll needed */}
+            <div ref={agendaRef} className="flex flex-col gap-3 mb-10">
               {AGENDA.map((item, i) => (
                 <AgendaCard key={item.num} item={item} index={i} />
               ))}
@@ -951,26 +1060,21 @@ const Collaborate = () => {
             <div
               ref={ctaRef}
               className="flex flex-col sm:flex-row items-start sm:items-center gap-4"
-              style={{ opacity: 0 }}
             >
-              <MagneticButton href="https://calendly.com/digi-dreamworks/onboarding-call">
+              <MagneticButton href={CALENDLY_URL}>
                 Book the 20-Minute Call
               </MagneticButton>
 
               {/* Trust micro-copy */}
+              {/* FIX #16: TRUST_LINES from module scope */}
               <div className="flex flex-col gap-1">
-                {['No commitment · 20 minutes', 'Straight talk, not a pitch'].map((line, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                      <circle cx="6" cy="6" r="5.5" stroke={`${B.orange}50`} />
-                      <path d="M3.5 6l2 2 3-3" stroke={B.orange} strokeWidth="1.3"
-                        strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                {TRUST_LINES.map((line) => (
+                  <div key={line} className="flex items-center gap-2">
+                    <CheckIcon />
                     <span
                       style={{
                         fontSize: 11,
                         color: 'rgba(255,255,255,0.32)',
-                        fontFamily: 'Inter, sans-serif',
                         letterSpacing: '0.04em',
                       }}
                     >
@@ -982,15 +1086,12 @@ const Collaborate = () => {
             </div>
           </div>
 
-          {/* ══════════════════════════════════════════════════════════
-              RIGHT — Visual Panel (desktop only)
-          ══════════════════════════════════════════════════════════ */}
+          {/* ── Right: Visual Panel ───────────────────────────────────────── */}
           <div
             ref={visualRef}
             className="relative hidden lg:block"
-            style={{ height: 'clamp(360px, 45vw, 520px)', opacity: 0 }}
+            style={{ height: 'clamp(360px, 45vw, 520px)' }}
           >
-            {/* Browser mockup */}
             <BrowserMockup>
               <div
                 className="relative overflow-hidden"
@@ -999,8 +1100,8 @@ const Collaborate = () => {
                   background: `radial-gradient(ellipse 70% 70% at 50% 50%, ${B.orange}07 0%, ${B.bg} 100%)`,
                 }}
               >
-                {/* Dot grid inside mockup */}
                 <div
+                  aria-hidden="true"
                   className="absolute inset-0 pointer-events-none"
                   style={{
                     backgroundImage: `radial-gradient(${B.orange}22 1px, transparent 1px)`,
@@ -1010,15 +1111,14 @@ const Collaborate = () => {
                 />
                 <AbstractCTAVisual />
 
-                {/* Watermark text inside mockup */}
                 <div
+                  aria-hidden="true"
                   className="absolute bottom-2 left-1/2 -translate-x-1/2 font-black pointer-events-none select-none whitespace-nowrap"
                   style={{
                     fontSize: 'clamp(40px, 6vw, 90px)',
                     color: B.orange,
                     opacity: 0.04,
                     letterSpacing: '-0.04em',
-                    fontFamily: 'Montserrat, sans-serif',
                   }}
                 >
                   DDW
@@ -1033,12 +1133,13 @@ const Collaborate = () => {
                 value={pill.value}
                 label={pill.label}
                 delay={pill.delay}
-                style={pill.pos}
+                pos={pill.pos}
               />
             ))}
 
-            {/* Glow halo behind mockup */}
+            {/* Glow halo */}
             <div
+              aria-hidden="true"
               className="absolute -z-10 rounded-3xl pointer-events-none"
               style={{
                 inset: '-8%',

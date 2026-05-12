@@ -4,12 +4,13 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/jpeg" href="/logo.jpeg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <title>Digital Dream Works | Software Systems &amp; Marketing Infrastructure</title>
+
     <meta name="description" content="Retainer-based software systems and marketing infrastructure for US and EU companies. Custom software, AI automation, cloud deployment, marketing systems, and SEO maintained by the team that built them." />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://digitaldreamworksagency.com/" />
 
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://digitaldreamworksagency.com/" />
     <meta property="og:title" content="Digital Dream Works | Software Systems &amp; Marketing Infrastructure" />
@@ -17,10 +18,12 @@
     <meta property="og:site_name" content="Digital Dream Works" />
     <meta property="og:locale" content="en_US" />
 
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Digital Dream Works | Software Systems &amp; Marketing Infrastructure" />
     <meta name="twitter:description" content="Seven retainer services. One team. No handoffs. US &amp; EU clients." />
 
+    <!-- Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -44,7 +47,25 @@
     }
     </script>
 
-    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <!--
+      FIXED: Single consolidated font load.
+      - preconnect fires immediately on parse
+      - preload fetches the CSS before render
+      - stylesheet applies it
+      - NO @import in CSS files anywhere
+      - All required weights in one URL string
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap"
+    />
     <link rel="dns-prefetch" href="https://calendly.com" />
   </head>
   <body>

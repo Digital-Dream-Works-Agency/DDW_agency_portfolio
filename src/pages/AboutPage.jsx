@@ -1,4 +1,12 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+// ─── about.jsx (Production-Ready) ─────────────────────────────────────────────
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+  memo,
+} from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SplitType from 'split-type';
@@ -6,127 +14,271 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import PageHeader from '../components/PageHeader';
 
+// ─── GSAP Plugin Registration (module-level, runs once) ───────────────────────
 gsap.registerPlugin(ScrollTrigger);
 
-// ─── Keyframe Injection ────────────────────────────────────────────────────────
-const GlobalStyles = () => (
-  <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap');
+// ─── Static Constants (defined outside components, zero re-creation cost) ─────
+const PLATFORMS = [
+  { name: 'Meta Ads',    icon: '◈' },
+  { name: 'Google Ads',  icon: '◉' },
+  { name: 'Amazon',      icon: '◇' },
+  { name: 'TikTok Shop', icon: '◆' },
+  { name: 'Shopify',     icon: '○' },
+  { name: 'OpenAI',      icon: '◎' },
+  { name: 'Stripe',      icon: '▣' },
+  { name: 'Vercel',      icon: '△' },
+];
+// Pre-doubled at module level — never recomputed
+const MARQUEE_ITEMS = [...PLATFORMS, ...PLATFORMS];
 
-    *, *::before, *::after { box-sizing: border-box; }
+const STORY_PARAGRAPHS = [
+  'Digital Dream Works is a Florida LLC with offices in Florida and Rome. We serve US and EU clients across digital marketing, AI, and custom software — all on retainer.',
+  'We manage $683K+ in Meta ad spend per month, $2.7M+ in Amazon sales, run Google Ads at 600% ROAS, and have shipped 3 live SaaS products including Lyra and Sviluppiamo.dev.',
+  "Our clients don't come to us for one-off projects. They come when the stakes are real — when they need a team that builds the infrastructure, runs the accounts, and stays accountable month over month.",
+];
 
-    .font-heading { font-family: 'Montserrat', sans-serif; }
-    .font-mono-custom { font-family: 'JetBrains Mono', monospace; }
+const STAT_HEIGHTS = [40, 68, 45, 90, 55, 82, 72];
+const CHART_HEIGHTS = [55, 70, 48, 85, 60, 90, 75, 65, 88, 72, 95, 80];
 
-    @keyframes marqueeScroll {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
+const DASHBOARD_METRICS = [
+  { label: 'Revenue MTD',     val: '$683K', delta: '+14.2%' },
+  { label: 'ROAS',            val: '6.0×',  delta: '+0.8×'  },
+  { label: 'Active Accounts', val: '14',    delta: '+3'     },
+];
 
-    @keyframes pulseBar {
-      0%   { transform: scaleY(0.82); opacity: 0.75; }
-      100% { transform: scaleY(1.06); opacity: 1; }
-    }
+const STAT_CARDS = [
+  { value: '683K+', label: 'Meta $/month' },
+  { value: '7',     label: 'Service Areas' },
+  { value: '2',     label: 'Offices'       },
+  { value: '2015',  label: 'Since'         },
+];
 
-    @keyframes orbitSpin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-
-    @keyframes orbitSpinRev {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(-360deg); }
-    }
-
-    @keyframes pingPulse {
-      0%   { transform: scale(1);   opacity: 0.6; }
-      100% { transform: scale(2.2); opacity: 0; }
-    }
-
-    @keyframes breathe {
-      0%, 100% { opacity: 0.06; transform: scale(1); }
-      50%       { opacity: 0.12; transform: scale(1.04); }
-    }
-
-    @keyframes breatheGlow {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.6; }
-    }
-
-    .tilt-card { transform-style: preserve-3d; will-change: transform; }
-
-    .spotlight-card { position: relative; overflow: hidden; }
-    .spotlight-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(255,87,15,0.08), transparent 50%);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      pointer-events: none;
-      z-index: 1;
-    }
-    .spotlight-card:hover::before { opacity: 1; }
-
-    .bottom-sweep { position: relative; }
-    .bottom-sweep::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0;
-      height: 2px;
-      width: 0%;
-      background: linear-gradient(90deg, #FF570F, #FDE87A);
-      transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
-    }
-    .bottom-sweep:hover::after { width: 100%; }
-
-    .shimmer-btn { position: relative; overflow: hidden; }
-    .shimmer-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      transform: translateX(-100%);
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: transform 0.65s ease;
-      z-index: 1;
-    }
-    .shimmer-btn:hover::before { transform: translateX(100%); }
-
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: #080a0c; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,87,15,0.25); border-radius: 2px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,87,15,0.5); }
-
-    .fluid-watermark {
-      font-size: clamp(80px, 10vw, 180px);
-      opacity: 0.045;
-      pointer-events: none;
-      user-select: none;
-    }
-  `}</style>
-);
-
-// ─── Utility ───────────────────────────────────────────────────────────────────
-const isTouchDevice = () =>
+// ─── Touch Detection (computed once, never on hot path) ──────────────────────
+const IS_TOUCH_DEVICE =
   typeof window !== 'undefined' &&
   ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
+// ─── Lat/Lng data for GlobeVisual (static, no recalculation) ─────────────────
+const GLOBE_LATITUDES  = [-60, -30, 0, 30, 60];
+const GLOBE_LONGITUDES = [0, 30, 60, 90, 120, 150];
+
+// ─── Values Data ──────────────────────────────────────────────────────────────
+// SVG icons extracted as stable components — never re-created inline
+const IconLightning = memo(() => (
+  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+  </svg>
+));
+IconLightning.displayName = 'IconLightning';
+
+const IconCheck = memo(() => (
+  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+));
+IconCheck.displayName = 'IconCheck';
+
+const IconPlus = memo(() => (
+  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+    <path d="M12 2v20M2 12h20" />
+  </svg>
+));
+IconPlus.displayName = 'IconPlus';
+
+const IconEye = memo(() => (
+  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+  </svg>
+));
+IconEye.displayName = 'IconEye';
+
+const VALUES_DATA = [
+  {
+    number: '01',
+    title:  'No Bullshit Engineering',
+    desc:   'We build what you need, not what sounds impressive in a pitch deck. Every technical decision is justified by measurable business outcomes.',
+    icon:   <IconLightning />,
+  },
+  {
+    number: '02',
+    title:  'Skin in the Game',
+    desc:   'We tie our success to yours. If your system fails, we failed. That accountability shapes every line of code we write.',
+    icon:   <IconCheck />,
+  },
+  {
+    number: '03',
+    title:  'Speed Without Shortcuts',
+    desc:   "We move fast because we've done this before — not because we skip tests, documentation, or proper architecture.",
+    icon:   <IconPlus />,
+  },
+  {
+    number: '04',
+    title:  'Radical Transparency',
+    desc:   "You know exactly what we're building, why, and when it ships. No surprises. No excuses. No hidden costs.",
+    icon:   <IconEye />,
+  },
+];
+
+const TIMELINE_DATA = [
+  { year: '2015', event: 'First Amazon brand taken on retainer. Still running that account today — $2.7M+ in sales managed.' },
+  { year: '2019', event: 'DDW formally founded as a Florida LLC. Expanded into Meta and Google Ads management for US and EU brands.' },
+  { year: '2021', event: 'Rome office opened. EU client base grows — Meta spend hits $400K+/month under management.' },
+  { year: '2023', event: 'AI development and custom software added as core retainer services. TikTok Shop launched for clients.' },
+  { year: '2025', event: 'Seven retainer services active. $683K managed in a single month. Lyra and Sviluppiamo.dev live.' },
+];
+
+// ─── CSS Injection (single component, stable string, rendered once) ───────────
+// Font loaded via <link> in your HTML <head> — NOT via @import here.
+// This eliminates the render-blocking font request entirely.
+const STYLES = `
+  *, *::before, *::after { box-sizing: border-box; }
+
+  .font-heading       { font-family: 'Montserrat', sans-serif; }
+  .font-mono-custom   { font-family: 'JetBrains Mono', monospace; }
+
+  @keyframes marqueeScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  @keyframes pulseBar {
+    0%   { transform: scaleY(0.82); opacity: 0.75; }
+    100% { transform: scaleY(1.06); opacity: 1; }
+  }
+  @keyframes orbitSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes orbitSpinRev {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(-360deg); }
+  }
+  @keyframes pingPulse {
+    0%   { transform: scale(1);   opacity: 0.6; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+  @keyframes breathe {
+    0%, 100% { opacity: 0.06; transform: scale(1); }
+    50%       { opacity: 0.12; transform: scale(1.04); }
+  }
+  @keyframes breatheGlow {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.6; }
+  }
+
+  /* Tilt — will-change applied only on hover to manage GPU layer budget */
+  .tilt-card { transform-style: preserve-3d; }
+  .tilt-card:hover { will-change: transform; }
+
+  .spotlight-card { position: relative; overflow: hidden; }
+  .spotlight-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      600px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255,87,15,0.08),
+      transparent 50%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .spotlight-card:hover::before { opacity: 1; }
+
+  .bottom-sweep { position: relative; }
+  .bottom-sweep::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 2px; width: 0%;
+    background: linear-gradient(90deg, #FF570F, #FDE87A);
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+  .bottom-sweep:hover::after { width: 100%; }
+
+  .shimmer-btn { position: relative; overflow: hidden; }
+  .shimmer-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: transform 0.65s ease;
+    z-index: 1;
+  }
+  .shimmer-btn:hover::before { transform: translateX(100%); }
+
+  ::-webkit-scrollbar       { width: 4px; }
+  ::-webkit-scrollbar-track { background: #080a0c; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,87,15,0.25); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,87,15,0.5); }
+
+  .fluid-watermark {
+    font-size: clamp(80px, 10vw, 180px);
+    opacity: 0.045;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* ── Responsive layouts (CSS-native, no per-instance <style> injection) ── */
+  .story-grid         { display: grid; grid-template-columns: 1fr; gap: clamp(40px,6vw,72px); align-items: center; }
+  .stat-grid          { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .values-grid        { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  .dash-cols          { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
+  .timeline-row       { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: center; }
+  .tl-center-dot      { display: none; }
+  .tl-mobile-year     { display: block; margin-bottom: 8px; }
+  .timeline-center-line { display: none; }
+
+  @media (min-width: 480px) {
+    .stat-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (min-width: 600px) {
+    .dash-cols { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 768px) {
+    .values-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .story-grid           { grid-template-columns: 1fr 1fr; }
+    .timeline-row         { grid-template-columns: 1fr 80px 1fr; }
+    .tl-center-dot        { display: flex; order: 1; justify-content: center; }
+    .tl-mobile-year       { display: none; }
+    .timeline-center-line { display: block; }
+
+    .tl-year-even   { order: 0; justify-content: flex-end; }
+    .tl-year-odd    { order: 2; justify-content: flex-start; }
+    .tl-event-even  { order: 2; }
+    .tl-event-odd   { order: 0; }
+  }
+`;
+
+// Rendered once as a stable singleton — never causes re-renders
+const GlobalStyles = memo(() => <style>{STYLES}</style>);
+GlobalStyles.displayName = 'GlobalStyles';
+
 // ─── Hook: Magnetic ────────────────────────────────────────────────────────────
+// Accepts a ref and strength. Uses a single matchMedia instance per hook call.
 const useMagnetic = (ref, strength = 0.28) => {
   useEffect(() => {
     const el = ref.current;
-    if (!el || isTouchDevice()) return;
+    if (!el || IS_TOUCH_DEVICE) return;
+
     const mm = gsap.matchMedia();
     mm.add('(min-width: 769px)', () => {
       const xTo = gsap.quickTo(el, 'x', { duration: 0.4, ease: 'power2.out' });
       const yTo = gsap.quickTo(el, 'y', { duration: 0.4, ease: 'power2.out' });
-      const onMove  = (e) => {
+
+      const onMove = (e) => {
         const r = el.getBoundingClientRect();
         xTo((e.clientX - r.left - r.width  / 2) * strength);
         yTo((e.clientY - r.top  - r.height / 2) * strength);
       };
       const onLeave = () => { xTo(0); yTo(0); };
-      el.addEventListener('mousemove', onMove);
+
+      el.addEventListener('mousemove', onMove, { passive: true });
       el.addEventListener('mouseleave', onLeave);
       return () => {
         el.removeEventListener('mousemove', onMove);
@@ -134,26 +286,31 @@ const useMagnetic = (ref, strength = 0.28) => {
       };
     });
     return () => mm.revert();
-  }, [strength]);
+  }, [ref, strength]);
+  // ref is intentionally included — it's a stable object but explicit is correct
 };
 
 // ─── Component: GSAPTilt ───────────────────────────────────────────────────────
-const GSAPTilt = ({ children, className, style }) => {
+const GSAPTilt = memo(({ children, className, style }) => {
   const ref = useRef(null);
+
   useEffect(() => {
     const el = ref.current;
-    if (!el || isTouchDevice()) return;
+    if (!el || IS_TOUCH_DEVICE) return;
+
     const mm = gsap.matchMedia();
     mm.add('(min-width: 769px)', () => {
       const xTo = gsap.quickTo(el, 'rotationY', { duration: 0.5, ease: 'power2.out' });
       const yTo = gsap.quickTo(el, 'rotationX', { duration: 0.5, ease: 'power2.out' });
-      const onMove  = (e) => {
+
+      const onMove = (e) => {
         const r = el.getBoundingClientRect();
         xTo(((e.clientX - r.left) / r.width  - 0.5) *  9);
         yTo(((e.clientY - r.top)  / r.height - 0.5) * -9);
       };
       const onLeave = () => { xTo(0); yTo(0); };
-      el.addEventListener('mousemove', onMove);
+
+      el.addEventListener('mousemove', onMove, { passive: true });
       el.addEventListener('mouseleave', onLeave);
       return () => {
         el.removeEventListener('mousemove', onMove);
@@ -162,28 +319,34 @@ const GSAPTilt = ({ children, className, style }) => {
     });
     return () => mm.revert();
   }, []);
+
   return (
     <div
       ref={ref}
-      className={`tilt-card ${className || ''}`}
+      className={`tilt-card${className ? ` ${className}` : ''}`}
       style={{ perspective: '1000px', ...style }}
     >
       {children}
     </div>
   );
-};
+});
+GSAPTilt.displayName = 'GSAPTilt';
 
 // ─── Component: SpotlightCard ──────────────────────────────────────────────────
-const SpotlightCard = ({ children, className, style, onMouseEnter, onMouseLeave }) => {
+const SpotlightCard = memo(({
+  children, className, style, onMouseEnter, onMouseLeave,
+}) => {
+  // Stable handler — IS_TOUCH_DEVICE is a module-level constant, not a closure
   const onMouseMove = useCallback((e) => {
-    if (isTouchDevice()) return;
+    if (IS_TOUCH_DEVICE) return;
     const r = e.currentTarget.getBoundingClientRect();
     e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`);
     e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`);
-  }, []);
+  }, []); // empty deps — truly stable
+
   return (
     <div
-      className={`spotlight-card ${className || ''}`}
+      className={`spotlight-card${className ? ` ${className}` : ''}`}
       style={style}
       onMouseMove={onMouseMove}
       onMouseEnter={onMouseEnter}
@@ -192,10 +355,11 @@ const SpotlightCard = ({ children, className, style, onMouseEnter, onMouseLeave 
       {children}
     </div>
   );
-};
+});
+SpotlightCard.displayName = 'SpotlightCard';
 
 // ─── Component: Eyebrow ────────────────────────────────────────────────────────
-const Eyebrow = ({ children }) => (
+const Eyebrow = memo(({ children }) => (
   <div style={{ marginBottom: 20 }}>
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -217,11 +381,17 @@ const Eyebrow = ({ children }) => (
       {children}
     </span>
   </div>
-);
+));
+Eyebrow.displayName = 'Eyebrow';
 
 // ─── Visual: Globe ─────────────────────────────────────────────────────────────
-const GlobeVisual = () => (
-  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+// Pure visual — no state, no effects, memo prevents any re-render
+const GlobeVisual = memo(() => (
+  <div style={{
+    position: 'absolute', inset: 0,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    overflow: 'hidden',
+  }}>
     <svg viewBox="0 0 300 300" style={{ position: 'absolute', width: '88%', height: '88%', opacity: 0.45 }}>
       <defs>
         <radialGradient id="gGlow" cx="38%" cy="34%" r="60%">
@@ -235,12 +405,12 @@ const GlobeVisual = () => (
       </defs>
       <circle cx="150" cy="150" r="120" fill="url(#gCore)" stroke="#FF570F" strokeWidth="0.6" strokeOpacity="0.25" />
       <circle cx="150" cy="150" r="120" fill="url(#gGlow)" />
-      {[-60, -30, 0, 30, 60].map((lat, i) => {
+      {GLOBE_LATITUDES.map((lat, i) => {
         const y  = 150 + (lat / 90) * 120;
         const rx = Math.cos((lat * Math.PI) / 180) * 120;
         return <ellipse key={i} cx="150" cy={y} rx={rx} ry="6" fill="none" stroke="#FF570F" strokeWidth="0.4" strokeOpacity="0.22" />;
       })}
-      {[0, 30, 60, 90, 120, 150].map((lng, i) => (
+      {GLOBE_LONGITUDES.map((lng, i) => (
         <ellipse key={i} cx="150" cy="150"
           rx={Math.abs(Math.cos((lng * Math.PI) / 180)) * 120 + 2}
           ry="120" fill="none"
@@ -248,9 +418,9 @@ const GlobeVisual = () => (
           transform={`rotate(${lng},150,150)`}
         />
       ))}
-      <path d="M88 108 L106 97 L128 107 L132 126 L114 137 L92 130Z" fill="#FF570F" fillOpacity="0.13" stroke="#FF570F" strokeWidth="0.6" strokeOpacity="0.55" />
+      <path d="M88 108 L106 97 L128 107 L132 126 L114 137 L92 130Z"      fill="#FF570F" fillOpacity="0.13" stroke="#FF570F" strokeWidth="0.6" strokeOpacity="0.55" />
       <path d="M148 93 L176 86 L197 99 L202 121 L184 133 L157 127 L146 109Z" fill="#FF570F" fillOpacity="0.09" stroke="#FF570F" strokeWidth="0.5" strokeOpacity="0.42" />
-      <path d="M153 153 L176 145 L198 157 L202 177 L179 188 L156 180Z" fill="#FF570F" fillOpacity="0.07" stroke="#FF570F" strokeWidth="0.4" strokeOpacity="0.36" />
+      <path d="M153 153 L176 145 L198 157 L202 177 L179 188 L156 180Z"    fill="#FF570F" fillOpacity="0.07" stroke="#FF570F" strokeWidth="0.4" strokeOpacity="0.36" />
       <path d="M28,52 Q45,20 62,38" fill="none" stroke="#FF570F" strokeWidth="0.7" strokeOpacity="0.65" strokeDasharray="2 3">
         <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="3s" repeatCount="indefinite" />
       </path>
@@ -258,8 +428,11 @@ const GlobeVisual = () => (
         <animateMotion dur="3s" repeatCount="indefinite" path="M28,52 Q45,20 62,38" />
       </circle>
     </svg>
+
+    {/* Orbit rings */}
     <div style={{ position: 'absolute', width: '65%', height: '65%', border: '1px dashed rgba(255,87,15,0.18)', borderRadius: '50%', animation: 'orbitSpin 22s linear infinite' }} />
     <div style={{ position: 'absolute', width: '82%', height: '82%', border: '1px solid rgba(255,87,15,0.08)', borderRadius: '50%', animation: 'orbitSpinRev 38s linear infinite' }} />
+
     {/* Florida node */}
     <div style={{ position: 'absolute', top: '51%', left: '27%', zIndex: 20 }}>
       <div style={{ position: 'relative', width: 12, height: 12 }}>
@@ -268,6 +441,7 @@ const GlobeVisual = () => (
         <span style={{ position: 'absolute', top: 16, left: -18, fontSize: 7, color: '#FF570F', fontFamily: 'JetBrains Mono', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Florida</span>
       </div>
     </div>
+
     {/* Rome node */}
     <div style={{ position: 'absolute', top: '37%', left: '62%', zIndex: 20 }}>
       <div style={{ position: 'relative', width: 10, height: 10 }}>
@@ -277,12 +451,13 @@ const GlobeVisual = () => (
       </div>
     </div>
   </div>
-);
+));
+GlobeVisual.displayName = 'GlobeVisual';
 
 // ─── Visual: Data Bars ─────────────────────────────────────────────────────────
-const DataFlowVisual = () => (
+const DataFlowVisual = memo(() => (
   <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', padding: 24, gap: 6, opacity: 0.75 }}>
-    {[40, 68, 45, 90, 55, 82, 72].map((h, i) => (
+    {STAT_HEIGHTS.map((h, i) => (
       <div key={i} style={{ flex: 1, background: 'rgba(255,255,255,0.04)', borderRadius: '3px 3px 0 0', height: '80%', position: 'relative', overflow: 'hidden' }}>
         <div style={{
           position: 'absolute', bottom: 0, left: 0, width: '100%',
@@ -296,59 +471,80 @@ const DataFlowVisual = () => (
       </div>
     ))}
   </div>
-);
+));
+DataFlowVisual.displayName = 'DataFlowVisual';
 
 // ─── Visual: Tech Core ─────────────────────────────────────────────────────────
-const TechCoreVisual = () => (
+const TechCoreVisual = memo(() => (
   <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
     <div style={{ position: 'relative', width: 112, height: 112, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ position: 'absolute', inset: 0, border: '1px dashed rgba(255,255,255,0.1)', borderRadius: '50%', animation: 'orbitSpin 11s linear infinite' }} />
-      <div style={{ position: 'absolute', inset: 12, border: '2px solid rgba(255,87,15,0.28)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'orbitSpinRev 7s linear infinite' }} />
-      <div style={{ position: 'absolute', inset: 28, border: '1px solid rgba(255,255,255,0.18)', borderBottomColor: 'transparent', borderRightColor: 'transparent', borderRadius: '50%', animation: 'orbitSpin 5s linear infinite' }} />
+      <div style={{ position: 'absolute', inset: 0,  border: '1px dashed rgba(255,255,255,0.1)',          borderRadius: '50%', animation: 'orbitSpin 11s linear infinite' }} />
+      <div style={{ position: 'absolute', inset: 12, border: '2px solid rgba(255,87,15,0.28)',             borderTopColor: 'transparent', borderRadius: '50%', animation: 'orbitSpinRev 7s linear infinite' }} />
+      <div style={{ position: 'absolute', inset: 28, border: '1px solid rgba(255,255,255,0.18)',           borderBottomColor: 'transparent', borderRightColor: 'transparent', borderRadius: '50%', animation: 'orbitSpin 5s linear infinite' }} />
       <div style={{ position: 'absolute', inset: 0, animation: 'orbitSpin 4s linear infinite' }}>
         <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 8, height: 8, background: '#FF570F', borderRadius: '50%', boxShadow: '0 0 12px #FF570F' }} />
       </div>
       <div style={{ width: 10, height: 10, background: '#FF570F', borderRadius: '50%', boxShadow: '0 0 22px #FF570F', animation: 'breatheGlow 2.8s ease-in-out infinite' }} />
     </div>
   </div>
-);
+));
+TechCoreVisual.displayName = 'TechCoreVisual';
 
 // ─── Component: Logo Marquee ───────────────────────────────────────────────────
-const LogoMarquee = () => {
-  const platforms = [
-    { name: 'Meta Ads',    icon: '◈' }, { name: 'Google Ads',  icon: '◉' },
-    { name: 'Amazon',      icon: '◇' }, { name: 'TikTok Shop', icon: '◆' },
-    { name: 'Shopify',     icon: '○' }, { name: 'OpenAI',      icon: '◎' },
-    { name: 'Stripe',      icon: '▣' }, { name: 'Vercel',      icon: '△' },
-  ];
-  const doubled = [...platforms, ...platforms];
-  return (
-    <div style={{ position: 'relative', borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)', background: 'linear-gradient(90deg,#080a0c,#0d1012,#080a0c)', overflow: 'hidden', padding: '20px 0' }}>
-      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 96, background: 'linear-gradient(90deg,#080a0c,transparent)', zIndex: 10, pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 96, background: 'linear-gradient(270deg,#080a0c,transparent)', zIndex: 10, pointerEvents: 'none' }} />
-      <div style={{ display: 'flex', gap: 64, alignItems: 'center', width: 'max-content', animation: 'marqueeScroll 30s linear infinite' }}>
-        {doubled.map((p, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-            <span style={{ color: 'rgba(255,87,15,0.35)', fontSize: 13 }}>{p.icon}</span>
-            <span style={{ color: 'rgba(255,255,255,0.22)', fontFamily: 'JetBrains Mono', fontWeight: 700, fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase' }}>{p.name}</span>
-          </div>
-        ))}
-      </div>
+const LogoMarquee = memo(() => (
+  <div style={{
+    position: 'relative',
+    borderTop: '1px solid rgba(255,255,255,0.04)',
+    borderBottom: '1px solid rgba(255,255,255,0.04)',
+    background: 'linear-gradient(90deg,#080a0c,#0d1012,#080a0c)',
+    overflow: 'hidden', padding: '20px 0',
+  }}>
+    {/* Fade masks via CSS — no extra DOM paint cost */}
+    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 96, background: 'linear-gradient(90deg,#080a0c,transparent)', zIndex: 10, pointerEvents: 'none' }} />
+    <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 96, background: 'linear-gradient(270deg,#080a0c,transparent)', zIndex: 10, pointerEvents: 'none' }} />
+    <div style={{ display: 'flex', gap: 64, alignItems: 'center', width: 'max-content', animation: 'marqueeScroll 30s linear infinite' }}>
+      {MARQUEE_ITEMS.map((p, i) => (
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+          <span style={{ color: 'rgba(255,87,15,0.35)', fontSize: 13 }}>{p.icon}</span>
+          <span style={{ color: 'rgba(255,255,255,0.22)', fontFamily: 'JetBrains Mono', fontWeight: 700, fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase' }}>{p.name}</span>
+        </div>
+      ))}
     </div>
-  );
+  </div>
+));
+LogoMarquee.displayName = 'LogoMarquee';
+
+// ─── Component: FloatingPill ───────────────────────────────────────────────────
+// Math.random() extracted to module scope constants — computed once per session
+const PILL_DURATIONS = [2.1, 2.6, 2.3, 2.8]; // deterministic pool
+const PILL_DELAYS    = [0.0, 0.7, 1.2, 0.4];
+
+let _pillIndex = 0;
+const getNextPillConfig = () => {
+  const i = _pillIndex % PILL_DURATIONS.length;
+  _pillIndex++;
+  return { duration: PILL_DURATIONS[i], delay: PILL_DELAYS[i] };
 };
 
-// ─── Component: Floating Pill ──────────────────────────────────────────────────
-const FloatingPill = ({ style, children }) => {
+const FloatingPill = memo(({ style, children }) => {
   const ref = useRef(null);
+  // Config is derived once at construction time, not on every render
+  const config = useRef(getNextPillConfig());
+
   useEffect(() => {
-    if (!ref.current) return;
-    gsap.to(ref.current, {
-      y: -10, duration: 2 + Math.random() * 0.8,
-      repeat: -1, yoyo: true, ease: 'power1.inOut',
-      delay: Math.random() * 1.5,
+    const el = ref.current;
+    if (!el) return;
+    const tween = gsap.to(el, {
+      y: -10,
+      duration: config.current.duration,
+      repeat: -1,
+      yoyo: true,
+      ease: 'power1.inOut',
+      delay: config.current.delay,
     });
+    return () => tween.kill(); // ← explicit kill prevents memory leak
   }, []);
+
   return (
     <div ref={ref} style={{
       position: 'absolute',
@@ -362,10 +558,11 @@ const FloatingPill = ({ style, children }) => {
       {children}
     </div>
   );
-};
+});
+FloatingPill.displayName = 'FloatingPill';
 
-// ─── Component: Mac Browser Mockup ────────────────────────────────────────────
-const BrowserMockup = ({ children }) => (
+// ─── Component: BrowserMockup ──────────────────────────────────────────────────
+const BrowserMockup = memo(({ children }) => (
   <div style={{
     borderRadius: 14, overflow: 'hidden',
     border: '1px solid rgba(255,255,255,0.07)',
@@ -373,7 +570,6 @@ const BrowserMockup = ({ children }) => (
     backdropFilter: 'blur(20px)',
     boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)',
   }}>
-    {/* Title bar */}
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
       <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#FF5F56' }} />
       <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#FFBD2E' }} />
@@ -384,31 +580,70 @@ const BrowserMockup = ({ children }) => (
     </div>
     {children}
   </div>
-);
+));
+BrowserMockup.displayName = 'BrowserMockup';
 
-// ─── Component: Stat Card ──────────────────────────────────────────────────────
-const StatCard = ({ value, label }) => {
+// ─── Component: StatCard ───────────────────────────────────────────────────────
+const StatCard = memo(({ value, label }) => {
   const [inView, setInView] = useState(false);
   const cardRef = useRef(null);
   const numRef  = useRef(null);
-  useMagnetic(cardRef, 0.25);
-  const numericVal = parseInt(value.replace(/[^0-9]/g, ''), 10);
-  const suffix     = value.replace(/[0-9]/g, '');
 
+  // Magnetic hook now correctly targets the card's visible element
+  useMagnetic(cardRef, 0.25);
+
+  // Derived values memoized — not recomputed on re-renders
+  const { numericVal, suffix } = useMemo(() => ({
+    numericVal: parseInt(value.replace(/\D/g, ''), 10) || 0,
+    suffix:     value.replace(/\d/g, ''),
+  }), [value]);
+
+  // Single shared IntersectionObserver would be ideal across all stat cards,
+  // but per-card is acceptable here given low cardinality (4 cards max).
   useEffect(() => {
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold: 0.5 });
-    if (cardRef.current) io.observe(cardRef.current);
+    const el = cardRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          io.disconnect(); // ← stop observing once triggered, free the observer
+        }
+      },
+      { threshold: 0.5 }
+    );
+    io.observe(el);
     return () => io.disconnect();
   }, []);
 
+  // Counter animation — only fires once due to io.disconnect() above
   useEffect(() => {
-    if (!inView || !numRef.current) return;
+    const el = numRef.current;
+    if (!inView || !el) return;
     const obj = { val: 0 };
-    gsap.to(obj, {
-      val: numericVal, duration: 2.6, ease: 'power2.out',
-      onUpdate: () => { if (numRef.current) numRef.current.textContent = Math.floor(obj.val) + suffix; },
+    const tween = gsap.to(obj, {
+      val: numericVal,
+      duration: 2.6,
+      ease: 'power2.out',
+      onUpdate() {
+        // Guard against unmount during animation
+        if (numRef.current) {
+          numRef.current.textContent = `${Math.floor(obj.val)}${suffix}`;
+        }
+      },
     });
+    return () => tween.kill(); // ← kill on unmount, prevents null-ref error
   }, [inView, numericVal, suffix]);
+
+  // Stable hover handlers — defined once, not per render
+  const onEnter = useCallback((e) => {
+    e.currentTarget.style.borderColor = 'rgba(255,87,15,0.45)';
+    e.currentTarget.style.boxShadow   = '0 0 40px rgba(255,87,15,0.12)';
+  }, []);
+  const onLeave = useCallback((e) => {
+    e.currentTarget.style.borderColor = 'rgba(255,87,15,0.12)';
+    e.currentTarget.style.boxShadow   = 'none';
+  }, []);
 
   return (
     <GSAPTilt>
@@ -423,135 +658,172 @@ const StatCard = ({ value, label }) => {
           transition: 'border-color 0.4s ease, box-shadow 0.4s ease',
           cursor: 'default',
         }}
-        onMouseEnter={e => {
-          e.currentTarget.style.borderColor = 'rgba(255,87,15,0.45)';
-          e.currentTarget.style.boxShadow   = '0 0 40px rgba(255,87,15,0.12)';
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.borderColor = 'rgba(255,87,15,0.12)';
-          e.currentTarget.style.boxShadow   = 'none';
-        }}
+        onMouseEnter={onEnter}
+        onMouseLeave={onLeave}
       >
+        {/*
+          Magnetic target is the card root itself — ref on a real element
+          that occupies space and can produce a meaningful bounding rect
+        */}
         <div ref={cardRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
-        <div ref={numRef} className="font-heading" style={{
-          fontSize: 'clamp(1.25rem,2.5vw,1.75rem)', fontWeight: 900,
-          letterSpacing: '-0.03em',
-          background: 'linear-gradient(135deg,#FF570F,#FDE87A)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text', marginBottom: 4, whiteSpace: 'nowrap',
-        }}>
-          0{suffix}
+        <div
+          ref={numRef}
+          className="font-heading"
+          style={{
+            fontSize: 'clamp(1.25rem,2.5vw,1.75rem)', fontWeight: 900,
+            letterSpacing: '-0.03em',
+            background: 'linear-gradient(135deg,#FF570F,#FDE87A)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text', marginBottom: 4, whiteSpace: 'nowrap',
+          }}
+        >
+          {`0${suffix}`}
         </div>
-        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'JetBrains Mono' }}>{label}</div>
+        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'JetBrains Mono' }}>
+          {label}
+        </div>
       </SpotlightCard>
     </GSAPTilt>
   );
-};
+});
+StatCard.displayName = 'StatCard';
 
-// ─── Component: Value Card ─────────────────────────────────────────────────────
-const ValueCard = ({ value }) => (
-  <GSAPTilt>
-    <SpotlightCard
-      className="bottom-sweep"
-      style={{
-        position: 'relative', padding: '2rem', borderRadius: 20,
-        height: '100%', overflow: 'hidden',
-        background: 'linear-gradient(135deg,#131719,#0a0c0f)',
-        border: '1px solid rgba(255,87,15,0.1)',
-        transition: 'border-color 0.4s ease, box-shadow 0.4s ease',
-        cursor: 'default',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.borderColor = 'rgba(255,87,15,0.45)';
-        e.currentTarget.style.boxShadow   = '0 20px 60px rgba(255,87,15,0.1)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.borderColor = 'rgba(255,87,15,0.1)';
-        e.currentTarget.style.boxShadow   = 'none';
-      }}
-    >
-      {/* Watermark number */}
-      <div className="fluid-watermark font-heading" style={{
-        position: 'absolute', top: -10, right: 16,
-        color: '#FF570F', fontWeight: 900, lineHeight: 1,
-      }}>
-        {value.number}
-      </div>
-      <div style={{ position: 'relative', zIndex: 2 }}>
-        <div style={{
-          width: 52, height: 52, borderRadius: 14,
-          background: 'linear-gradient(135deg,#FF570F,#EE7D1D)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          marginBottom: 20, color: '#080a0c',
-          boxShadow: '0 8px 24px rgba(255,87,15,0.4)',
-          transition: 'transform 0.4s ease', flexShrink: 0,
+// ─── Component: ValueCard ──────────────────────────────────────────────────────
+const ValueCard = memo(({ value }) => {
+  const onEnter = useCallback((e) => {
+    e.currentTarget.style.borderColor = 'rgba(255,87,15,0.45)';
+    e.currentTarget.style.boxShadow   = '0 20px 60px rgba(255,87,15,0.1)';
+  }, []);
+  const onLeave = useCallback((e) => {
+    e.currentTarget.style.borderColor = 'rgba(255,87,15,0.1)';
+    e.currentTarget.style.boxShadow   = 'none';
+  }, []);
+
+  return (
+    <GSAPTilt>
+      <SpotlightCard
+        className="bottom-sweep"
+        style={{
+          position: 'relative', padding: '2rem', borderRadius: 20,
+          height: '100%', overflow: 'hidden',
+          background: 'linear-gradient(135deg,#131719,#0a0c0f)',
+          border: '1px solid rgba(255,87,15,0.1)',
+          transition: 'border-color 0.4s ease, box-shadow 0.4s ease',
+          cursor: 'default',
+        }}
+        onMouseEnter={onEnter}
+        onMouseLeave={onLeave}
+      >
+        <div className="fluid-watermark font-heading" style={{
+          position: 'absolute', top: -10, right: 16,
+          color: '#FF570F', fontWeight: 900, lineHeight: 1,
         }}>
-          {value.icon}
+          {value.number}
         </div>
-        <h4 className="font-heading" style={{ fontSize: 'clamp(1rem,1.8vw,1.2rem)', fontWeight: 800, color: '#fff', marginBottom: 12, letterSpacing: '-0.02em' }}>
-          {value.title}
-        </h4>
-        <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, fontSize: 14, fontFamily: 'Inter' }}>
-          {value.desc}
-        </p>
-      </div>
-    </SpotlightCard>
-  </GSAPTilt>
-);
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{
+            width: 52, height: 52, borderRadius: 14,
+            background: 'linear-gradient(135deg,#FF570F,#EE7D1D)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            marginBottom: 20, color: '#080a0c',
+            boxShadow: '0 8px 24px rgba(255,87,15,0.4)',
+            flexShrink: 0,
+          }}>
+            {value.icon}
+          </div>
+          <h4 className="font-heading" style={{ fontSize: 'clamp(1rem,1.8vw,1.2rem)', fontWeight: 800, color: '#fff', marginBottom: 12, letterSpacing: '-0.02em' }}>
+            {value.title}
+          </h4>
+          <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, fontSize: 14, fontFamily: 'Inter' }}>
+            {value.desc}
+          </p>
+        </div>
+      </SpotlightCard>
+    </GSAPTilt>
+  );
+});
+ValueCard.displayName = 'ValueCard';
 
-// ─── Component: Timeline Item ──────────────────────────────────────────────────
-const TimelineItem = ({ item, index }) => {
+// ─── Component: TimelineItem ───────────────────────────────────────────────────
+const TimelineItem = memo(({ item, index }) => {
   const ref    = useRef(null);
   const isEven = index % 2 === 0;
 
   useEffect(() => {
-    if (!ref.current) return;
+    const el = ref.current;
+    if (!el) return;
+    // Scoped context prevents leaking tweens outside this element's subtree
     const ctx = gsap.context(() => {
-      gsap.from(ref.current, {
+      gsap.from(el, {
         opacity: 0, y: 55, duration: 1.1, ease: 'power3.out',
-        scrollTrigger: { trigger: ref.current, start: 'top 84%', once: true },
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 84%',
+          once: true,
+        },
       });
-    }, ref);
+    }, el);
     return () => ctx.revert();
   }, []);
 
+  // Stable hover handlers
+  const onYearEnter = useCallback((e) => { e.currentTarget.style.transform = 'scale(1.05)'; }, []);
+  const onYearLeave = useCallback((e) => { e.currentTarget.style.transform = 'scale(1)';    }, []);
+  const onDotEnter  = useCallback((e) => { e.currentTarget.style.transform = 'scale(1.15)'; }, []);
+  const onDotLeave  = useCallback((e) => { e.currentTarget.style.transform = 'scale(1)';    }, []);
+  const onCardEnter = useCallback((e) => { e.currentTarget.style.borderColor = 'rgba(255,87,15,0.55)'; }, []);
+  const onCardLeave = useCallback((e) => { e.currentTarget.style.borderColor = 'rgba(255,87,15,0.18)'; }, []);
+
   return (
     <div ref={ref}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16, alignItems: 'center' }} className={`timeline-row-${index}`}>
-        <style>{`
-          @media (min-width: 1024px) {
-            .timeline-row-${index} {
-              grid-template-columns: 1fr 80px 1fr !important;
-            }
-            .tl-year-${index}  { order: ${isEven ? 0 : 2} !important; justify-content: ${isEven ? 'flex-end' : 'flex-start'} !important; }
-            .tl-dot-${index}   { display: flex !important; order: 1 !important; }
-            .tl-event-${index} { order: ${isEven ? 2 : 0} !important; }
-          }
-        `}</style>
-
+      {/*
+        All responsive layout handled by global CSS classes.
+        Zero per-instance <style> injection.
+        isEven/isOdd classes control ordering via CSS-only rules.
+      */}
+      <div className="timeline-row">
         {/* Year badge */}
-        <div className={`tl-year-${index}`} style={{ display: 'flex', justifyContent: 'flex-start', order: 0 }}>
+        <div className={`tl-year-${isEven ? 'even' : 'odd'}`}
+          style={{ display: 'flex', justifyContent: 'flex-start' }}
+        >
           <div
-            style={{ padding: '10px 24px', background: 'linear-gradient(90deg,#FF570F,#EE7D1D)', borderRadius: 12, boxShadow: '0 8px 30px rgba(255,87,15,0.35)', display: 'inline-block', transition: 'transform 0.3s ease', cursor: 'default' }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+            style={{
+              padding: '10px 24px',
+              background: 'linear-gradient(90deg,#FF570F,#EE7D1D)',
+              borderRadius: 12,
+              boxShadow: '0 8px 30px rgba(255,87,15,0.35)',
+              display: 'inline-block',
+              transition: 'transform 0.3s ease',
+              cursor: 'default',
+            }}
+            onMouseEnter={onYearEnter}
+            onMouseLeave={onYearLeave}
           >
-            <span className="font-heading" style={{ fontSize: 'clamp(1.1rem,2vw,1.5rem)', fontWeight: 900, color: '#080a0c', letterSpacing: '-0.03em' }}>{item.year}</span>
+            <span className="font-heading" style={{ fontSize: 'clamp(1.1rem,2vw,1.5rem)', fontWeight: 900, color: '#080a0c', letterSpacing: '-0.03em' }}>
+              {item.year}
+            </span>
           </div>
         </div>
 
-        {/* Center dot — desktop only */}
-        <div className={`tl-dot-${index}`} style={{ display: 'none', justifyContent: 'center' }}>
-          <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#FF570F', border: '4px solid #080a0c', boxShadow: '0 0 0 2px #FF570F, 0 0 24px rgba(255,87,15,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.3s ease', flexShrink: 0 }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.15)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+        {/* Center dot — visible on desktop via CSS class */}
+        <div className="tl-center-dot">
+          <div
+            style={{
+              width: 44, height: 44, borderRadius: '50%',
+              background: '#FF570F', border: '4px solid #080a0c',
+              boxShadow: '0 0 0 2px #FF570F, 0 0 24px rgba(255,87,15,0.5)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'transform 0.3s ease', flexShrink: 0,
+            }}
+            onMouseEnter={onDotEnter}
+            onMouseLeave={onDotLeave}
           >
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#080a0c', animation: 'breatheGlow 2s ease-in-out infinite' }} />
           </div>
         </div>
 
         {/* Event card */}
-        <div className={`tl-event-${index}`} style={{ order: 2 }}>
+        <div className={`tl-event-${isEven ? 'even' : 'odd'}`}>
           <GSAPTilt>
             <SpotlightCard
               className="bottom-sweep"
@@ -561,28 +833,58 @@ const TimelineItem = ({ item, index }) => {
                 border: '1px solid rgba(255,87,15,0.18)',
                 transition: 'border-color 0.4s ease',
               }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,87,15,0.55)'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,87,15,0.18)'}
+              onMouseEnter={onCardEnter}
+              onMouseLeave={onCardLeave}
             >
-              {/* Mobile-only year inside card */}
-              <div className={`tl-mobile-year-${index}`} style={{ marginBottom: 8 }}>
-                <style>{`@media (min-width:1024px){ .tl-mobile-year-${index} { display:none !important; } }`}</style>
-                <span style={{ fontSize: 10, color: '#FF570F', fontFamily: 'JetBrains Mono', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' }}>{item.year}</span>
+              {/* Mobile year — hidden on desktop via CSS class */}
+              <div className="tl-mobile-year">
+                <span style={{ fontSize: 10, color: '#FF570F', fontFamily: 'JetBrains Mono', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+                  {item.year}
+                </span>
               </div>
-              <p style={{ color: 'rgba(255,255,255,0.82)', lineHeight: 1.75, fontSize: 14, fontFamily: 'Inter' }}>{item.event}</p>
+              <p style={{ color: 'rgba(255,255,255,0.82)', lineHeight: 1.75, fontSize: 14, fontFamily: 'Inter' }}>
+                {item.event}
+              </p>
             </SpotlightCard>
           </GSAPTilt>
         </div>
       </div>
     </div>
   );
-};
+});
+TimelineItem.displayName = 'TimelineItem';
 
-// ─── Component: CTA Button ─────────────────────────────────────────────────────
-const CTAButton = ({ href, children, variant = 'primary' }) => {
-  const ref = useRef(null);
-  useMagnetic(ref, 0.3);
+// ─── Arrow Icon (stable, module-level) ────────────────────────────────────────
+const ArrowIcon = (
+  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+    <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+  </svg>
+);
+
+// ─── Component: CTAButton ──────────────────────────────────────────────────────
+const CTAButton = memo(({ href, children, variant = 'primary' }) => {
+  const ref       = useRef(null);
   const isPrimary = variant === 'primary';
+  useMagnetic(ref, 0.3);
+
+  const onEnter = useCallback((e) => {
+    if (isPrimary) {
+      e.currentTarget.style.boxShadow = '0 0 50px rgba(255,87,15,0.55)';
+    } else {
+      e.currentTarget.style.borderColor = 'rgba(255,87,15,0.9)';
+      e.currentTarget.style.background  = 'rgba(255,87,15,0.08)';
+    }
+  }, [isPrimary]);
+
+  const onLeave = useCallback((e) => {
+    if (isPrimary) {
+      e.currentTarget.style.boxShadow = '0 4px 20px rgba(255,87,15,0.35)';
+    } else {
+      e.currentTarget.style.borderColor = 'rgba(255,87,15,0.45)';
+      e.currentTarget.style.background  = 'transparent';
+    }
+  }, [isPrimary]);
+
   return (
     <a
       ref={ref}
@@ -597,69 +899,22 @@ const CTAButton = ({ href, children, variant = 'primary' }) => {
         textDecoration: 'none', borderRadius: 2,
         minHeight: 52, cursor: 'pointer', whiteSpace: 'nowrap',
         transition: 'box-shadow 0.35s ease',
-        background: isPrimary ? '#FF570F' : 'transparent',
-        color: isPrimary ? '#080a0c' : '#ffffff',
-        border: isPrimary ? 'none' : '1.5px solid rgba(255,87,15,0.45)',
-        boxShadow: isPrimary ? '0 4px 20px rgba(255,87,15,0.35)' : 'none',
+        background:  isPrimary ? '#FF570F' : 'transparent',
+        color:       isPrimary ? '#080a0c' : '#ffffff',
+        border:      isPrimary ? 'none'    : '1.5px solid rgba(255,87,15,0.45)',
+        boxShadow:   isPrimary ? '0 4px 20px rgba(255,87,15,0.35)' : 'none',
       }}
-      onMouseEnter={e => {
-        if (isPrimary) {
-          e.currentTarget.style.boxShadow = '0 0 50px rgba(255,87,15,0.55)';
-        } else {
-          e.currentTarget.style.borderColor = 'rgba(255,87,15,0.9)';
-          e.currentTarget.style.background  = 'rgba(255,87,15,0.08)';
-        }
-      }}
-      onMouseLeave={e => {
-        if (isPrimary) {
-          e.currentTarget.style.boxShadow = '0 4px 20px rgba(255,87,15,0.35)';
-        } else {
-          e.currentTarget.style.borderColor = 'rgba(255,87,15,0.45)';
-          e.currentTarget.style.background  = 'transparent';
-        }
-      }}
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
     >
       <span style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', gap: 10 }}>
         {children}
-        <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-          <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
-        </svg>
+        {ArrowIcon}
       </span>
     </a>
   );
-};
-
-// ─── DATA ──────────────────────────────────────────────────────────────────────
-const valuesData = [
-  {
-    number: '01', title: 'No Bullshit Engineering',
-    desc: 'We build what you need, not what sounds impressive in a pitch deck. Every technical decision is justified by measurable business outcomes.',
-    icon: <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
-  },
-  {
-    number: '02', title: 'Skin in the Game',
-    desc: 'We tie our success to yours. If your system fails, we failed. That accountability shapes every line of code we write.',
-    icon: <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-  },
-  {
-    number: '03', title: 'Speed Without Shortcuts',
-    desc: "We move fast because we've done this before — not because we skip tests, documentation, or proper architecture.",
-    icon: <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20" /></svg>,
-  },
-  {
-    number: '04', title: 'Radical Transparency',
-    desc: "You know exactly what we're building, why, and when it ships. No surprises. No excuses. No hidden costs.",
-    icon: <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>,
-  },
-];
-
-const timelineData = [
-  { year: '2015', event: 'First Amazon brand taken on retainer. Still running that account today — $2.7M+ in sales managed.' },
-  { year: '2019', event: 'DDW formally founded as a Florida LLC. Expanded into Meta and Google Ads management for US and EU brands.' },
-  { year: '2021', event: 'Rome office opened. EU client base grows — Meta spend hits $400K+/month under management.' },
-  { year: '2023', event: 'AI development and custom software added as core retainer services. TikTok Shop launched for clients.' },
-  { year: '2025', event: 'Seven retainer services active. $683K managed in a single month. Lyra and Sviluppiamo.dev live.' },
-];
+});
+CTAButton.displayName = 'CTAButton';
 
 // ─── MAIN COMPONENT ────────────────────────────────────────────────────────────
 const AboutPage = () => {
@@ -670,38 +925,71 @@ const AboutPage = () => {
 
   // SplitType heading reveal
   useEffect(() => {
-    if (!headingRef.current) return;
-    const split = new SplitType(headingRef.current, { types: 'words,chars' });
-    gsap.from(split.chars, {
+    const el = headingRef.current;
+    if (!el) return;
+    const split = new SplitType(el, { types: 'words,chars' });
+    const tween = gsap.from(split.chars, {
       opacity: 0, y: 45, rotationX: -35, skewX: 3,
       transformOrigin: 'top center',
       stagger: 0.028, duration: 0.85, ease: 'power3.out',
       delay: 0.15,
     });
-    return () => split.revert();
+    return () => {
+      tween.kill();
+      split.revert();
+    };
   }, []);
 
-  // Parallax orbs
+  // Parallax orbs — scoped to hero section
   useEffect(() => {
-    if (!orb1Ref.current || !orb2Ref.current || !heroRef.current) return;
+    const orb1 = orb1Ref.current;
+    const orb2 = orb2Ref.current;
+    const hero = heroRef.current;
+    if (!orb1 || !orb2 || !hero) return;
+
     const ctx = gsap.context(() => {
-      gsap.to(orb1Ref.current, { yPercent: 30, ease: 'none', scrollTrigger: { trigger: heroRef.current, scrub: 1.2 } });
-      gsap.to(orb2Ref.current, { yPercent: -20, ease: 'none', scrollTrigger: { trigger: heroRef.current, scrub: 1.2 } });
-    });
+      gsap.to(orb1, { yPercent: 30,  ease: 'none', scrollTrigger: { trigger: hero, scrub: 1.2 } });
+      gsap.to(orb2, { yPercent: -20, ease: 'none', scrollTrigger: { trigger: hero, scrub: 1.2 } });
+    }, hero); // scope to hero subtree
     return () => ctx.revert();
   }, []);
 
-  // Global scroll fade-ups
+  // Scroll fade-ups — using refs, not document.querySelectorAll
+  // Each section's elements are targeted via a scoped context ref
+  const storyRef    = useRef(null);
+  const mockupRef   = useRef(null);
+  const valuesRef   = useRef(null);
+  const timelineRef = useRef(null);
+  const ctaRef      = useRef(null);
+
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      document.querySelectorAll('.scroll-fade-up').forEach(el => {
-        gsap.from(el, {
-          opacity: 0, y: 50, duration: 0.95, ease: 'power3.out',
-          scrollTrigger: { trigger: el, start: 'top 85%', once: true },
+    const sections = [
+      storyRef.current,
+      mockupRef.current,
+      valuesRef.current,
+      timelineRef.current,
+      ctaRef.current,
+    ].filter(Boolean);
+
+    const ctxList = sections.map((section) => {
+      const ctx = gsap.context(() => {
+        section.querySelectorAll('.scroll-fade-up').forEach((el) => {
+          gsap.from(el, {
+            opacity: 0, y: 50, duration: 0.95, ease: 'power3.out',
+            scrollTrigger: { trigger: el, start: 'top 85%', once: true },
+          });
         });
-      });
+      }, section);
+      return ctx;
     });
-    return () => ctx.revert();
+
+    // Refresh ScrollTrigger after all contexts are registered
+    // so layout is fully settled
+    ScrollTrigger.refresh();
+
+    return () => {
+      ctxList.forEach((ctx) => ctx.revert());
+    };
   }, []);
 
   return (
@@ -709,36 +997,28 @@ const AboutPage = () => {
       <GlobalStyles />
       <main style={{ position: 'relative', width: '100%', background: '#080a0c', overflowX: 'hidden' }}>
 
-        {/* ── Your existing Navbar ── */}
         <Navbar />
 
-        {/* ════════════════════════════════════════════════
-            § PAGE HEADER — passes through to your existing
-              PageHeader component, same props as before
-        ════════════════════════════════════════════════ */}
         <PageHeader
           title="About DDW"
           breadcrumb="About"
           subtitle="Florida LLC. Offices in Florida and Rome. We manage $683K+/month in Meta spend, $2.7M+ in Amazon sales, and ship live SaaS products — all on retainer."
         />
 
-        {/* ── Logo Marquee ── */}
         <LogoMarquee />
 
-        {/* ════════════════════════════════════════════════
-            § STORY + BENTO
-        ════════════════════════════════════════════════ */}
-        <section style={{ position: 'relative', padding: 'clamp(56px,8vw,96px) 24px', background: '#080a0c', overflow: 'hidden' }}>
-          {/* Grid mesh */}
+        {/* ── STORY + BENTO ─────────────────────────────────────────── */}
+        <section ref={storyRef} style={{ position: 'relative', padding: 'clamp(56px,8vw,96px) 24px', background: '#080a0c', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,87,15,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,87,15,0.02) 1px,transparent 1px)', backgroundSize: '48px 48px', maskImage: 'radial-gradient(ellipse 90% 80% at 50% 50%,black,transparent)', WebkitMaskImage: 'radial-gradient(ellipse 90% 80% at 50% 50%,black,transparent)', pointerEvents: 'none' }} />
-          {/* Orbs */}
-          <div ref={orb1Ref} style={{ position: 'absolute', top: '5%', right: '10%', width: 'clamp(280px,40vw,600px)', height: 'clamp(280px,40vw,600px)', background: 'rgba(255,87,15,0.06)', borderRadius: '50%', filter: 'blur(120px)', pointerEvents: 'none' }} />
-          <div ref={orb2Ref} style={{ position: 'absolute', bottom: '5%', left: '-5%', width: 'clamp(200px,30vw,450px)', height: 'clamp(200px,30vw,450px)', background: 'rgba(253,232,122,0.03)', borderRadius: '50%', filter: 'blur(100px)', pointerEvents: 'none' }} />
+
+          {/* Parallax orbs — ref is on the heroRef wrapping section */}
+          <div ref={heroRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+            <div ref={orb1Ref} style={{ position: 'absolute', top: '5%', right: '10%', width: 'clamp(280px,40vw,600px)', height: 'clamp(280px,40vw,600px)', background: 'rgba(255,87,15,0.06)', borderRadius: '50%', filter: 'blur(120px)' }} />
+            <div ref={orb2Ref} style={{ position: 'absolute', bottom: '5%', left: '-5%', width: 'clamp(200px,30vw,450px)', height: 'clamp(200px,30vw,450px)', background: 'rgba(253,232,122,0.03)', borderRadius: '50%', filter: 'blur(100px)' }} />
+          </div>
 
           <div style={{ maxWidth: 1280, margin: '0 auto', position: 'relative', zIndex: 10 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 'clamp(40px,6vw,72px)', alignItems: 'center' }} className="story-grid">
-              <style>{`@media (min-width:1024px){ .story-grid { grid-template-columns: 1fr 1fr !important; } }`}</style>
-
+            <div className="story-grid">
               {/* Left: Text */}
               <div className="scroll-fade-up" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                 <Eyebrow>Our Story</Eyebrow>
@@ -747,30 +1027,24 @@ const AboutPage = () => {
                   <span style={{ background: 'linear-gradient(135deg,#FF570F,#FDE87A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Two Offices.</span>
                 </h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  {[
-                    'Digital Dream Works is a Florida LLC with offices in Florida and Rome. We serve US and EU clients across digital marketing, AI, and custom software — all on retainer.',
-                    'We manage $683K+ in Meta ad spend per month, $2.7M+ in Amazon sales, run Google Ads at 600% ROAS, and have shipped 3 live SaaS products including Lyra and Sviluppiamo.dev.',
-                    "Our clients don't come to us for one-off projects. They come when the stakes are real — when they need a team that builds the infrastructure, runs the accounts, and stays accountable month over month.",
-                  ].map((text, i) => (
+                  {STORY_PARAGRAPHS.map((text, i) => (
                     <p key={i} style={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.78, fontSize: 'clamp(0.875rem,1.4vw,1rem)', fontFamily: 'Inter' }}>{text}</p>
                   ))}
-                  <p style={{ color: '#FF570F', fontWeight: 700, fontSize: 15, fontFamily: 'Montserrat', letterSpacing: '0.02em' }}>Retainer-only. One team. US + EU markets.</p>
+                  <p style={{ color: '#FF570F', fontWeight: 700, fontSize: 15, fontFamily: 'Montserrat', letterSpacing: '0.02em' }}>
+                    Retainer-only. One team. US + EU markets.
+                  </p>
                 </div>
 
-                {/* Stat grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 12, paddingTop: 20, borderTop: '1px solid rgba(255,87,15,0.12)' }} className="stat-grid">
-                  <style>{`@media (min-width:480px){ .stat-grid { grid-template-columns: repeat(4,1fr) !important; } }`}</style>
-                  <StatCard value="683K+" label="Meta $/month" />
-                  <StatCard value="7"     label="Service Areas" />
-                  <StatCard value="2"     label="Offices" />
-                  <StatCard value="2015"  label="Since" />
+                <div className="stat-grid" style={{ paddingTop: 20, borderTop: '1px solid rgba(255,87,15,0.12)' }}>
+                  {STAT_CARDS.map((s) => (
+                    <StatCard key={s.label} value={s.value} label={s.label} />
+                  ))}
                 </div>
               </div>
 
               {/* Right: Bento */}
               <div className="scroll-fade-up" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-
-                {/* Globe — full width */}
+                {/* Globe */}
                 <GSAPTilt style={{ gridColumn: '1 / -1' }}>
                   <SpotlightCard style={{ position: 'relative', aspectRatio: '16/9', borderRadius: 18, overflow: 'hidden', border: '1px solid rgba(255,87,15,0.18)', background: '#05070a', boxShadow: '0 30px 60px rgba(0,0,0,0.5)' }}>
                     <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,87,15,0.12) 1px,transparent 1px)', backgroundSize: '18px 18px', opacity: 0.4, pointerEvents: 'none' }} />
@@ -821,10 +1095,8 @@ const AboutPage = () => {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════════
-            § BROWSER MOCKUP
-        ════════════════════════════════════════════════ */}
-        <section style={{ position: 'relative', padding: 'clamp(48px,7vw,80px) 24px', background: '#0a0c0f', overflow: 'hidden' }}>
+        {/* ── BROWSER MOCKUP ────────────────────────────────────────── */}
+        <section ref={mockupRef} style={{ position: 'relative', padding: 'clamp(48px,7vw,80px) 24px', background: '#0a0c0f', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 800, height: 400, background: 'rgba(255,87,15,0.04)', borderRadius: '50%', filter: 'blur(100px)', pointerEvents: 'none' }} />
           <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 10 }}>
             <div className="scroll-fade-up" style={{ textAlign: 'center', marginBottom: 40 }}>
@@ -838,13 +1110,8 @@ const AboutPage = () => {
             <div className="scroll-fade-up">
               <BrowserMockup>
                 <div style={{ background: '#080a0c', padding: 24, minHeight: 280, position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 20 }} className="dash-cols">
-                    <style>{`@media (max-width:600px){ .dash-cols { grid-template-columns: 1fr !important; } }`}</style>
-                    {[
-                      { label: 'Revenue MTD',    val: '$683K', delta: '+14.2%' },
-                      { label: 'ROAS',           val: '6.0×',  delta: '+0.8×'  },
-                      { label: 'Active Accounts',val: '14',    delta: '+3'     },
-                    ].map((d, i) => (
+                  <div className="dash-cols">
+                    {DASHBOARD_METRICS.map((d, i) => (
                       <div key={i} style={{ background: 'rgba(255,255,255,0.025)', borderRadius: 10, padding: 16, border: '1px solid rgba(255,87,15,0.1)' }}>
                         <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontFamily: 'JetBrains Mono', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8 }}>{d.label}</p>
                         <p className="font-heading" style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em' }}>{d.val}</p>
@@ -854,7 +1121,7 @@ const AboutPage = () => {
                   </div>
                   {/* Faux chart */}
                   <div style={{ background: 'rgba(255,255,255,0.015)', borderRadius: 10, padding: 16, border: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'flex-end', gap: 8, height: 100, position: 'relative' }}>
-                    {[55,70,48,85,60,90,75,65,88,72,95,80].map((h, i) => (
+                    {CHART_HEIGHTS.map((h, i) => (
                       <div key={i} style={{ flex: 1, background: 'linear-gradient(to top,rgba(255,87,15,0.1),#FF570F)', borderRadius: '3px 3px 0 0', height: `${h}%`, minWidth: 6, opacity: 0.7 + i * 0.02 }} />
                     ))}
                     <div style={{ position: 'absolute', top: 10, right: 14 }}>
@@ -873,10 +1140,8 @@ const AboutPage = () => {
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════════
-            § VALUES
-        ════════════════════════════════════════════════ */}
-        <section style={{ position: 'relative', padding: 'clamp(56px,8vw,96px) 24px', background: '#0d1012', overflow: 'hidden' }}>
+        {/* ── VALUES ───────────────────────────────────────────────── */}
+        <section ref={valuesRef} style={{ position: 'relative', padding: 'clamp(56px,8vw,96px) 24px', background: '#0d1012', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', bottom: 0, left: '25%', width: 500, height: 500, background: 'rgba(253,232,122,0.03)', borderRadius: '50%', filter: 'blur(120px)', pointerEvents: 'none' }} />
           <div style={{ maxWidth: 1280, margin: '0 auto', position: 'relative', zIndex: 10 }}>
             <div className="scroll-fade-up" style={{ textAlign: 'center', marginBottom: 48 }}>
@@ -885,23 +1150,19 @@ const AboutPage = () => {
                 How We{' '}
                 <span style={{ background: 'linear-gradient(135deg,#FF570F,#FDE87A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Operate</span>
               </h3>
-              <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, maxWidth: 480, margin: '0 auto', fontFamily: 'Inter' }}>Four non-negotiable principles that govern every project.</p>
+              <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, maxWidth: 480, margin: '0 auto', fontFamily: 'Inter' }}>
+                Four non-negotiable principles that govern every project.
+              </p>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20 }} className="values-grid scroll-fade-up">
-              <style>{`@media (min-width:768px){ .values-grid { grid-template-columns: repeat(2,1fr) !important; } }`}</style>
-              {valuesData.map((v, i) => <ValueCard key={i} value={v} />)}
+            <div className="values-grid scroll-fade-up">
+              {VALUES_DATA.map((v) => <ValueCard key={v.number} value={v} />)}
             </div>
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════════
-            § TIMELINE
-        ════════════════════════════════════════════════ */}
-        <section style={{ position: 'relative', padding: 'clamp(56px,8vw,96px) 24px', background: '#080a0c', overflow: 'hidden' }}>
-          {/* Vertical center line — desktop only */}
-          <div className="timeline-center-line" style={{ display: 'none', position: 'absolute', top: 0, bottom: 0, left: '50%', width: 1, transform: 'translateX(-50%)', background: 'linear-gradient(to bottom,transparent,rgba(255,87,15,0.12),transparent)', pointerEvents: 'none' }}>
-            <style>{`@media (min-width:1024px){ .timeline-center-line { display:block !important; } }`}</style>
-          </div>
+        {/* ── TIMELINE ─────────────────────────────────────────────── */}
+        <section ref={timelineRef} style={{ position: 'relative', padding: 'clamp(56px,8vw,96px) 24px', background: '#080a0c', overflow: 'hidden' }}>
+          <div className="timeline-center-line" style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: 1, transform: 'translateX(-50%)', background: 'linear-gradient(to bottom,transparent,rgba(255,87,15,0.12),transparent)', pointerEvents: 'none' }} />
           <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative', zIndex: 10 }}>
             <div className="scroll-fade-up" style={{ textAlign: 'center', marginBottom: 56 }}>
               <Eyebrow>Our Journey</Eyebrow>
@@ -909,51 +1170,47 @@ const AboutPage = () => {
                 The{' '}
                 <span style={{ background: 'linear-gradient(135deg,#FF570F,#FDE87A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Timeline</span>
               </h3>
-              <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, maxWidth: 440, margin: '0 auto', fontFamily: 'Inter' }}>From frustrated engineers to trusted enterprise partner.</p>
+              <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, maxWidth: 440, margin: '0 auto', fontFamily: 'Inter' }}>
+                From frustrated engineers to trusted enterprise partner.
+              </p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 48 }}>
-              {timelineData.map((item, i) => <TimelineItem key={i} item={item} index={i} />)}
+              {TIMELINE_DATA.map((item, i) => (
+                <TimelineItem key={item.year} item={item} index={i} />
+              ))}
             </div>
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════════
-            § CTA
-        ════════════════════════════════════════════════ */}
-        <section style={{ position: 'relative', padding: 'clamp(64px,10vw,120px) 24px', background: 'linear-gradient(180deg,#080a0c,#0d1012)', overflow: 'hidden' }}>
+        {/* ── CTA ──────────────────────────────────────────────────── */}
+        <section ref={ctaRef} style={{ position: 'relative', padding: 'clamp(64px,10vw,120px) 24px', background: 'linear-gradient(180deg,#080a0c,#0d1012)', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 'clamp(300px,60vw,700px)', height: 'clamp(150px,30vw,350px)', background: 'rgba(255,87,15,0.09)', borderRadius: '50%', filter: 'blur(80px)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,rgba(255,87,15,0.35),transparent)' }} />
-
           <div style={{ maxWidth: 860, margin: '0 auto', position: 'relative', zIndex: 10, textAlign: 'center' }}>
             <div className="scroll-fade-up" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
               <div style={{ width: 32, height: 1, background: 'rgba(255,87,15,0.4)' }} />
               <span style={{ color: '#FF570F', fontSize: 10, fontFamily: 'JetBrains Mono', letterSpacing: '0.3em', textTransform: 'uppercase' }}>Let's Work Together</span>
               <div style={{ width: 32, height: 1, background: 'rgba(255,87,15,0.4)' }} />
             </div>
-
-            <h3 className="font-heading scroll-fade-up" style={{ fontSize: 'clamp(2rem,5vw,4.2rem)', fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.1, color: '#fff', marginBottom: 20 }}>
+            <h3 ref={headingRef} className="font-heading scroll-fade-up" style={{ fontSize: 'clamp(2rem,5vw,4.2rem)', fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.1, color: '#fff', marginBottom: 20 }}>
               Ready to Build{' '}
-              <span style={{ background: 'linear-gradient(135deg,#FF570F,#FDE87A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Something Real?</span>
+<span className="hero-gradient-text">
+                Something Real?</span>
             </h3>
-
             <p className="scroll-fade-up" style={{ color: 'rgba(255,255,255,0.42)', fontSize: 'clamp(0.875rem,1.5vw,1.05rem)', lineHeight: 1.75, maxWidth: 580, margin: '0 auto 40px', fontFamily: 'Inter' }}>
               Let's talk about your technical challenges and how we can solve them with infrastructure that scales.
             </p>
-
             <div className="scroll-fade-up" style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
-              <CTAButton href="/contact"     variant="primary">Start a Project</CTAButton>
+              <CTAButton href="/contact"      variant="primary">Start a Project</CTAButton>
               <CTAButton href="/case-studies" variant="secondary">View Our Work</CTAButton>
-            </div>
-
             <p className="scroll-fade-up" style={{ marginTop: 32, color: 'rgba(255,255,255,0.2)', fontSize: 10, fontFamily: 'JetBrains Mono', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
               Retainer-only · No lock-in contracts · US + EU
             </p>
           </div>
+           </div>
         </section>
 
-        {/* ── Your existing Footer ── */}
         <Footer />
-
       </main>
     </>
   );

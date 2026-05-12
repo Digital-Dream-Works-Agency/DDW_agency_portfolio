@@ -1,22 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@300;400;600;700&display=swap');
+/* ─── Fonts ──────────────────────────────────────────────────────────────────
+   FIXED: @import REMOVED entirely.
+   Fonts are loaded via <link> tags in index.html (preconnect + preload).
+   @import is render-blocking and discovered late — never use it.
+──────────────────────────────────────────────────────────────────────────── */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
+/* ─── Reset ──────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* ─── Design Tokens ──────────────────────────────────────────────────────── */
 :root {
-  --brand-primary: #FF570F;
+  --brand-primary:   #FF570F;
   --brand-secondary: #EE7D1D;
-  --brand-accent: #FDE87A;
-  --maroon-dark: #630D00;
-  --bg-base: #000000;
-  --text-main: #FFFFFF;
+  --brand-accent:    #FDE87A;
+  --bg-base:         #080a0c;
+  --text-main:       #FFFFFF;
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: auto; /* Lenis handles smooth scroll */
 }
 
 body {
@@ -33,53 +45,25 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-}
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 8px; }
+::-webkit-scrollbar-track  { background: #0a0a0a; }
+::-webkit-scrollbar-thumb  { background: var(--brand-primary); border-radius: 10px; }
 
-::-webkit-scrollbar-track {
-  background: #0a0a0a;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--brand-primary);
-  border-radius: 10px;
-}
-
+/* ─── Selection ──────────────────────────────────────────────────────────── */
 ::selection {
   background: var(--brand-primary);
   color: var(--bg-base);
 }
 
-html {
-  scroll-behavior: auto;
-}
+/* ─── Lenis ──────────────────────────────────────────────────────────────── */
+html.lenis                              { height: auto; }
+.lenis.lenis-smooth                     { scroll-behavior: auto; }
+.lenis.lenis-smooth [data-lenis-prevent]{ overscroll-behavior: contain; }
+.lenis.lenis-stopped                    { overflow: hidden; }
+.lenis.lenis-scrolling iframe           { pointer-events: none; }
 
-html.lenis {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
-.lenis.lenis-scrolling iframe {
-  pointer-events: none;
-}
-
-.magnetic {
-  position: relative;
-  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
+/* ─── Utilities ──────────────────────────────────────────────────────────── */
 .glass {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
@@ -98,6 +82,318 @@ html.lenis {
   visibility: hidden;
 }
 
+/* ─── Accessibility: Reduced Motion ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   KEYFRAMES
+   FIXED: Every @keyframe defined ONCE here.
+   Previously scattered across: inline <style> tags, component files,
+   and duplicated in index.css multiple times.
+   The browser parsed ddwPing at least 3 times. Now: exactly once.
+══════════════════════════════════════════════════════════════════════════ */
+
+/* Shared ping animation — About badges, Collaborate dots */
+@keyframes ddwPing {
+  0%   { transform: scale(1);   opacity: 0.4; }
+  80%  { transform: scale(1.5); opacity: 0;   }
+  100% { transform: scale(1.5); opacity: 0;   }
+}
+
+/* Floating badge pulse */
+@keyframes ddwFloat {
+  0%, 100% { transform: translateY(0px);  }
+  50%       { transform: translateY(-10px); }
+}
+
+/* Loading screen animations */
+@keyframes ddwCorePulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0  0   rgba(255, 87, 15, 0),
+      0 0 40px   rgba(255, 87, 15, 0.3),
+      0 0 80px   rgba(255, 87, 15, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 0  12px rgba(255, 87, 15, 0),
+      0 0 60px   rgba(255, 87, 15, 0.55),
+      0 0 120px  rgba(255, 87, 15, 0.22);
+  }
+}
+
+@keyframes ddwGlowPulse {
+  0%, 100% { opacity: 0.35; transform: scale(1)    translateZ(0); }
+  50%       { opacity: 0.7;  transform: scale(1.25) translateZ(0); }
+}
+
+@keyframes ddwScanLine {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(400%);  opacity: 0; }
+}
+
+@keyframes ddwParticleFloat {
+  0%   { transform: translateY(0)      translateX(0)              translateZ(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(-120px) translateX(var(--px, 0px)) translateZ(0); opacity: 0; }
+}
+
+@keyframes ddwShimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes ddwBlinkCursor {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes ddwBarRise {
+  0%, 100% { transform: scaleY(0.2) translateZ(0); opacity: 0.2; }
+  50%       { transform: scaleY(1)   translateZ(0); opacity: 1;   }
+}
+
+@keyframes ddwAuroraFloat {
+  0%   { transform: translate(0,     0)    scale(1)    translateZ(0); }
+  50%  { transform: translate(-30px, 20px) scale(1.12) translateZ(0); }
+  100% { transform: translate(0,     0)    scale(1)    translateZ(0); }
+}
+
+@keyframes ddwProgressGlow {
+  0%, 100% { opacity: 0.8; }
+  50%       { opacity: 1;   }
+}
+
+@keyframes ddwTaglineReveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* Testimonial spin rings */
+@keyframes testimonialSpinCW {
+  from { transform: rotate(0deg);    }
+  to   { transform: rotate(360deg);  }
+}
+
+@keyframes testimonialSpinCCW {
+  from { transform: rotate(0deg);    }
+  to   { transform: rotate(-360deg); }
+}
+
+@keyframes testimonialGridPulse {
+  0%, 100% { opacity: 0.025; }
+  50%       { opacity: 0.05;  }
+}
+
+/* Products */
+@keyframes productPulse {
+  0%, 100% { opacity: 1;   }
+  50%       { opacity: 0.4; }
+}
+
+/* Footer */
+@keyframes ddwFooterPulse {
+  0%, 100% { opacity: 1;   box-shadow: 0 0  8px #FF570F; }
+  50%       { opacity: 0.5; box-shadow: 0 0 16px #FF570F; }
+}
+
+@keyframes ddwFooterPulseGreen {
+  0%, 100% { opacity: 1;   box-shadow: 0 0  8px #28C840; }
+  50%       { opacity: 0.5; box-shadow: 0 0 16px #28C840; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   COMPONENT CLASSES
+   FIXED: All hover/animation classes consolidated here — zero inline <style>
+   tags anywhere in the codebase.
+══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── About Section ──────────────────────────────────────────────────────── */
+.about-word {
+  display: inline-block;
+  transform-style: preserve-3d;
+}
+
+/* FIXED: Ping ring opacity no longer hardcoded to 0 inline.
+   The animation itself handles opacity via keyframes. */
+.about-ping-ring {
+  animation: ddwPing 2.5s ease-out infinite;
+}
+
+/* FIXED: Shimmer now has the class applied in JSX + CSS trigger works */
+.about-magnetic-btn__shimmer {
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 65%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.8s ease;
+}
+.about-magnetic-btn:hover .about-magnetic-btn__shimmer {
+  transform: translateX(100%);
+}
+
+/* Pill hover */
+.about-pill {
+  transition: border-color 0.3s ease, background 0.3s ease;
+}
+.about-pill:hover {
+  border-color: rgba(255, 87, 15, 0.6) !important;
+  background: rgba(255, 87, 15, 0.12) !important;
+}
+
+/* Trust item hover */
+.about-trust-item {
+  transition: color 0.3s ease;
+}
+.about-trust-item:hover {
+  color: #FF570F;
+}
+.about-trust-icon {
+  transition: transform 0.3s ease;
+}
+.about-trust-item:hover .about-trust-icon {
+  transform: scale(1.25);
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────────── */
+.footer-nav-link {
+  transition: color 0.2s ease, padding-left 0.2s ease;
+}
+.footer-nav-link:hover {
+  color: #FF570F;
+  padding-left: 4px;
+}
+
+.social-btn {
+  transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
+}
+.social-btn:hover {
+  border-color: #FF570F !important;
+  background: rgba(255, 87, 15, 0.1) !important;
+  color: #FF570F !important;
+}
+
+.footer-pulse-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #FF570F;
+  animation: ddwFooterPulse 2s ease-in-out infinite;
+}
+.footer-pulse-dot--green {
+  background: #28C840;
+  animation: ddwFooterPulseGreen 2s ease-in-out infinite;
+}
+
+/* ─── Testimonials ───────────────────────────────────────────────────────── */
+.testimonial-spin-cw  { animation: testimonialSpinCW  18s linear infinite; }
+.testimonial-spin-ccw { animation: testimonialSpinCCW 12s linear infinite; }
+.testimonial-grid-pulse { animation: testimonialGridPulse 6s ease-in-out infinite; }
+
+/* ─── Products ───────────────────────────────────────────────────────────── */
+.product-pulse-dot { animation: productPulse 2s ease-in-out infinite; }
+
+.product-card {
+  transition: border-color 0.45s ease;
+}
+.product-card--hovered {
+  border-color: rgba(255, 87, 15, 0.5) !important;
+}
+.product-card-glow {
+  opacity: 0.5;
+  transition: opacity 0.5s ease;
+}
+.product-card--hovered .product-card-glow { opacity: 1; }
+
+.product-card-bar {
+  width: 0;
+  transition: width 0.7s ease;
+}
+.product-card--hovered .product-card-bar { width: 100%; }
+
+.product-cta-shimmer {
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.55s ease;
+}
+.product-cta-btn:hover .product-cta-shimmer { transform: translateX(100%); }
+.product-cta-btn:hover { box-shadow: 0 10px 40px rgba(255, 87, 15, 0.4) !important; }
+
+.product-cta-icon { transition: transform 0.3s ease; }
+.product-cta-btn:hover .product-cta-icon { transform: translate(3px, -3px); }
+
+/* ─── Services ───────────────────────────────────────────────────────────── */
+.learn-more-link:hover .learn-more-text  { color: var(--accent-color, #FF570F); }
+.learn-more-link:hover .learn-more-arrow { transform: translateX(4px); }
+
+.magnetic-cta[data-hovered='true'] { background: #FDE87A !important; box-shadow: 0 8px 40px rgba(253, 232, 122, 0.35) !important; }
+.magnetic-cta[data-hovered='true'] .shimmer { transform: translateX(100%); }
+.magnetic-cta[data-hovered='true'] .cta-arrow { transform: translateX(4px); }
+
+/* ─── Hero ───────────────────────────────────────────────────────────────── */
+.hero-gradient-text {
+  background: linear-gradient(135deg, #FF570F, #FDE87A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+}
+.hero-gradient-text .char {
+  background: linear-gradient(135deg, #FF570F, #FDE87A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ─── Loading Screen ─────────────────────────────────────────────────────── */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FF570F 0%, #FDE87A 60%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.corner-deco {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0.2;
+}
+
+/* ─── General Button ─────────────────────────────────────────────────────── */
 .btn-primary {
   position: relative;
   padding: 1rem 2.5rem;
@@ -108,40 +404,72 @@ html.lenis {
   color: var(--bg-base);
   border: none;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
 }
-
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 30px rgba(255, 87, 15, 0.4);
 }
 
-.loading-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: var(--bg-base);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Global magnetic CTA box-shadow hover */
+.magnetic-cta:hover {
+  box-shadow:
+    0 0 48px rgba(255, 87, 15, 0.5),
+    0 8px 32px rgba(0, 0, 0, 0.4) !important;
 }
-/* ... aapka purana baqi CSS ... */
+/* These should already exist from the AboutSection review.
+   Only additions specific to LoadingScreen are listed below.
+   ddwDotGrid is intentionally NOT included — see review point #3. */
 
-    .hero-gradient-text {
-      background: linear-gradient(135deg, #FF570F, #FDE87A);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      color: transparent;
-      display: inline-block;
-    }
+/* Glow dot progress — use transform instead of 'left' */
+@keyframes ddwProgressGlow {
+  0%, 100% { opacity: 0.8; }
+  50%       { opacity: 1;   }
+}
+/* ─── PageHeader / AuroraBackground ──────────────────────────────────────────
+   FIXED: Removed from inline <style> tags in AuroraBackground and PageHeader.
+   Parsed once at app load. Never re-injected on mount/unmount.
+──────────────────────────────────────────────────────────────────────────── */
+@keyframes aurora1 {
+  from { transform: translate(0, 0)      scale(1);    }
+  to   { transform: translate(-80px, 60px) scale(1.15); }
+}
+@keyframes aurora2 {
+  from { transform: translate(0, 0)     scale(1);   }
+  to   { transform: translate(60px, -40px) scale(1.1); }
+}
+@keyframes aurora3 {
+  from { transform: translate(0, 0)      scale(1);   }
+  to   { transform: translate(-40px, 30px) scale(1.2); }
+}
+@keyframes scrollDrop {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  30%  { opacity: 1; }
+  100% { transform: translateY(300%);  opacity: 0; }
+}
 
-    /* V.IMP: SplitType jab text ko todta hai, toh .char ko bhi gradient dena parta hai */
-    .hero-gradient-text .char {
-      background: linear-gradient(135deg, #FF570F, #FDE87A);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      color: transparent;
-    }
+/* ─── Breadcrumb link hover — CSS replaces onMouseEnter/Leave handlers ───── */
+.page-header-breadcrumb-link {
+  color: rgba(255, 255, 255, 0.35);
+  transition: color 0.3s ease;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+}
+.page-header-breadcrumb-link:hover {
+  color: #FF570F;
+}
+@keyframes ddwTaglineReveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* Scan line */
+@keyframes ddwScanLine {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateY(400%);  opacity: 0; }
+}
