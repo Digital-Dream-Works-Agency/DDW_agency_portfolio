@@ -1,5 +1,5 @@
 // src/components/Navbar/index.jsx
-// DDW Agency — Navbar | Optimized | Production-Ready
+// DDW Portfolio — Navbar | Agency-Grade UI | Original Links Preserved
 
 import { useState, useEffect, useRef, useCallback, memo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
@@ -9,126 +9,43 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-// FIX #12: Frozen at module level — signals immutability
 const NAV_LINKS = Object.freeze([
-  { name: 'Home',         path: '/'            },
-  { name: 'Services',     path: '/services'    },
+  { name: 'Home',         path: '/'             },
+  { name: 'Services',     path: '/services'     },
   { name: 'Case Studies', path: '/case-studies' },
-  { name: 'Portfolio',    path: '/projects'    },
-  { name: 'About',        path: '/about'       },
-  { name: 'Contact',      path: '/contact'     },
+  { name: 'Portfolio',    path: '/projects'     },
+  { name: 'About',        path: '/about'        },
+  { name: 'Contact',      path: '/contact'      },
 ])
 
 const BRAND = Object.freeze({
-  orange:    '#FF570F',
-  accent:    '#FDE87A',
-  bg:        '#0A0B0D',
-  darkBg:    'rgba(8,10,12,0.97)',
-  navBg:     'rgba(10,11,13,0.92)',
+  orange: '#FF570F',
+  accent: '#FDE87A',
+  bg:     '#080a0c',
 })
+
+const ACCENT_COLORS = ['#FF570F', '#EE7D1D', '#FDE87A']
 
 const CALENDLY = 'https://calendly.com/digi-dreamworks/onboarding-call'
 
-// ─── FIX #9: Correct active route matching — no false positives ───────────────
+// ─── Active route matching ────────────────────────────────────────────────────
 function isRouteActive(linkPath, currentPath) {
   if (linkPath === '/') return currentPath === '/'
   return currentPath === linkPath || currentPath.startsWith(linkPath + '/')
 }
 
-// ─── Shared SVG Components ────────────────────────────────────────────────────
-// FIX #14: Arrow SVG extracted — used in both CTAs
+// ─── Arrow Icon ───────────────────────────────────────────────────────────────
 const ArrowIcon = memo(() => (
   <svg
-    width="12" height="12" viewBox="0 0 12 12"
-    fill="none" aria-hidden="true"
-    className="transition-transform duration-300 group-hover:translate-x-0.5 shrink-0"
+    width="11" height="11" viewBox="0 0 24 24"
+    fill="none" stroke="currentColor" strokeWidth="2.5"
+    aria-hidden="true"
+    className="shrink-0 transition-transform duration-300 group-hover:translate-x-0.5"
   >
-    <path
-      d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9"
-      stroke="currentColor" strokeWidth="1.8"
-      strokeLinecap="round" strokeLinejoin="round"
-    />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
   </svg>
 ))
 ArrowIcon.displayName = 'ArrowIcon'
-
-// ─── FIX #13 + #14: Shared CTA Button component — eliminates duplication ─────
-const CTAButton = memo(({ href, children, className = '', style = {} }) => (
-  <a
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-    className={`relative flex items-center justify-center gap-2 group overflow-hidden cta-button ${className}`}
-    style={style}
-  >
-    {/* FIX #15: aria-hidden on decorative shimmer */}
-    <span
-      aria-hidden="true"
-      className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/25 to-transparent skew-x-12 pointer-events-none"
-    />
-    <span className="relative z-10 flex items-center gap-2">
-      {children}
-      <ArrowIcon />
-    </span>
-  </a>
-))
-CTAButton.displayName = 'CTAButton'
-
-// ─── Active Dot Indicator ─────────────────────────────────────────────────────
-const ActiveDot = memo(({ size = 'sm' }) => (
-  <span
-    aria-hidden="true"
-    className={`rounded-full shrink-0 ${size === 'lg' ? 'w-2 h-2' : 'w-1 h-1'}`}
-    style={{
-      background: BRAND.orange,
-      boxShadow: `0 0 ${size === 'lg' ? 10 : 6}px ${BRAND.orange}`,
-    }}
-  />
-))
-ActiveDot.displayName = 'ActiveDot'
-
-// ─── Desktop Nav Link ─────────────────────────────────────────────────────────
-// FIX #1: Hover driven by CSS class — no direct DOM style mutation
-// FIX #15: memo prevents re-renders from parent
-const DesktopNavLink = memo(({ link, isActive, onClick }) => (
-  <li>
-    <Link
-      to={link.path}
-      onClick={onClick}
-      className={`nav-desktop-link relative block min-h-[44px] flex items-center ${isActive ? 'nav-desktop-link--active' : ''}`}
-      style={{ padding: '6px 13px' }}
-      aria-current={isActive ? 'page' : undefined}
-    >
-      {link.name}
-      {isActive && (
-        <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2">
-          <ActiveDot size="sm" />
-        </span>
-      )}
-    </Link>
-  </li>
-))
-DesktopNavLink.displayName = 'DesktopNavLink'
-
-// ─── Mobile Nav Link ──────────────────────────────────────────────────────────
-// FIX #1: Hover driven by CSS class
-const MobileNavLink = memo(({ link, isActive, onClick, refCallback }) => (
-  <li
-    ref={refCallback}
-    style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-  >
-    <Link
-      to={link.path}
-      onClick={onClick}
-      className={`nav-mobile-link flex items-center justify-between py-4 min-h-[56px] ${isActive ? 'nav-mobile-link--active' : ''}`}
-      aria-current={isActive ? 'page' : undefined}
-    >
-      <span>{link.name}</span>
-      {isActive && <ActiveDot size="lg" />}
-    </Link>
-  </li>
-))
-MobileNavLink.displayName = 'MobileNavLink'
 
 // ─── Hamburger Button ─────────────────────────────────────────────────────────
 const HamburgerButton = memo(({ open, onToggle }) => (
@@ -154,7 +71,7 @@ const HamburgerButton = memo(({ open, onToggle }) => (
       className="block h-[1.5px] transition-all duration-200"
       style={{
         width: '22px',
-        background: 'rgba(255,255,255,0.65)',
+        background: 'rgba(255,255,255,0.5)',
         opacity: open ? 0 : 1,
         transform: open ? 'scaleX(0)' : 'scaleX(1)',
       }}
@@ -179,82 +96,81 @@ const Navbar = () => {
   const overlayRef   = useRef(null)
   const backdropRef  = useRef(null)
   const ctaRef       = useRef(null)
-  // FIX #4: Reset ref array via initializer function — never stale
   const menuLinksRef = useRef([])
-  menuLinksRef.current = [] // Reset before each render population
 
   const [mobileOpen, setMobileOpen] = useState(false)
-  const location  = useLocation()
-  const pathname  = location.pathname
+  const location = useLocation()
+  const pathname = location.pathname
 
-  // ── FIX #9: Corrected active matching ──────────────────────────────────────
+  // ── Close mobile on route change ───────────────────────────────────────────
+  useEffect(() => { setMobileOpen(false) }, [pathname])
+
+  // ── Active check ───────────────────────────────────────────────────────────
   const isActive = useCallback(
     (path) => isRouteActive(path, pathname),
     [pathname],
   )
 
-  // ── Close mobile on route change ───────────────────────────────────────────
-  useEffect(() => {
-    setMobileOpen(false)
+  // ── Handlers ───────────────────────────────────────────────────────────────
+  const handleHomeClick = useCallback((e) => {
+    if (pathname === '/') {
+      e.preventDefault()
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }, [pathname])
 
-  // ── FIX #3: handleHomeClick stabilized with useCallback ────────────────────
-  const handleHomeClick = useCallback(
-    (e) => {
-      if (pathname === '/') {
-        e.preventDefault()
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
-    },
-    [pathname],
-  )
-
-  const closeMobile = useCallback(() => setMobileOpen(false), [])
+  const closeMobile  = useCallback(() => setMobileOpen(false), [])
   const toggleMobile = useCallback(() => setMobileOpen((o) => !o), [])
 
-  // ── Navbar intro + scroll logic ────────────────────────────────────────────
+  // ── GSAP: Entrance + Scroll ────────────────────────────────────────────────
   useEffect(() => {
     const nav = navRef.current
     if (!nav) return
 
-    // FIX #5: gsap.context() handles all cleanup — no manual stInstancesRef needed
     const ctx = gsap.context(() => {
-      // Entrance animation
       gsap.fromTo(
         nav,
         { yPercent: -100, opacity: 0 },
-        { yPercent: 0, opacity: 1, duration: 0.9, ease: 'expo.out', delay: 0.1 },
+        { yPercent: 0, opacity: 1, duration: 1, ease: 'expo.out', delay: 0.05 },
       )
 
-      // FIX #6: Progress bar driven by direct style write — zero GSAP overhead per frame
       ScrollTrigger.create({
         trigger: document.body,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 0.15,
-        onUpdate: (self) => {
+        scrub: 0.1,
+        onUpdate: (s) => {
           if (progressRef.current) {
-            // Direct transform write — most performant path possible
-            progressRef.current.style.transform = `scaleX(${self.progress})`
+            progressRef.current.style.transform = `scaleX(${s.progress})`
           }
         },
       })
 
-      // FIX #2: scrolled state → CSS class toggle on DOM node directly
-      // Zero React state, zero re-renders, zero reconciler involvement
       ScrollTrigger.create({
-        start: 'top -40',
+        start: 'top -50',
         end: 99999,
         onEnter: () => {
-          nav.classList.add('nav--scrolled')
+          gsap.to(nav, {
+            backgroundColor: 'rgba(10,10,10,0.85)',
+            borderBottomColor: 'rgba(255,87,15,0.20)',
+            duration: 0.4,
+            ease: 'power2.out',
+            overwrite: 'auto',
+          })
           if (progressRef.current?.parentElement) {
-            progressRef.current.parentElement.style.opacity = '1'
+            gsap.to(progressRef.current.parentElement, { opacity: 1, duration: 0.3 })
           }
         },
         onLeaveBack: () => {
-          nav.classList.remove('nav--scrolled')
+          gsap.to(nav, {
+            backgroundColor: 'rgba(0,0,0,0)',
+            borderBottomColor: 'rgba(255,87,15,0.05)',
+            duration: 0.4,
+            ease: 'power2.out',
+            overwrite: 'auto',
+          })
           if (progressRef.current?.parentElement) {
-            progressRef.current.parentElement.style.opacity = '0'
+            gsap.to(progressRef.current.parentElement, { opacity: 0, duration: 0.3 })
           }
         },
       })
@@ -263,28 +179,23 @@ const Navbar = () => {
     return () => ctx.revert()
   }, [])
 
-  // ── Magnetic CTA — desktop only ────────────────────────────────────────────
+  // ── Magnetic CTA ───────────────────────────────────────────────────────────
   useEffect(() => {
     const mm = gsap.matchMedia()
     mm.add('(min-width: 1024px) and (hover: hover)', () => {
       const el = ctaRef.current
       if (!el) return
 
-      // FIX #11: willChange set only during interaction
-      const xTo = gsap.quickTo(el, 'x', { duration: 0.4, ease: 'power2.out' })
-      const yTo = gsap.quickTo(el, 'y', { duration: 0.4, ease: 'power2.out' })
+      const xTo = gsap.quickTo(el, 'x', { duration: 0.45, ease: 'power2.out' })
+      const yTo = gsap.quickTo(el, 'y', { duration: 0.45, ease: 'power2.out' })
 
-      const onMove = (e) => {
+      const onMove  = (e) => {
         const r = el.getBoundingClientRect()
         xTo((e.clientX - r.left - r.width  / 2) * 0.22)
         yTo((e.clientY - r.top  - r.height / 2) * 0.22)
       }
       const onEnter = () => { el.style.willChange = 'transform' }
-      const onLeave = () => {
-        xTo(0)
-        yTo(0)
-        el.style.willChange = 'auto'
-      }
+      const onLeave = () => { xTo(0); yTo(0); el.style.willChange = 'auto' }
 
       el.addEventListener('mouseenter', onEnter)
       el.addEventListener('mousemove',  onMove)
@@ -301,130 +212,105 @@ const Navbar = () => {
   }, [])
 
   // ── Mobile overlay animation ───────────────────────────────────────────────
-  // FIX #7: visibility + pointer-events instead of display toggle
-  // FIX #8: Backdrop always in DOM, toggled via CSS class — no layout thrash
   useEffect(() => {
     const overlay  = overlayRef.current
     const backdrop = backdropRef.current
     if (!overlay || !backdrop) return
 
     if (mobileOpen) {
-      // Prevent body scroll
       document.body.style.overflow = 'hidden'
+      gsap.to(backdrop, { opacity: 1, pointerEvents: 'auto', duration: 0.3, ease: 'power2.out' })
+      gsap.set(overlay, { display: 'flex', x: '100%' })
+      gsap.to(overlay, { x: '0%', duration: 0.6, ease: 'expo.out' })
 
-      // Show overlay
-      overlay.style.visibility    = 'visible'
-      overlay.style.pointerEvents = 'auto'
-      gsap.fromTo(
-        overlay,
-        { x: '100%' },
-        { x: '0%', duration: 0.55, ease: 'expo.out' },
-      )
-
-      // Show backdrop
-      gsap.to(backdrop, { opacity: 1, duration: 0.3, ease: 'power2.out' })
-      backdrop.style.pointerEvents = 'auto'
-
-      // Stagger links — filter stale nulls defensively
-      const links = menuLinksRef.current.filter(Boolean)
-      if (links.length) {
+      const validLinks = menuLinksRef.current.filter(Boolean)
+      if (validLinks.length > 0) {
         gsap.fromTo(
-          links,
-          { x: 32, opacity: 0 },
-          {
-            x: 0, opacity: 1, duration: 0.45,
-            ease: 'expo.out', stagger: 0.07, delay: 0.22,
-          },
+          validLinks,
+          { x: 40, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.5, ease: 'expo.out', stagger: 0.055, delay: 0.2 },
         )
       }
     } else {
       document.body.style.overflow = ''
-
+      gsap.to(backdrop, { opacity: 0, pointerEvents: 'none', duration: 0.3, ease: 'power2.out' })
       gsap.to(overlay, {
-        x: '100%', duration: 0.45, ease: 'expo.in',
-        onComplete: () => {
-          overlay.style.visibility    = 'hidden'
-          overlay.style.pointerEvents = 'none'
-        },
-      })
-
-      gsap.to(backdrop, {
-        opacity: 0, duration: 0.35, ease: 'power2.out',
-        onComplete: () => { backdrop.style.pointerEvents = 'none' },
+        x: '100%',
+        duration: 0.4,
+        ease: 'expo.in',
+        onComplete: () => gsap.set(overlay, { display: 'none' }),
       })
     }
 
-    return () => {
-      // Guarantee body scroll is restored on unmount
-      document.body.style.overflow = ''
-    }
+    return () => { document.body.style.overflow = '' }
   }, [mobileOpen])
 
-  // ── Ref callback factory for mobile links ──────────────────────────────────
-  // FIX #4: Stable per-index ref callback — avoids closure over stale array
-  const getMobileLinkRef = useCallback((i) => (el) => {
-    menuLinksRef.current[i] = el
-  }, [])
+  const setMenuLinkRef = useCallback(
+    (index) => (el) => { menuLinksRef.current[index] = el },
+    [],
+  )
 
   return (
     <>
-      {/* ── Main nav bar ──────────────────────────────────────────────────── */}
-      {/*
-        FIX #2: All scroll-driven styles handled via CSS class .nav--scrolled
-        injected directly onto the DOM node — zero React re-renders
-      */}
+      {/* ── Main nav ──────────────────────────────────────────────────────── */}
       <nav
         ref={navRef}
-        className="navbar fixed top-0 left-0 w-full z-[100]"
+        className="fixed top-0 left-0 w-full z-[100] will-change-transform"
         aria-label="Main navigation"
+        style={{
+          padding: '18px 0',
+          background: 'rgba(0,0,0,0)',
+          borderBottom: '1px solid rgba(255,87,15,0.05)',
+          boxShadow: '0 1px 0 rgba(255,255,255,0.02)',
+          transition: 'border-color 0.5s ease, box-shadow 0.5s ease',
+        }}
       >
-        <div className="max-w-[1280px] mx-auto px-5 sm:px-7 flex items-center justify-between gap-6">
+        <div className="max-w-[1320px] mx-auto px-6 lg:px-10 flex items-center justify-between gap-4">
 
           {/* ── Logo ──────────────────────────────────────────────────────── */}
           <Link
             to="/"
             onClick={handleHomeClick}
-            className="flex items-center gap-2.5 shrink-0 z-[110] group"
+            className="group flex items-center gap-3 shrink-0 z-[110]"
             style={{ textDecoration: 'none' }}
             aria-label="DDW Agency — Home"
           >
-            <div
-              className="w-9 h-9 rounded-lg overflow-hidden shrink-0 transition-all duration-300"
-              style={{ border: '1.5px solid rgba(255,87,15,0.35)' }}
-            >
-              <img
-                src="/logo.jpeg"
-                alt=""
-                width="36"
-                height="36"
-                className="w-full h-full object-cover block"
-                // Decorative — aria-label on parent Link covers this
-                aria-hidden="true"
+            <div className="relative w-9 h-9 shrink-0">
+              <div
+                className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ boxShadow: '0 0 20px rgba(255,87,15,0.35)' }}
               />
+              <div
+                className="relative w-full h-full rounded-lg overflow-hidden"
+                style={{ border: '1.5px solid rgba(255,87,15,0.35)' }}
+              >
+                <img
+                  src="/logo.jpeg"
+                  alt=""
+                  width="36" height="36"
+                  className="w-full h-full object-cover block"
+                  aria-hidden="true"
+                />
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{ background: 'linear-gradient(135deg, rgba(255,87,15,0.15) 0%, transparent 60%)' }}
+                />
+              </div>
             </div>
 
-            <div className="flex flex-col leading-none gap-0.5">
-              <span
-                className="font-extrabold text-white"
-                style={{ fontSize: '15px', letterSpacing: '-0.02em' }}
-              >
+            <div className="flex flex-col leading-none gap-[3px]">
+              <span className="text-base font-bold tracking-tight text-white">
                 DDW
                 <span
                   className="bg-clip-text text-transparent"
-                  style={{
-                    backgroundImage: `linear-gradient(90deg, ${BRAND.orange}, ${BRAND.accent})`,
-                  }}
+                  style={{ backgroundImage: 'linear-gradient(135deg, #FF570F, #FDE87A)' }}
                 >
                   {' '}Agency
                 </span>
               </span>
               <span
-                className="font-medium uppercase"
-                style={{
-                  fontSize: '8px',
-                  color: 'rgba(255,255,255,0.28)',
-                  letterSpacing: '0.18em',
-                }}
+                className="text-xs font-bold uppercase tracking-widest"
+                style={{ color: 'rgba(255,255,255,0.25)' }}
               >
                 Digital Dreamworks
               </span>
@@ -432,43 +318,58 @@ const Navbar = () => {
           </Link>
 
           {/* ── Desktop links ─────────────────────────────────────────────── */}
-          <ul className="hidden lg:flex items-center gap-0.5 list-none m-0 p-0" role="list">
-            {NAV_LINKS.map((link) => (
-              <DesktopNavLink
-                key={link.name}
-                link={link}
-                isActive={isActive(link.path)}
-                onClick={link.path === '/' ? handleHomeClick : undefined}
-              />
-            ))}
-          </ul>
+          <div className="hidden lg:flex items-center gap-1">
+            {NAV_LINKS.map((l) => {
+              const active = isActive(l.path)
+              return (
+                <Link
+                  key={l.name}
+                  to={l.path}
+                  onClick={l.path === '/' ? handleHomeClick : undefined}
+                  className="relative px-3 py-2 text-sm font-semibold tracking-wider
+                             transition-colors duration-[250ms] hover:text-white"
+                  style={{
+                    color: active ? BRAND.orange : 'rgba(255,255,255,0.45)',
+                    textDecoration: 'none',
+                  }}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  {l.name}
+                  {active && (
+                    <span
+                      className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
+                      style={{ background: BRAND.orange }}
+                    />
+                  )}
+                </Link>
+              )
+            })}
+          </div>
 
           {/* ── Right side ────────────────────────────────────────────────── */}
           <div className="flex items-center gap-3 shrink-0">
-            {/* FIX #13: Desktop CTA — shared CTAButton component */}
-            <CTAButton
-              href={CALENDLY}
-              className="hidden lg:inline-flex min-h-[44px]"
-              style={{
-                padding: '9px 20px',
-                background: `linear-gradient(135deg, ${BRAND.orange} 0%, #EE7D1D 100%)`,
-                color: BRAND.bg,
-                fontSize: '11px',
-                fontWeight: 700,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                textDecoration: 'none',
-                borderRadius: '10px',
-                boxShadow: `0 6px 28px rgba(255,87,15,0.25)`,
-              }}
-              // FIX: pass ref for magnetic effect via wrapper
-            >
-              {/* Inner ref target for magnetic effect */}
-              <span ref={ctaRef} className="absolute inset-0 rounded-[10px]" aria-hidden="true" />
-              Book a Call
-            </CTAButton>
 
-            {/* Hamburger */}
+            {/* CTA — clip-path polygon */}
+            <a
+              ref={ctaRef}
+              href={CALENDLY}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group hidden lg:inline-flex items-center gap-2 text-xs font-bold
+                         uppercase tracking-wider transition-shadow duration-300
+                         hover:shadow-[0_0_30px_rgba(255,87,15,0.4)]"
+              style={{
+                padding: '10px 22px',
+                background: 'linear-gradient(135deg, #FF570F, #EE7D1D)',
+                color: '#080a0c',
+                clipPath: 'polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%)',
+                textDecoration: 'none',
+              }}
+            >
+              Book a Call
+              <ArrowIcon />
+            </a>
+
             <HamburgerButton open={mobileOpen} onToggle={toggleMobile} />
           </div>
         </div>
@@ -476,163 +377,152 @@ const Navbar = () => {
         {/* ── Scroll progress bar ───────────────────────────────────────── */}
         <div
           aria-hidden="true"
-          className="absolute bottom-0 left-0 w-full h-[1.5px] transition-opacity duration-300"
-          style={{
-            background: 'rgba(255,255,255,0.04)',
-            opacity: 0, // FIX #2: controlled directly via DOM in ScrollTrigger
-          }}
+          className="absolute bottom-0 left-0 w-full h-[1px]"
+          style={{ opacity: 0, background: 'rgba(255,255,255,0.04)' }}
         >
           <div
             ref={progressRef}
-            className="h-full origin-left"
+            className="h-full origin-left will-change-transform"
             style={{
-              background: `linear-gradient(90deg, ${BRAND.orange}, ${BRAND.accent})`,
-              transform: 'scaleX(0)', // FIX #6: direct style, no GSAP per frame
+              background: `linear-gradient(to right, ${BRAND.orange}, ${BRAND.accent})`,
+              transform: 'scaleX(0)',
             }}
           />
         </div>
       </nav>
 
       {/* ── Mobile overlay ────────────────────────────────────────────────── */}
-      {/*
-        FIX #7: visibility/pointer-events instead of display toggle —
-        React reconciler never fights GSAP over display property
-      */}
       <div
         ref={overlayRef}
         id="mobile-nav-overlay"
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation"
-        className="fixed top-0 right-0 bottom-0 z-[99] flex flex-col justify-center"
+        className="fixed inset-y-0 right-0 w-full sm:w-[420px] z-[99] flex-col will-change-transform overflow-y-auto"
         style={{
-          width: 'min(100vw, 420px)',
-          background: BRAND.darkBg,
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          borderLeft: '1px solid rgba(255,87,15,0.1)',
-          padding: '40px 44px',
-          boxSizing: 'border-box',
-          // FIX #7: Start hidden via visibility, not display
-          visibility: 'hidden',
-          pointerEvents: 'none',
-          transform: 'translateX(100%)', // Initial off-screen
+          display: 'none',
+          background: 'rgba(8,10,12,0.98)',
+          borderLeft: '1px solid rgba(255,87,15,0.10)',
         }}
       >
-        {/* Menu label */}
-        <div className="absolute top-7 left-7">
+        {/* Top bar */}
+        <div className="absolute top-7 left-8 right-8 flex items-center justify-between">
           <span
-            className="font-bold uppercase"
-            style={{
-              fontSize: '9px',
-              color: 'rgba(255,255,255,0.18)',
-              letterSpacing: '0.22em',
-            }}
+            className="text-xs font-bold uppercase tracking-widest"
+            style={{ color: 'rgba(255,255,255,0.18)' }}
           >
             Navigation
           </span>
+          <div className="flex gap-1">
+            {ACCENT_COLORS.map((c) => (
+              <span
+                key={c}
+                className="w-2 h-2 rounded-full"
+                style={{ background: c, opacity: 0.5 }}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Decorative orb */}
         <div
           aria-hidden="true"
-          className="absolute top-0 right-0 w-64 h-64 rounded-full pointer-events-none"
+          className="absolute top-1/4 right-0 w-64 h-64 rounded-full pointer-events-none"
           style={{
-            background: 'radial-gradient(ellipse, rgba(255,87,15,0.07) 0%, transparent 70%)',
-            filter: 'blur(40px)',
+            background: 'radial-gradient(circle, #FF570F 0%, transparent 70%)',
+            opacity: 0.06,
           }}
         />
 
         {/* Nav links */}
-        <ul className="list-none m-0 p-0 relative z-10" role="list">
-          {NAV_LINKS.map((link, i) => {
-            const active = isActive(link.path)
-            const handleClick = (e) => {
-              if (link.path === '/') handleHomeClick(e)
-              closeMobile()
-            }
+        <div className="flex flex-col gap-0 my-auto pt-24 pb-10 px-8 sm:px-12">
+          {NAV_LINKS.map((l, i) => {
+            const active = isActive(l.path)
             return (
-              <MobileNavLink
-                key={link.name}
-                link={link}
-                isActive={active}
-                onClick={handleClick}
-                // FIX #4: stable ref callback per index
-                refCallback={getMobileLinkRef(i)}
-              />
+              <div
+                key={l.name}
+                ref={setMenuLinkRef(i)}
+                className="border-b py-5"
+                style={{ borderColor: 'rgba(255,255,255,0.06)' }}
+              >
+                <Link
+                  to={l.path}
+                  onClick={(e) => {
+                    if (l.path === '/') handleHomeClick(e)
+                    closeMobile()
+                  }}
+                  className="flex items-center justify-between group"
+                  style={{ textDecoration: 'none' }}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  <span
+                    className="text-xl font-bold tracking-tight transition-colors duration-200 group-hover:text-white"
+                    style={{ color: active ? BRAND.orange : 'rgba(255,255,255,0.8)' }}
+                  >
+                    {l.name}
+                  </span>
+                  <svg
+                    className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-1 group-hover:translate-x-0"
+                    style={{ color: BRAND.orange }}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"
+                    aria-hidden="true"
+                  >
+                    <path d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+              </div>
             )
           })}
-        </ul>
 
-        {/* FIX #13: Mobile CTA — shared CTAButton component */}
-        <CTAButton
-          href={CALENDLY}
-          className="mt-8 min-h-[52px]"
-          style={{
-            padding: '15px 24px',
-            background: `linear-gradient(135deg, ${BRAND.orange} 0%, #EE7D1D 100%)`,
-            color: BRAND.bg,
-            fontSize: '11px',
-            fontWeight: 700,
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            textDecoration: 'none',
-            borderRadius: '12px',
-            boxShadow: '0 8px 32px rgba(255,87,15,0.28)',
-          }}
-        >
-          Book a Strategy Call
-        </CTAButton>
-
-        {/* Contact info strip */}
-        <div className="absolute bottom-8 left-11 right-11">
+          {/* Mobile CTAs */}
           <div
-            className="pt-5"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+            ref={setMenuLinkRef(NAV_LINKS.length)}
+            className="mt-8 flex flex-col gap-3"
           >
-            <p
-              className="font-mono"
-              style={{
-                fontSize: '10px',
-                color: 'rgba(255,255,255,0.2)',
-                letterSpacing: '0.1em',
-                margin: 0,
-              }}
-            >
-              Rome, Italy · Florida, USA
-            </p>
             <a
-              href="mailto:hello@digitaldreamworksagency.com"
-              className="block mt-1 nav-email-link"
+              href={CALENDLY}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={closeMobile}
+              className="flex items-center justify-center gap-2.5 w-full py-4 text-xs font-bold
+                         uppercase tracking-widest transition-shadow duration-300
+                         hover:shadow-[0_0_30px_rgba(255,87,15,0.3)]"
               style={{
-                fontSize: '10px',
-                color: 'rgba(255,255,255,0.25)',
-                letterSpacing: '0.06em',
+                background: 'linear-gradient(135deg, #FF570F, #EE7D1D)',
+                color: '#080a0c',
+                clipPath: 'polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%)',
                 textDecoration: 'none',
               }}
             >
-              hello@digitaldreamworksagency.com
+              Book a Strategy Call
+              <ArrowIcon />
             </a>
+
+
           </div>
+        </div>
+
+        {/* Bottom strip */}
+        <div className="absolute bottom-7 left-8 right-8 flex items-center justify-between">
+          <p className="text-xs font-semibold tracking-wide" style={{ color: 'rgba(255,255,255,0.18)', margin: 0 }}>
+            Rome, Italy · Florida, USA
+          </p>
+          <p className="text-xs" style={{ color: 'rgba(255,87,15,0.35)', margin: 0 }}>
+            © 2026 DDW
+          </p>
         </div>
       </div>
 
-      {/* ── Backdrop tap-to-close ─────────────────────────────────────────── */}
-      {/*
-        FIX #8: Always in DOM — toggled via opacity, not mount/unmount.
-        Eliminates layout recalculation on every menu toggle.
-      */}
+      {/* ── Backdrop ──────────────────────────────────────────────────────── */}
       <div
         ref={backdropRef}
         onClick={closeMobile}
         aria-hidden="true"
-        className="fixed inset-0 z-[98]"
+        className="fixed inset-0 z-[98] cursor-pointer"
         style={{
-          background: 'rgba(0,0,0,0.55)',
-          backdropFilter: 'blur(3px)',
-          WebkitBackdropFilter: 'blur(3px)',
-          opacity: 0,           // FIX #8: starts invisible
-          pointerEvents: 'none', // FIX #8: starts non-interactive
+          background: 'rgba(0,0,0,0.65)',
+          opacity: 0,
+          pointerEvents: 'none',
         }}
       />
     </>

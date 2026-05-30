@@ -157,22 +157,17 @@ const ICON_BADGE_STYLE = {
 };
 
 const COUNTER_STYLE = {
-  fontSize: 'clamp(36px, 5vw, 52px)',
-  letterSpacing: '-0.03em',
   background: 'linear-gradient(135deg, #FF570F, #FDE87A)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
 };
 
 const LABEL_STYLE = {
-  fontSize: '11px',
-  letterSpacing: '0.2em',
   color: 'rgba(255,255,255,0.9)',
   transition: 'color 0.3s ease',
 };
 
 const SUBLABEL_STYLE = {
-  fontSize: '12px',
   color: 'rgba(255,255,255,0.38)',
   maxWidth: '200px',
 };
@@ -353,7 +348,7 @@ const StatItem = memo(({ stat, animationDelay }) => {
       {/* Counter — textContent mutated directly, never via state */}
       <div
         ref={countRef}
-        className="relative z-10 font-black tabular-nums mb-4 leading-none"
+        className="relative z-10 font-bold tabular-nums mb-4 leading-[1.1] tracking-tight text-3xl md:text-4xl"
         style={COUNTER_STYLE}
         aria-live="polite"
       >
@@ -369,7 +364,7 @@ const StatItem = memo(({ stat, animationDelay }) => {
 
       {/* Label */}
       <div
-        className="relative z-10 font-bold uppercase mb-3 group-hover:text-[#FF570F]"
+        className="relative z-10 text-xs font-bold uppercase tracking-widest mb-3 group-hover:text-[#FF570F]"
         style={LABEL_STYLE}
       >
         {label}
@@ -377,7 +372,7 @@ const StatItem = memo(({ stat, animationDelay }) => {
 
       {/* Sub label */}
       <p
-        className="relative z-10 leading-relaxed"
+        className="relative z-10 text-sm leading-relaxed"
         style={SUBLABEL_STYLE}
       >
         {sublabel}
@@ -447,9 +442,7 @@ const BADGE_STYLE = {
 const BADGE_DOT_STYLE = { background: '#FF570F' };
 
 const BADGE_TEXT_STYLE = {
-  fontSize: '10px',
   color: 'rgba(255,87,15,0.9)',
-  letterSpacing: '0.22em',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -525,7 +518,7 @@ const Stats = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden py-14 md:py-20"
+      className="relative overflow-hidden py-14 md:py-8 md:py-12 lg:py-16"
       style={SECTION_STYLE}
       aria-label="Performance Statistics"
     >
@@ -562,7 +555,7 @@ const Stats = () => {
               aria-hidden="true"
             />
             <span
-              className="font-bold uppercase"
+              className="text-xs font-bold uppercase tracking-widest"
               style={BADGE_TEXT_STYLE}
             >
               Real numbers · live accounts · dashboard screenshots available

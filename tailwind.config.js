@@ -26,7 +26,7 @@ export default {
         'text-muted': '#a1a1aa',
       },
       fontFamily: {
-        'heading': ['Montserrat', 'sans-serif'],
+        'heading': ['var(--font-agrandir)', 'Montserrat', 'sans-serif'],
         'body': ['Inter', 'sans-serif'],
       },
       backgroundImage: {

@@ -158,22 +158,20 @@ const MagneticButton = memo(({ href, children, external = false, primary = true,
   }, []) // stable: href/external/primary don't affect magnetic behavior
 
   const primaryStyle = useMemo(() => ({
-    fontSize: '11px',
-    letterSpacing: '0.15em',
+    letterSpacing: '0.1em',
     background: 'linear-gradient(135deg, #FF570F 0%, #EE7D1D 100%)',
     color: '#0A0B0D',
     boxShadow: '0 8px 36px rgba(255,87,15,0.3)',
   }), [])
 
   const ghostStyle = useMemo(() => ({
-    fontSize: '11px',
-    letterSpacing: '0.15em',
+    letterSpacing: '0.1em',
     background: 'transparent',
     color: 'rgba(255,255,255,0.55)',
     border: '1px solid rgba(255,255,255,0.1)',
   }), [])
 
-  const sharedClass = `hero-shimmer-btn group relative flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-xl overflow-hidden min-h-[40px] transition-all duration-300 w-full sm:w-auto font-extrabold uppercase ${className}`
+  const sharedClass = `hero-shimmer-btn group relative flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-xl overflow-hidden min-h-[40px] transition-all duration-300 w-full sm:w-auto font-bold uppercase text-xs ${className}`
 
   const innerContent = (
     <>
@@ -266,13 +264,13 @@ const FloatingPill = memo(({ label, value, color, className = '', delay = 0 }) =
       />
       <div className="flex flex-col leading-none">
         <span
-          className="font-bold uppercase font-mono"
-          style={{ fontSize: '7px', color: 'rgba(255,255,255,0.28)', letterSpacing: '0.15em' }}
+          className="text-xs font-bold uppercase font-mono tracking-wider"
+          style={{ color: 'rgba(255,255,255,0.28)' }}
         >
           {label}
         </span>
         <span
-          className="font-black font-mono text-[10px]"
+          className="font-bold font-mono text-sm"
           style={{ color }}
         >
           {value}
@@ -395,8 +393,8 @@ const LiveMetricsDashboard = memo(() => {
               style={{ background: '#27C93F', boxShadow: '0 0 6px #27C93F' }}
             />
             <span
-              className="font-mono text-[8px] truncate"
-              style={{ color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em' }}
+              className="font-mono text-xs truncate tracking-wide"
+              style={{ color: 'rgba(255,255,255,0.2)' }}
             >
               app.digitaldreamworksagency.com
             </span>
@@ -411,8 +409,8 @@ const LiveMetricsDashboard = memo(() => {
               style={{ background: '#27C93F' }}
             />
             <span
-              className="font-bold font-mono hidden sm:inline-block"
-              style={{ fontSize: '7px', color: '#27C93F', letterSpacing: '0.18em' }}
+              className="text-xs font-bold font-mono hidden sm:inline-block tracking-widest"
+              style={{ color: '#27C93F' }}
             >
               LIVE
             </span>
@@ -426,10 +424,8 @@ const LiveMetricsDashboard = memo(() => {
               <button
                 key={m.tag}
                 onClick={() => handleMetricClick(i)}
-                className="flex-1 sm:flex-none px-2 py-1 rounded-md font-bold font-mono transition-all duration-300 min-h-[28px]"
+                className="flex-1 sm:flex-none px-2 py-1 rounded-md font-bold font-mono transition-all duration-300 min-h-[28px] text-xs tracking-wider"
                 style={{
-                  fontSize:   '8px',
-                  letterSpacing: '0.16em',
                   background: i === activeIdx ? 'rgba(255,87,15,0.12)' : 'rgba(255,255,255,0.03)',
                   border:     i === activeIdx ? '1px solid rgba(255,87,15,0.3)' : '1px solid rgba(255,255,255,0.06)',
                   color:      i === activeIdx ? m.color : 'rgba(255,255,255,0.3)',
@@ -444,26 +440,23 @@ const LiveMetricsDashboard = memo(() => {
           {/* Active metric value */}
           <div className="rounded-xl p-3 flex flex-col gap-0.5" style={activePanelStyle}>
             <span
-              className="font-bold uppercase font-mono"
-              style={{ fontSize: '7px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.2em' }}
+              className="text-xs font-bold uppercase font-mono tracking-widest"
+              style={{ color: 'rgba(255,255,255,0.3)' }}
             >
               {active.sublabel}
             </span>
             <span
-              className="font-black font-mono"
+              className="font-bold font-mono text-4xl md:text-5xl leading-[1.1] tracking-tight"
               style={{
-                fontSize:   'clamp(28px, 6vw, 38px)',
-                letterSpacing: '-0.04em',
                 color:      active.color,
                 textShadow: `0 0 30px ${active.color}55`,
-                lineHeight: 1,
               }}
             >
               {active.value}
             </span>
             <span
-              className="font-bold mt-0.5"
-              style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)' }}
+              className="text-xs font-bold mt-0.5"
+              style={{ color: 'rgba(255,255,255,0.55)' }}
             >
               {active.label}
             </span>
@@ -476,13 +469,13 @@ const LiveMetricsDashboard = memo(() => {
           >
             <div className="flex items-center justify-between mb-2">
               <span
-                className="font-bold uppercase font-mono"
-                style={{ fontSize: '7px', color: 'rgba(255,255,255,0.22)', letterSpacing: '0.18em' }}
+                className="text-xs font-bold uppercase font-mono tracking-widest"
+                style={{ color: 'rgba(255,255,255,0.22)' }}
               >
                 Performance Index
               </span>
               <span
-                className="font-bold font-mono text-[8px]"
+                className="text-xs font-bold font-mono"
                 style={{ color: active.color }}
               >
                 ↑ {MOM_LABELS[activeIdx]}% MoM
@@ -514,14 +507,14 @@ const LiveMetricsDashboard = memo(() => {
                 style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
               >
                 <span
-                  className="font-bold uppercase font-mono"
-                  style={{ fontSize: '6px', color: 'rgba(255,255,255,0.22)', letterSpacing: '0.15em' }}
+                  className="text-xs font-bold uppercase font-mono tracking-wider"
+                  style={{ color: 'rgba(255,255,255,0.22)' }}
                 >
                   {kpi.l}
                 </span>
                 <span
-                  className="font-black font-mono"
-                  style={{ fontSize: 'clamp(11px, 2.5vw, 14px)', color: 'white', letterSpacing: '-0.03em' }}
+                  className="text-xs md:text-sm font-bold font-mono"
+                  style={{ color: 'white', letterSpacing: '-0.03em' }}
                 >
                   {kpi.v}
                 </span>
@@ -593,8 +586,8 @@ const PlatformMarquee = memo(() => (
             style={{ background: 'rgba(255,87,15,0.4)' }}
           />
           <span
-            className="font-bold uppercase font-mono"
-            style={{ fontSize: '9px', color: 'rgba(255,255,255,0.22)', letterSpacing: '0.2em' }}
+            className="text-xs font-bold uppercase font-mono tracking-widest"
+            style={{ color: 'rgba(255,255,255,0.22)' }}
           >
             {name}
           </span>
@@ -766,10 +759,10 @@ const Hero = () => {
                   className="invisible flex items-center gap-1.5 px-2.5 py-1 rounded-full"
                   style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
                 >
-                  <span style={{ color: '#FF570F', fontSize: '9px' }} aria-hidden="true">{pill.icon}</span>
+                  <span className="text-xs" style={{ color: '#FF570F' }} aria-hidden="true">{pill.icon}</span>
                   <span
-                    className="font-bold uppercase font-mono"
-                    style={{ fontSize: '8px', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.15em' }}
+                    className="text-xs font-bold uppercase font-mono tracking-wider"
+                    style={{ color: 'rgba(255,255,255,0.5)' }}
                   >
                     {pill.label}
                   </span>
@@ -786,8 +779,8 @@ const Hero = () => {
                   style={{ background: '#27C93F', boxShadow: '0 0 6px #27C93F' }}
                 />
                 <span
-                  className="font-bold uppercase font-mono"
-                  style={{ fontSize: '8px', color: '#27C93F', letterSpacing: '0.15em' }}
+                  className="text-xs font-bold uppercase font-mono tracking-wider"
+                  style={{ color: '#27C93F' }}
                 >
                   Accounts Verified Live
                 </span>
@@ -798,22 +791,18 @@ const Hero = () => {
             <div className="flex flex-col w-full leading-[1.02]">
               <h1
                 ref={headingRef}
-                className="font-black tracking-tight text-white"
+                className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-[-0.035em]"
                 style={{
-                  fontSize:    'clamp(28px, 4.5vw, 50px)',
-                  letterSpacing: '-0.03em',
-                  fontFamily:  'Montserrat, sans-serif',
+                  fontFamily:  'var(--font-agrandir, Montserrat, sans-serif)',
                 }}
               >
                 Most agencies show case studies.
               </h1>
               <h2
                 ref={heading2Ref}
-                className="font-black tracking-tight"
+                className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-[-0.035em]"
                 style={{
-                  fontSize:    'clamp(28px, 4.5vw, 50px)',
-                  letterSpacing: '-0.03em',
-                  fontFamily:  'Montserrat, sans-serif',
+                  fontFamily:  'var(--font-agrandir, Montserrat, sans-serif)',
                   background:  'linear-gradient(135deg, #FF570F, #FDE87A)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor:  'transparent',
@@ -827,9 +816,8 @@ const Hero = () => {
             {/* Body */}
             <p
               ref={bodyRef}
-              className="invisible leading-relaxed max-w-md"
+              className="invisible max-w-md text-base leading-relaxed"
               style={{
-                fontSize:   'clamp(13px, 1.5vw, 15px)',
                 color:      'rgba(255,255,255,0.45)',
                 fontFamily: 'Inter, sans-serif',
               }}
@@ -857,8 +845,7 @@ const Hero = () => {
                */}
               <Link
                 to="/case-studies"
-                className="hero-ghost-link group flex items-center justify-center gap-1.5 min-h-[40px] px-3"
-                style={{ fontSize: '12px', fontWeight: 600 }}
+                className="hero-ghost-link group flex items-center justify-center gap-1.5 min-h-[40px] px-3 text-xs font-semibold"
               >
                 View Numbers
                 <svg
@@ -884,14 +871,14 @@ const Hero = () => {
               {HERO_STATS.map(s => (
                 <div key={s.label} className="flex flex-col gap-0.5 text-center lg:text-left">
                   <span
-                    className="font-black font-mono"
+                    className="font-bold font-mono"
                     style={{ fontSize: 'clamp(16px, 2vw, 20px)', color: '#FF570F', letterSpacing: '-0.02em' }}
                   >
                     {s.val}
                   </span>
                   <span
-                    className="font-bold uppercase font-mono"
-                    style={{ fontSize: '8px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.15em' }}
+                    className="text-xs font-bold uppercase font-mono tracking-wider"
+                    style={{ color: 'rgba(255,255,255,0.3)' }}
                   >
                     {s.label}
                   </span>

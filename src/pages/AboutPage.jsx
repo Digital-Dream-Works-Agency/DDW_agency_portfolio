@@ -361,15 +361,13 @@ SpotlightCard.displayName = 'SpotlightCard';
 // ─── Component: Eyebrow ────────────────────────────────────────────────────────
 const Eyebrow = memo(({ children }) => (
   <div style={{ marginBottom: 20 }}>
-    <span style={{
+    <span className="text-xs font-bold uppercase tracking-widest" style={{
       display: 'inline-flex', alignItems: 'center', gap: 8,
       padding: '6px 18px',
       border: '1px solid rgba(255,87,15,0.3)',
       background: 'rgba(255,87,15,0.07)',
       borderRadius: 999,
       color: '#FF570F',
-      fontSize: 10, fontWeight: 700,
-      letterSpacing: '0.25em', textTransform: 'uppercase',
       fontFamily: 'JetBrains Mono, monospace',
       backdropFilter: 'blur(8px)',
     }}>
@@ -438,7 +436,7 @@ const GlobeVisual = memo(() => (
       <div style={{ position: 'relative', width: 12, height: 12 }}>
         <div style={{ width: 12, height: 12, background: '#FF570F', borderRadius: '50%', boxShadow: '0 0 14px #FF570F' }} />
         <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#FF570F', animation: 'pingPulse 1.8s ease-out infinite', opacity: 0.45 }} />
-        <span style={{ position: 'absolute', top: 16, left: -18, fontSize: 7, color: '#FF570F', fontFamily: 'JetBrains Mono', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Florida</span>
+        <span className="text-xs font-bold uppercase tracking-widest" style={{ position: 'absolute', top: 16, left: -18, color: '#FF570F', fontFamily: 'JetBrains Mono', whiteSpace: 'nowrap' }}>Florida</span>
       </div>
     </div>
 
@@ -447,7 +445,7 @@ const GlobeVisual = memo(() => (
       <div style={{ position: 'relative', width: 10, height: 10 }}>
         <div style={{ width: 10, height: 10, background: '#fff', borderRadius: '50%', boxShadow: '0 0 12px rgba(255,255,255,0.8)' }} />
         <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#fff', animation: 'pingPulse 1.8s ease-out infinite', animationDelay: '1.2s', opacity: 0.35 }} />
-        <span style={{ position: 'absolute', top: 14, left: -8, fontSize: 7, color: 'rgba(255,255,255,0.85)', fontFamily: 'JetBrains Mono', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Rome</span>
+        <span className="text-xs font-bold uppercase tracking-widest" style={{ position: 'absolute', top: 14, left: -8, color: 'rgba(255,255,255,0.85)', fontFamily: 'JetBrains Mono', whiteSpace: 'nowrap' }}>Rome</span>
       </div>
     </div>
   </div>
@@ -505,8 +503,8 @@ const LogoMarquee = memo(() => (
     <div style={{ display: 'flex', gap: 64, alignItems: 'center', width: 'max-content', animation: 'marqueeScroll 30s linear infinite' }}>
       {MARQUEE_ITEMS.map((p, i) => (
         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-          <span style={{ color: 'rgba(255,87,15,0.35)', fontSize: 13 }}>{p.icon}</span>
-          <span style={{ color: 'rgba(255,255,255,0.22)', fontFamily: 'JetBrains Mono', fontWeight: 700, fontSize: 11, letterSpacing: '0.22em', textTransform: 'uppercase' }}>{p.name}</span>
+          <span className="text-sm" style={{ color: 'rgba(255,87,15,0.35)' }}>{p.icon}</span>
+          <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.22)', fontFamily: 'JetBrains Mono' }}>{p.name}</span>
         </div>
       ))}
     </div>
@@ -575,7 +573,7 @@ const BrowserMockup = memo(({ children }) => (
       <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#FFBD2E' }} />
       <div style={{ width: 11, height: 11, borderRadius: '50%', background: '#27C93F' }} />
       <div style={{ flex: 1, margin: '0 12px', height: 22, borderRadius: 6, background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontFamily: 'JetBrains Mono' }}>app.ddwagency.com</span>
+        <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'JetBrains Mono' }}>app.ddwagency.com</span>
       </div>
     </div>
     {children}
@@ -668,10 +666,9 @@ const StatCard = memo(({ value, label }) => {
         <div ref={cardRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
         <div
           ref={numRef}
-          className="font-heading"
+          className="font-heading text-3xl md:text-4xl leading-[1.1] tracking-tight"
           style={{
-            fontSize: 'clamp(1.25rem,2.5vw,1.75rem)', fontWeight: 900,
-            letterSpacing: '-0.03em',
+            fontWeight: 700,
             background: 'linear-gradient(135deg,#FF570F,#FDE87A)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text', marginBottom: 4, whiteSpace: 'nowrap',
@@ -679,7 +676,7 @@ const StatCard = memo(({ value, label }) => {
         >
           {`0${suffix}`}
         </div>
-        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.2em', fontFamily: 'JetBrains Mono' }}>
+        <div className="text-xs uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.35)', fontFamily: 'JetBrains Mono' }}>
           {label}
         </div>
       </SpotlightCard>
@@ -716,7 +713,7 @@ const ValueCard = memo(({ value }) => {
       >
         <div className="fluid-watermark font-heading" style={{
           position: 'absolute', top: -10, right: 16,
-          color: '#FF570F', fontWeight: 900, lineHeight: 1,
+          color: '#FF570F', fontWeight: 700, lineHeight: 1,
         }}>
           {value.number}
         </div>
@@ -731,10 +728,10 @@ const ValueCard = memo(({ value }) => {
           }}>
             {value.icon}
           </div>
-          <h4 className="font-heading" style={{ fontSize: 'clamp(1rem,1.8vw,1.2rem)', fontWeight: 800, color: '#fff', marginBottom: 12, letterSpacing: '-0.02em' }}>
+          <h4 className="text-xl sm:text-2xl font-bold tracking-tight" style={{   color: '#fff', marginBottom: 12,  }}>
             {value.title}
           </h4>
-          <p style={{ color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, fontSize: 14, fontFamily: 'Inter' }}>
+          <p className="text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'Inter' }}>
             {value.desc}
           </p>
         </div>
@@ -799,7 +796,7 @@ const TimelineItem = memo(({ item, index }) => {
             onMouseEnter={onYearEnter}
             onMouseLeave={onYearLeave}
           >
-            <span className="font-heading" style={{ fontSize: 'clamp(1.1rem,2vw,1.5rem)', fontWeight: 900, color: '#080a0c', letterSpacing: '-0.03em' }}>
+            <span className="font-heading text-xl md:text-2xl" style={{ fontWeight: 700, color: '#080a0c', letterSpacing: '-0.03em' }}>
               {item.year}
             </span>
           </div>
@@ -838,11 +835,11 @@ const TimelineItem = memo(({ item, index }) => {
             >
               {/* Mobile year — hidden on desktop via CSS class */}
               <div className="tl-mobile-year">
-                <span style={{ fontSize: 10, color: '#FF570F', fontFamily: 'JetBrains Mono', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: '#FF570F', fontFamily: 'JetBrains Mono' }}>
                   {item.year}
                 </span>
               </div>
-              <p style={{ color: 'rgba(255,255,255,0.82)', lineHeight: 1.75, fontSize: 14, fontFamily: 'Inter' }}>
+              <p className="text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.82)', fontFamily: 'Inter' }}>
                 {item.event}
               </p>
             </SpotlightCard>
@@ -889,13 +886,12 @@ const CTAButton = memo(({ href, children, variant = 'primary' }) => {
     <a
       ref={ref}
       href={href}
-      className="shimmer-btn"
-      style={{
+      className="shimmer-btn text-sm font-bold uppercase tracking-widest" style={{
         position: 'relative', display: 'inline-flex',
         alignItems: 'center', justifyContent: 'center',
         gap: 12, padding: '14px 36px',
-        fontFamily: 'Montserrat', fontWeight: 800,
-        fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.14em',
+        fontFamily: 'Montserrat', 
+         textTransform: 'uppercase', 
         textDecoration: 'none', borderRadius: 2,
         minHeight: 52, cursor: 'pointer', whiteSpace: 'nowrap',
         transition: 'box-shadow 0.35s ease',
@@ -1022,15 +1018,15 @@ const AboutPage = () => {
               {/* Left: Text */}
               <div className="scroll-fade-up" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                 <Eyebrow>Our Story</Eyebrow>
-                <h2 className="font-heading" style={{ fontSize: 'clamp(2rem,4.5vw,3.5rem)', fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.12, color: '#fff' }}>
+                <h2 className="text-3xl md:text-4xl font-bold leading-[1.1] tracking-[-0.035em]" style={{     color: '#fff' }}>
                   Florida LLC.{' '}<br />
                   <span style={{ background: 'linear-gradient(135deg,#FF570F,#FDE87A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Two Offices.</span>
                 </h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {STORY_PARAGRAPHS.map((text, i) => (
-                    <p key={i} style={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.78, fontSize: 'clamp(0.875rem,1.4vw,1rem)', fontFamily: 'Inter' }}>{text}</p>
+                    <p className="text-base leading-relaxed" key={i} style={{ color: 'rgba(255,255,255,0.55)', fontFamily: 'Inter' }}>{text}</p>
                   ))}
-                  <p style={{ color: '#FF570F', fontWeight: 700, fontSize: 15, fontFamily: 'Montserrat', letterSpacing: '0.02em' }}>
+                  <p className="text-base leading-relaxed font-bold" style={{ color: '#FF570F', fontFamily: 'Montserrat' }}>
                     Retainer-only. One team. US + EU markets.
                   </p>
                 </div>
@@ -1051,16 +1047,16 @@ const AboutPage = () => {
                     <GlobeVisual />
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top,#05070a 8%,transparent)', pointerEvents: 'none' }} />
                     <div style={{ position: 'absolute', bottom: 18, left: 18, zIndex: 30 }}>
-                      <p style={{ color: '#FF570F', fontSize: 9, fontFamily: 'JetBrains Mono', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 2 }}>Global Infrastructure</p>
-                      <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}>US & EU Endpoints Active</p>
+                      <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#FF570F', fontFamily: 'JetBrains Mono', marginBottom: 2 }}>Global Infrastructure</p>
+                      <p className="text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>US & EU Endpoints Active</p>
                     </div>
                     <div style={{ position: 'absolute', top: 14, right: 14, zIndex: 30, display: 'flex', alignItems: 'center', gap: 6 }}>
                       <div style={{ width: 7, height: 7, background: '#22c55e', borderRadius: '50%', animation: 'breatheGlow 1.8s ease-in-out infinite' }} />
-                      <span style={{ fontSize: 9, color: '#22c55e', fontFamily: 'JetBrains Mono', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Live</span>
+                      <span className="text-xs uppercase tracking-widest" style={{ color: '#22c55e', fontFamily: 'JetBrains Mono' }}>Live</span>
                     </div>
                     <FloatingPill style={{ bottom: 18, right: 18 }}>
-                      <span style={{ fontSize: 10, color: '#FF570F', fontFamily: 'JetBrains Mono', fontWeight: 700 }}>+$683K</span>
-                      <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', display: 'block', letterSpacing: '0.1em' }}>this month</span>
+                      <span className="text-xs font-bold" style={{ color: '#FF570F', fontFamily: 'JetBrains Mono' }}>+$683K</span>
+                      <span className="text-xs tracking-wider" style={{ color: 'rgba(255,255,255,0.4)', display: 'block' }}>this month</span>
                     </FloatingPill>
                   </SpotlightCard>
                 </GSAPTilt>
@@ -1072,8 +1068,8 @@ const AboutPage = () => {
                     <DataFlowVisual />
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top,#05070a 12%,transparent)', pointerEvents: 'none' }} />
                     <div style={{ position: 'absolute', bottom: 14, left: 14, zIndex: 30 }}>
-                      <p style={{ color: '#FF570F', fontSize: 9, fontFamily: 'JetBrains Mono', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 2 }}>Ad Spend</p>
-                      <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 11 }}>$683K+/mo</p>
+                      <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#FF570F', fontFamily: 'JetBrains Mono', marginBottom: 2 }}>Ad Spend</p>
+                      <p className="text-xs" style={{ color: 'rgba(255,255,255,0.55)' }}>$683K+/mo</p>
                     </div>
                   </SpotlightCard>
                 </GSAPTilt>
@@ -1085,8 +1081,8 @@ const AboutPage = () => {
                     <TechCoreVisual />
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top,#05070a 12%,transparent)', pointerEvents: 'none' }} />
                     <div style={{ position: 'absolute', bottom: 14, left: 14, zIndex: 30 }}>
-                      <p style={{ color: '#FF570F', fontSize: 9, fontFamily: 'JetBrains Mono', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 2 }}>AI Logic</p>
-                      <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 11 }}>Custom Arch</p>
+                      <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#FF570F', fontFamily: 'JetBrains Mono', marginBottom: 2 }}>AI Logic</p>
+                      <p className="text-xs" style={{ color: 'rgba(255,255,255,0.55)' }}>Custom Arch</p>
                     </div>
                   </SpotlightCard>
                 </GSAPTilt>
@@ -1101,11 +1097,11 @@ const AboutPage = () => {
           <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 10 }}>
             <div className="scroll-fade-up" style={{ textAlign: 'center', marginBottom: 40 }}>
               <Eyebrow>Live Products</Eyebrow>
-              <h3 className="font-heading" style={{ fontSize: 'clamp(1.75rem,4vw,3rem)', fontWeight: 900, letterSpacing: '-0.03em', color: '#fff' }}>
+              <h3 className="text-xl sm:text-2xl font-bold tracking-tight" style={{    color: '#fff' }}>
                 Shipped.{' '}
                 <span style={{ background: 'linear-gradient(135deg,#FF570F,#FDE87A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>In Production.</span>
               </h3>
-              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginTop: 12, fontFamily: 'Inter' }}>Real products. Real revenue. Running on real infrastructure.</p>
+              <p className="text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)', marginTop: 12, fontFamily: 'Inter' }}>Real products. Real revenue. Running on real infrastructure.</p>
             </div>
             <div className="scroll-fade-up">
               <BrowserMockup>
@@ -1113,9 +1109,9 @@ const AboutPage = () => {
                   <div className="dash-cols">
                     {DASHBOARD_METRICS.map((d, i) => (
                       <div key={i} style={{ background: 'rgba(255,255,255,0.025)', borderRadius: 10, padding: 16, border: '1px solid rgba(255,87,15,0.1)' }}>
-                        <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontFamily: 'JetBrains Mono', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 8 }}>{d.label}</p>
-                        <p className="font-heading" style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em' }}>{d.val}</p>
-                        <p style={{ fontSize: 10, color: '#22c55e', fontFamily: 'JetBrains Mono', marginTop: 4 }}>{d.delta} this mo.</p>
+                        <p className="text-xs uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.35)', fontFamily: 'JetBrains Mono', marginBottom: 8 }}>{d.label}</p>
+                        <p className="font-heading text-3xl md:text-4xl leading-[1.1] tracking-tight" style={{ fontWeight: 700, color: '#fff' }}>{d.val}</p>
+                        <p className="text-xs" style={{ color: '#22c55e', fontFamily: 'JetBrains Mono', marginTop: 4 }}>{d.delta} this mo.</p>
                       </div>
                     ))}
                   </div>
@@ -1125,13 +1121,13 @@ const AboutPage = () => {
                       <div key={i} style={{ flex: 1, background: 'linear-gradient(to top,rgba(255,87,15,0.1),#FF570F)', borderRadius: '3px 3px 0 0', height: `${h}%`, minWidth: 6, opacity: 0.7 + i * 0.02 }} />
                     ))}
                     <div style={{ position: 'absolute', top: 10, right: 14 }}>
-                      <span style={{ fontSize: 9, color: '#FF570F', fontFamily: 'JetBrains Mono', letterSpacing: '0.15em' }}>META SPEND · 12 WEEKS</span>
+                      <span className="text-xs tracking-widest uppercase" style={{ color: '#FF570F', fontFamily: 'JetBrains Mono' }}>META SPEND · 12 WEEKS</span>
                     </div>
                   </div>
                   <FloatingPill style={{ top: 16, right: 16 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <div style={{ width: 6, height: 6, background: '#22c55e', borderRadius: '50%', animation: 'breatheGlow 1.5s ease-in-out infinite' }} />
-                      <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', fontFamily: 'JetBrains Mono' }}>All systems operational</span>
+                      <span className="text-xs" style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'JetBrains Mono' }}>All systems operational</span>
                     </div>
                   </FloatingPill>
                 </div>
@@ -1146,11 +1142,11 @@ const AboutPage = () => {
           <div style={{ maxWidth: 1280, margin: '0 auto', position: 'relative', zIndex: 10 }}>
             <div className="scroll-fade-up" style={{ textAlign: 'center', marginBottom: 48 }}>
               <Eyebrow>Our Principles</Eyebrow>
-              <h3 className="font-heading" style={{ fontSize: 'clamp(1.75rem,4vw,3rem)', fontWeight: 900, letterSpacing: '-0.03em', color: '#fff', marginBottom: 12 }}>
+              <h3 className="text-xl sm:text-2xl font-bold tracking-tight" style={{    color: '#fff', marginBottom: 12 }}>
                 How We{' '}
                 <span style={{ background: 'linear-gradient(135deg,#FF570F,#FDE87A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Operate</span>
               </h3>
-              <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, maxWidth: 480, margin: '0 auto', fontFamily: 'Inter' }}>
+              <p className="text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.38)', maxWidth: 480, margin: '0 auto', fontFamily: 'Inter' }}>
                 Four non-negotiable principles that govern every project.
               </p>
             </div>
@@ -1166,11 +1162,11 @@ const AboutPage = () => {
           <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative', zIndex: 10 }}>
             <div className="scroll-fade-up" style={{ textAlign: 'center', marginBottom: 56 }}>
               <Eyebrow>Our Journey</Eyebrow>
-              <h3 className="font-heading" style={{ fontSize: 'clamp(1.75rem,4vw,3rem)', fontWeight: 900, letterSpacing: '-0.03em', color: '#fff', marginBottom: 12 }}>
+              <h3 className="text-xl sm:text-2xl font-bold tracking-tight" style={{    color: '#fff', marginBottom: 12 }}>
                 The{' '}
                 <span style={{ background: 'linear-gradient(135deg,#FF570F,#FDE87A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Timeline</span>
               </h3>
-              <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, maxWidth: 440, margin: '0 auto', fontFamily: 'Inter' }}>
+              <p className="text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.38)', maxWidth: 440, margin: '0 auto', fontFamily: 'Inter' }}>
                 From frustrated engineers to trusted enterprise partner.
               </p>
             </div>
@@ -1189,21 +1185,21 @@ const AboutPage = () => {
           <div style={{ maxWidth: 860, margin: '0 auto', position: 'relative', zIndex: 10, textAlign: 'center' }}>
             <div className="scroll-fade-up" style={{ display: 'inline-flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
               <div style={{ width: 32, height: 1, background: 'rgba(255,87,15,0.4)' }} />
-              <span style={{ color: '#FF570F', fontSize: 10, fontFamily: 'JetBrains Mono', letterSpacing: '0.3em', textTransform: 'uppercase' }}>Let's Work Together</span>
+              <span className="text-xs uppercase tracking-widest" style={{ color: '#FF570F', fontFamily: 'JetBrains Mono' }}>Let's Work Together</span>
               <div style={{ width: 32, height: 1, background: 'rgba(255,87,15,0.4)' }} />
             </div>
-            <h3 ref={headingRef} className="font-heading scroll-fade-up" style={{ fontSize: 'clamp(2rem,5vw,4.2rem)', fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.1, color: '#fff', marginBottom: 20 }}>
+            <h3 ref={headingRef} className="scroll-fade-up text-xl sm:text-2xl font-bold tracking-tight" style={{     color: '#fff', marginBottom: 20 }}>
               Ready to Build{' '}
 <span className="hero-gradient-text">
                 Something Real?</span>
             </h3>
-            <p className="scroll-fade-up" style={{ color: 'rgba(255,255,255,0.42)', fontSize: 'clamp(0.875rem,1.5vw,1.05rem)', lineHeight: 1.75, maxWidth: 580, margin: '0 auto 40px', fontFamily: 'Inter' }}>
+            <p className="scroll-fade-up text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.42)', maxWidth: 580, margin: '0 auto 40px', fontFamily: 'Inter' }}>
               Let's talk about your technical challenges and how we can solve them with infrastructure that scales.
             </p>
             <div className="scroll-fade-up" style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
               <CTAButton href="/contact"      variant="primary">Start a Project</CTAButton>
               <CTAButton href="/case-studies" variant="secondary">View Our Work</CTAButton>
-            <p className="scroll-fade-up" style={{ marginTop: 32, color: 'rgba(255,255,255,0.2)', fontSize: 10, fontFamily: 'JetBrains Mono', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+            <p className="scroll-fade-up text-xs uppercase tracking-widest" style={{ marginTop: 32, color: 'rgba(255,255,255,0.2)', fontFamily: 'JetBrains Mono' }}>
               Retainer-only · No lock-in contracts · US + EU
             </p>
           </div>

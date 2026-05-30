@@ -252,7 +252,7 @@ const MetricsDashboard = memo(({ project }) => (
         </div>
         <span
           className="font-mono uppercase"
-          style={{ fontSize: '9px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.2em' }}
+          style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.2em' }}
         >
           {project.category}
         </span>
@@ -264,14 +264,14 @@ const MetricsDashboard = memo(({ project }) => (
         {/* Primary metric */}
         <div className="mb-4">
           <div
-            className="font-black leading-none mb-1"
-            style={{ fontSize: 'clamp(28px, 5vw, 38px)', ...GRADIENT_TEXT }}
+            className="font-bold leading-[1.1] tracking-tight text-3xl md:text-4xl mb-1"
+            style={{ ...GRADIENT_TEXT }}
           >
             {project.metrics[0]?.value}
           </div>
           <div
             className="uppercase font-bold"
-            style={{ fontSize: '9px', color: 'rgba(255,255,255,0.28)', letterSpacing: '0.2em' }}
+            style={{ fontSize: '12px', color: 'rgba(255,255,255,0.28)', letterSpacing: '0.1em' }}
           >
             {project.metrics[0]?.label}
           </div>
@@ -303,14 +303,14 @@ const MetricsDashboard = memo(({ project }) => (
             {project.metrics.slice(1).map((m) => (
               <div key={m.label}>
                 <div
-                  className="font-black"
+                  className="font-bold"
                   style={{ fontSize: '13px', color: 'rgba(255,255,255,0.8)' }}
                 >
                   {m.value}
                 </div>
                 <div
                   className="uppercase"
-                  style={{ fontSize: '8px', color: 'rgba(255,255,255,0.22)', letterSpacing: '0.15em' }}
+                   style={{ fontSize: '12px', color: 'rgba(255,255,255,0.22)', letterSpacing: '0.15em' }}
                 >
                   {m.label}
                 </div>
@@ -352,14 +352,14 @@ const FloatingPill = memo(({ value, label, style, pillRef }) => (
     />
     <div>
       <div
-        className="font-black leading-none"
+        className="font-bold leading-none"
         style={{ fontSize: '12px', color: BRAND.orange }}
       >
         {value}
       </div>
       <div
         className="uppercase"
-        style={{ fontSize: '8px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em' }}
+        style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em' }}
       >
         {label}
       </div>
@@ -410,14 +410,11 @@ const HeroProjectCard = memo(({ project }) => {
       project.tags.map((tag) => (
         <span
           key={tag}
-          className="font-bold uppercase"
-          style={{
+          className="uppercase text-xs font-bold uppercase tracking-widest" style={{
             padding: '4px 12px',
             background: 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.09)',
             color: 'rgba(255,255,255,0.45)',
-            fontSize: '10px',
-            letterSpacing: '0.18em',
             borderRadius: '999px',
           }}
         >
@@ -433,18 +430,15 @@ const HeroProjectCard = memo(({ project }) => {
       project.metrics.map((metric) => (
         <div key={metric.label}>
           <div
-            className="font-black leading-tight"
+            className="font-bold leading-[1.1] tracking-tight text-3xl md:text-4xl"
             style={{
-              fontSize: 'clamp(22px, 3vw, 34px)',
               ...GRADIENT_TEXT,
-              letterSpacing: '-0.02em',
             }}
           >
             {metric.value}
           </div>
           <div
-            className="uppercase mt-1"
-            style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.18em' }}
+            className="uppercase mt-1 text-xs font-bold uppercase tracking-widest" style={{  color: 'rgba(255,255,255,0.3)',  }}
           >
             {metric.label}
           </div>
@@ -551,18 +545,7 @@ const HeroProjectCard = memo(({ project }) => {
         )}
       </div>
 
-      {/* Watermark */}
-      <div
-        className="absolute bottom-0 left-0 right-0 z-0 pointer-events-none overflow-hidden select-none"
-        style={{ opacity: 0.04 }}
-      >
-        <div
-          className="font-black whitespace-nowrap leading-none"
-          style={{ fontSize: 'clamp(80px, 12vw, 160px)', color: BRAND.orange }}
-        >
-          {project.category.toUpperCase()}
-        </div>
-      </div>
+
 
       {/* Card content */}
       <div className="relative z-10 h-full flex flex-col justify-between p-6 sm:p-10 md:p-14">
@@ -584,23 +567,22 @@ const HeroProjectCard = memo(({ project }) => {
 
         <div style={{ maxWidth: '520px' }}>
           <div
-            className="font-bold uppercase mb-3"
-            style={{ color: BRAND.orange, fontSize: '11px', letterSpacing: '0.25em' }}
+            className="uppercase mb-3 text-xs font-bold uppercase tracking-widest" style={{ color: BRAND.orange,   }}
           >
             {project.category}
           </div>
           <h3
-            className="font-black leading-tight mb-4"
+            className="mb-4 text-xl sm:text-2xl font-bold tracking-tight"
             style={{
-              fontSize: 'clamp(28px, 4vw, 52px)',
-              letterSpacing: '-0.03em',
+              
+              
               color: '#ffffff',
             }}
           >
             {project.title}
           </h3>
           <p
-            className="leading-relaxed mb-8"
+            className="mb-8 text-base leading-relaxed"
             style={{
               color: 'rgba(255,255,255,0.52)',
               fontSize: 'clamp(14px, 1.5vw, 16px)',
@@ -679,14 +661,14 @@ const ProjectCard = memo(({ project }) => {
       project.metrics.map((metric) => (
         <div key={metric.label}>
           <div
-            className="font-black"
+            className="font-bold"
             style={{ fontSize: 'clamp(15px, 2vw, 18px)', color: BRAND.orange }}
           >
             {metric.value}
           </div>
           <div
             className="uppercase mt-0.5"
-            style={{ fontSize: '9px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.15em' }}
+            style={{ fontSize: '12px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.15em' }}
           >
             {metric.label}
           </div>
@@ -775,19 +757,19 @@ const ProjectCard = memo(({ project }) => {
               >
                 <div
                   className="font-mono uppercase mb-3"
-                  style={{ fontSize: '8px', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.15em' }}
+                  style={{ fontSize: '12px', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.15em' }}
                 >
                   {project.category}
                 </div>
                 <div
-                  className="font-black mb-1"
+                  className="font-bold mb-1"
                   style={{ fontSize: '16px', color: BRAND.orange }}
                 >
                   {project.metrics[0]?.value}
                 </div>
                 <div
                   className="uppercase mb-4"
-                  style={{ fontSize: '7px', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.12em' }}
+                   style={{ fontSize: '12px', color: 'rgba(255,255,255,0.18)', letterSpacing: '0.12em' }}
                 >
                   {project.metrics[0]?.label}
                 </div>
@@ -823,8 +805,7 @@ const ProjectCard = memo(({ project }) => {
       <div className="relative z-10 h-full flex flex-col justify-between p-6 sm:p-7">
         <div className="flex items-center justify-between">
           <span
-            className="font-bold uppercase"
-            style={{ color: BRAND.orange, fontSize: '10px', letterSpacing: '0.2em' }}
+            className="uppercase text-xs font-bold uppercase tracking-widest" style={{ color: BRAND.orange,   }}
           >
             {project.category}
           </span>
@@ -835,7 +816,7 @@ const ProjectCard = memo(({ project }) => {
               height: '40px',
               border: '1px solid rgba(255,255,255,0.1)',
               color: 'rgba(255,255,255,0.3)',
-              fontSize: '14px',
+              fontSize: '16px',
             }}
           >
             ↗
@@ -844,17 +825,17 @@ const ProjectCard = memo(({ project }) => {
 
         <div>
           <h4
-            className="font-black leading-tight mb-2"
+            className="mb-2 text-xl sm:text-2xl font-bold tracking-tight"
             style={{
-              fontSize: 'clamp(18px, 2.5vw, 24px)',
-              letterSpacing: '-0.025em',
+              
+              
               color: '#ffffff',
             }}
           >
             {project.title}
           </h4>
           <p
-            className="leading-relaxed mb-5"
+            className="mb-5 text-base leading-relaxed"
             style={{
               color: 'rgba(255,255,255,0.42)',
               fontSize: 'clamp(13px, 1.2vw, 14px)',
@@ -980,7 +961,7 @@ const MagneticButton = memo(({ to, children }) => {
         className="hp-cta group inline-flex items-center gap-3 font-bold uppercase"
         style={{
           padding: '14px 28px',
-          fontSize: '11px',
+          fontSize: '12px',
           letterSpacing: '0.18em',
           minHeight: '48px',
           willChange: 'transform',
@@ -1056,7 +1037,7 @@ const HomeProjects = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden py-16 md:py-24 lg:py-32"
+      className="relative overflow-hidden py-16 md:py-8 md:py-12 lg:py-16"
       style={{ background: '#080a0c' }}
     >
       {/* Atmospheric orbs — static decorative elements */}
@@ -1112,8 +1093,7 @@ const HomeProjects = () => {
             >
               <div className="w-1.5 h-1.5 rounded-full" style={{ background: BRAND.orange }} />
               <span
-                className="font-bold uppercase"
-                style={{ color: BRAND.orange, fontSize: '11px', letterSpacing: '0.2em' }}
+                className="uppercase text-xs font-bold uppercase tracking-widest" style={{ color: BRAND.orange,   }}
               >
                 Real Accounts. Real Numbers.
               </span>
@@ -1121,10 +1101,10 @@ const HomeProjects = () => {
 
             {/* Heading */}
             <h2
-              className="hp-heading font-black leading-tight mb-4"
+              className="hp-heading mb-4 text-3xl md:text-4xl font-bold leading-[1.1] tracking-[-0.035em]"
               style={{
-                fontSize: 'clamp(32px, 5vw, 62px)',
-                letterSpacing: '-0.03em',
+                
+                
                 color: '#ffffff',
               }}
             >
@@ -1134,10 +1114,10 @@ const HomeProjects = () => {
 
             {/* Subheading */}
             <p
-              className="hp-sub leading-relaxed"
+              className="hp-sub text-base leading-relaxed"
               style={{
                 color: 'rgba(255,255,255,0.48)',
-                fontSize: 'clamp(14px, 1.5vw, 17px)',
+                fontSize: 'clamp(16px, 1.5vw, 18px)',
                 maxWidth: '460px',
               }}
             >

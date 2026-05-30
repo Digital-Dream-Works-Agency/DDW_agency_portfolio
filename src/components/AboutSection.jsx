@@ -314,10 +314,9 @@ const AbstractTeamVisual = React.memo(() => {
           <rect x="20" y="20" width="13" height="13" rx="2" stroke={B.accent}      strokeWidth="1.4" />
           <circle cx="18" cy="18" r="3" fill={B.orange} />
         </svg>
-        <span
+        <span className="text-xs font-bold uppercase tracking-widest"
           style={{
-            fontSize: 8, fontWeight: 700, textTransform: 'uppercase',
-            letterSpacing: '0.2em', color: 'rgba(255,255,255,0.35)',
+            color: 'rgba(255,255,255,0.35)',
             fontFamily: 'Montserrat, sans-serif',
           }}
         >
@@ -336,7 +335,7 @@ const AbstractTeamVisual = React.memo(() => {
         }}
       >
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: B.orange }} />
-        <span style={{ fontSize: 10, fontWeight: 700, color: B.orange, fontFamily: 'Montserrat, sans-serif' }}>
+        <span className="text-xs font-bold" style={{ color: B.orange, fontFamily: 'Montserrat, sans-serif' }}>
           7 Core Services
         </span>
       </div>
@@ -350,7 +349,7 @@ const AbstractTeamVisual = React.memo(() => {
         }}
       >
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: B.accent }} />
-        <span style={{ fontSize: 10, fontWeight: 700, color: B.accent, fontFamily: 'Montserrat, sans-serif' }}>
+        <span className="text-xs font-bold" style={{ color: B.accent, fontFamily: 'Montserrat, sans-serif' }}>
           100% Retainer
         </span>
       </div>
@@ -394,7 +393,7 @@ const BrowserMockup = React.memo(({ children, className = '' }) => (
           <rect x="3" y="11" width="18" height="11" rx="2" />
           <path d="M7 11V7a5 5 0 0110 0v4" />
         </svg>
-        <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.25)', fontFamily: 'Inter, sans-serif' }}>
+        <span className="text-xs" style={{ color: 'rgba(255,255,255,0.25)', fontFamily: 'Inter, sans-serif' }}>
           ddwagency.com/about
         </span>
       </div>
@@ -441,22 +440,16 @@ const FloatingBadge = React.memo(({ value, label, accent, delay = 0, style = {} 
       style={containerStyle}
     >
       <div
-        className="font-black leading-none mb-1"
+        className="text-3xl md:text-4xl font-bold leading-[1.1] tracking-tight"
         style={{
-          fontSize: 'clamp(22px, 3vw, 32px)',
           color: B.bg,
           fontFamily: 'Montserrat, sans-serif',
-          letterSpacing: '-0.03em',
         }}
       >
         {value}
       </div>
-      <div
+      <div className="text-xs font-bold uppercase tracking-widest"
         style={{
-          fontSize: 9,
-          fontWeight: 700,
-          textTransform: 'uppercase',
-          letterSpacing: '0.18em',
           color: `${B.bg}CC`,
           fontFamily: 'Montserrat, sans-serif',
           lineHeight: 1.4,
@@ -498,16 +491,8 @@ const StatCard = React.memo(({ stat, active, index }) => {
     transition: 'border-color 0.4s ease',
   }), [accent]);
 
-  const watermarkStyle = useMemo(() => ({
-    fontSize: 'clamp(48px, 6vw, 80px)',
-    color: accent,
-    opacity: 0.05,
-    letterSpacing: '-0.04em',
-    fontFamily: 'Montserrat, sans-serif',
-  }), [accent]);
 
   const numberStyle = useMemo(() => ({
-    fontSize: 'clamp(28px, 3.5vw, 42px)',
     letterSpacing: '-0.03em',
     background: `linear-gradient(135deg, ${accent} 0%, ${B.accent} 100%)`,
     WebkitBackgroundClip: 'text',
@@ -588,14 +573,6 @@ const StatCard = React.memo(({ stat, active, index }) => {
         }}
       />
 
-      {/* Watermark number */}
-      <div
-        className="absolute -bottom-2 -right-1 font-black pointer-events-none select-none leading-none"
-        style={watermarkStyle}
-      >
-        {stat.end}{stat.suffix}
-      </div>
-
       {/* Bottom progress bar */}
       <div
         className="absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full transition-all duration-700 rounded-full"
@@ -610,16 +587,15 @@ const StatCard = React.memo(({ stat, active, index }) => {
 
       {/* Content */}
       <div className="relative z-10 p-5">
-        <div className="font-black mb-1 leading-none" style={numberStyle}>
+        <div className="font-bold mb-1 leading-[1.1] tracking-tight text-3xl md:text-4xl" style={numberStyle}>
           <GSAPCounter end={stat.end} suffix={stat.suffix} active={active} />
         </div>
         <div
-          className="font-bold uppercase mb-1 group-hover:text-white transition-colors duration-300"
-          style={{ fontSize: 10, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.7)', fontFamily: 'Montserrat, sans-serif' }}
+          className="uppercase mb-1 group-hover: transition-colors duration-300 text-xs font-bold uppercase tracking-widest" style={{   color: 'rgba(255,255,255,0.7)', fontFamily: 'Montserrat, sans-serif' }}
         >
           {stat.label}
         </div>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontFamily: 'Inter, sans-serif' }}>
+        <div className="text-xs" style={{ color: 'rgba(255,255,255,0.35)', fontFamily: 'Inter, sans-serif' }}>
           {stat.sub}
         </div>
       </div>
@@ -670,7 +646,6 @@ const MagneticButton = React.memo(({ href, children, variant = 'primary' }) => {
     minHeight: 52,
     padding: '14px 32px',
     borderRadius: 12,
-    fontSize: 12,
     letterSpacing: '0.16em',
     fontFamily: 'Montserrat, sans-serif',
     background: isPrimary
@@ -688,7 +663,7 @@ const MagneticButton = React.memo(({ href, children, variant = 'primary' }) => {
       ref={btnRef}
       // FIXED: href prop is now used. Previously hardcoded based on variant.
       href={href}
-      className="about-magnetic-btn relative inline-flex items-center justify-center gap-2 font-bold uppercase overflow-hidden group"
+      className="about-magnetic-btn text-xs relative inline-flex items-center justify-center gap-2 font-bold uppercase overflow-hidden group"
       style={btnStyle}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -740,10 +715,9 @@ const Pill = React.memo(({ pill }) => (
     }}
   >
     <div style={{ width: 6, height: 6, borderRadius: '50%', background: B.orange, flexShrink: 0 }} />
-    <span
+    <span className="text-xs font-bold uppercase tracking-widest"
       style={{
-        fontSize: 11, fontWeight: 700, letterSpacing: '0.14em',
-        textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)',
+        color: 'rgba(255,255,255,0.7)',
         fontFamily: 'Montserrat, sans-serif',
       }}
     >
@@ -761,10 +735,9 @@ const TrustItem = React.memo(({ item }) => (
   >
     <span className="about-trust-icon">{item.icon}</span>
     <span
-      className="about-trust-text transition-colors duration-300"
-      style={{
-        fontSize: 10, fontWeight: 700,
-        textTransform: 'uppercase', letterSpacing: '0.2em',
+      className="about-trust-text transition-colors duration-300 text-xs font-bold uppercase tracking-widest" style={{
+         
+         
         fontFamily: 'Montserrat, sans-serif',
       }}
     >
@@ -1027,10 +1000,8 @@ const AboutSection = () => {
                   display: 'inline-block',
                 }}
               />
-              <span
+              <span className="text-xs font-bold uppercase tracking-widest"
                 style={{
-                  fontSize: 10, fontWeight: 700,
-                  textTransform: 'uppercase', letterSpacing: '0.24em',
                   color: B.orange, fontFamily: 'Montserrat, sans-serif',
                 }}
               >
@@ -1041,12 +1012,12 @@ const AboutSection = () => {
             {/* Heading */}
             <h2
               ref={headingRef}
-              className="leading-[1.08]"
+              className=".08 text-3xl md:text-4xl font-bold leading-[1.1] tracking-[-0.035em]"
               style={{
                 fontFamily: 'Montserrat, sans-serif',
-                fontWeight: 900,
-                letterSpacing: '-0.03em',
-                fontSize: 'clamp(32px, 5vw, 64px)',
+                
+                
+                
                 perspective: '1000px',
               }}
             >
@@ -1083,11 +1054,10 @@ const AboutSection = () => {
             </h2>
 
             {/* Body copy */}
-            <p
+            <p className="text-base leading-relaxed"
               ref={bodyRef}
               style={{
                 fontFamily: 'Inter, sans-serif',
-                fontSize: 'clamp(14px, 1.5vw, 17px)',
                 lineHeight: 1.75,
                 color: 'rgba(255,255,255,0.55)',
                 maxWidth: 540,
@@ -1098,11 +1068,10 @@ const AboutSection = () => {
               and Rome. We build and maintain software systems and marketing
               infrastructure for US and EU clients on an ongoing retainer basis.
             </p>
-            <p
+            <p className=" text-base leading-relaxed"
               ref={body2Ref}
               style={{
                 fontFamily: 'Inter, sans-serif',
-                fontSize: 'clamp(13px, 1.3vw, 15px)',
                 lineHeight: 1.75,
                 color: 'rgba(255,255,255,0.35)',
                 maxWidth: 520,

@@ -8,14 +8,17 @@ import React, {
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-gsap.registerPlugin(ScrollTrigger);
-
 // ─────────────────────────────────────────────────────────────────────────────
 // UTILITY: Stable, computed-once mobile detection
 // ─────────────────────────────────────────────────────────────────────────────
-const getIsMobile = () =>
-  typeof window !== 'undefined' &&
-  window.matchMedia('(max-width: 768px)').matches;
+let mobileMediaQuery = null;
+const getIsMobile = () => {
+  if (typeof window === 'undefined') return false;
+  if (!mobileMediaQuery) {
+    mobileMediaQuery = window.matchMedia('(max-width: 768px)');
+  }
+  return mobileMediaQuery.matches;
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ICON COMPONENTS
@@ -345,22 +348,7 @@ const ServiceCard = memo(({ service, index }) => {
         }}
       />
 
-      {/* Watermark number */}
-      <div
-        className="absolute bottom-0 right-0 pointer-events-none select-none overflow-hidden"
-        style={{ opacity: 0.04, zIndex: 0 }}
-        aria-hidden="true"
-      >
-        <div
-          className="font-black leading-none"
-          style={{
-            fontSize: 'clamp(80px, 10vw, 140px)',
-            color: service.accent,
-          }}
-        >
-          {String(index + 1).padStart(2, '0')}
-        </div>
-      </div>
+
 
       {/* Content */}
       <div className="relative z-10 flex flex-col flex-1 p-7 md:p-8">
@@ -381,10 +369,10 @@ const ServiceCard = memo(({ service, index }) => {
 
         {/* Title */}
         <h3
-          className="font-black mb-3 leading-tight"
+          className="mb-3 text-xl sm:text-2xl font-bold tracking-tight"
           style={{
-            fontSize: 'clamp(17px, 2vw, 21px)',
-            letterSpacing: '-0.02em',
+            
+            
             color: 'var(--title-color, #ffffff)',
             transition: 'color 0.3s ease',
           }}
@@ -394,9 +382,9 @@ const ServiceCard = memo(({ service, index }) => {
 
         {/* Description */}
         <p
-          className="leading-relaxed mb-6 flex-1"
+          className="mb-6 flex-1 text-base leading-relaxed"
           style={{
-            fontSize: 'clamp(13px, 1.1vw, 14px)',
+            fontSize: 'clamp(16px, 1.1vw, 18px)',
             color: `rgba(255,255,255,var(--desc-opacity, 0.42))`,
             transition: 'color 0.3s ease',
           }}
@@ -419,10 +407,7 @@ const ServiceCard = memo(({ service, index }) => {
             aria-hidden="true"
           />
           <span
-            className="font-bold uppercase"
-            style={{
-              fontSize: '10px',
-              letterSpacing: '0.16em',
+            className="uppercase text-xs font-bold uppercase tracking-widest" style={{
               color: service.accent,
             }}
           >
@@ -438,10 +423,7 @@ const ServiceCard = memo(({ service, index }) => {
           style={{ textDecoration: 'none' }}
         >
           <span
-            className="learn-more-text font-bold uppercase"
-            style={{
-              fontSize: '11px',
-              letterSpacing: '0.18em',
+            className="learn-more-text uppercase text-xs font-bold uppercase tracking-widest" style={{
               color: 'rgba(255,255,255,0.35)',
               transition: 'color 0.3s ease',
             }}
@@ -523,12 +505,10 @@ const MagneticCTA = memo(({ href, children }) => {
     <a
       ref={btnRef}
       href={href}
-      className="magnetic-cta relative inline-flex items-center gap-3
-                 font-bold uppercase overflow-hidden"
-      style={{
+      className="magnetic-cta relative inline-flex items-center gap-3 uppercase overflow-hidden text-sm font-bold uppercase tracking-widest" style={{
         padding: '15px 36px',
-        fontSize: '12px',
-        letterSpacing: '0.18em',
+        
+        
         minHeight: '52px',
         textDecoration: 'none',
         background: '#FF570F',
@@ -679,7 +659,7 @@ const ServicesGrid = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden py-16 md:py-24 lg:py-32"
+      className="relative overflow-hidden py-16 md:py-8 md:py-12 lg:py-16"
       style={{ background: '#0d1012' }}
       aria-labelledby="services-heading"
     >
@@ -747,11 +727,10 @@ const ServicesGrid = () => {
               aria-hidden="true"
             />
             <span
-              className="font-bold uppercase"
-              style={{
-                fontSize: '10px',
+              className="uppercase text-xs font-bold uppercase tracking-widest" style={{
+                
                 color: 'rgba(255,87,15,0.9)',
-                letterSpacing: '0.22em',
+                
               }}
             >
               Seven service areas · Florida LLC · Rome & Florida offices
@@ -762,10 +741,10 @@ const ServicesGrid = () => {
           <h2
             id="services-heading"
             ref={headingRef}
-            className="font-black leading-tight mb-5"
+            className="mb-5 text-3xl md:text-4xl font-bold leading-[1.1] tracking-[-0.035em]"
             style={{
-              fontSize: 'clamp(32px, 5.5vw, 64px)',
-              letterSpacing: '-0.03em',
+              
+              
               color: '#ffffff',
               opacity: 0,
             }}
@@ -785,9 +764,9 @@ const ServicesGrid = () => {
           {/* Sub */}
           <p
             ref={subRef}
-            className="leading-relaxed mx-auto"
+            className="mx-auto text-base leading-relaxed"
             style={{
-              fontSize: 'clamp(14px, 1.5vw, 17px)',
+              fontSize: 'clamp(16px, 1.5vw, 18px)',
               color: 'rgba(255,255,255,0.48)',
               maxWidth: '560px',
               opacity: 0,

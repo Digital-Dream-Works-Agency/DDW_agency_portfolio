@@ -311,9 +311,8 @@ const Eyebrow = memo(({ children, pulse = false }) => (
         }} />
       </span>
     )}
-    <span style={{
-      color: '#FF570F', fontSize: 9, fontWeight: 800,
-      textTransform: 'uppercase', letterSpacing: '0.24em',
+    <span className="text-xs font-bold uppercase tracking-widest" style={{
+      color: '#FF570F',
       fontFamily: 'JetBrains Mono, monospace', lineHeight: 1,
     }}>
       {children}
@@ -431,21 +430,16 @@ const StatsStrip = memo(() => {
               }}
             >
               <div
-                className="stat-value font-heading"
+                className="stat-value font-heading text-3xl md:text-4xl leading-[1.1] tracking-tight"
                 style={{
-                  fontSize: 'clamp(1.5rem,3vw,2rem)',
-                  fontWeight: 900,
+                  fontWeight: 700,
                   color: 'rgba(255,255,255,0.9)',
-                  letterSpacing: '-0.03em',
-                  lineHeight: 1,
                   marginBottom: 8,
                 }}
               >
                 <CountUp end={s.value} suffix={s.suffix} />
               </div>
-              <div style={{
-                fontSize: 9, fontWeight: 700,
-                textTransform: 'uppercase', letterSpacing: '0.2em',
+              <div className="text-xs font-bold uppercase tracking-widest" style={{
                 color: 'rgba(255,255,255,0.28)',
                 fontFamily: 'JetBrains Mono, monospace',
               }}>
@@ -588,31 +582,26 @@ const ProcessSteps = memo(({ activeStep, setActiveStep }) => {
                 </div>
 
                 {/* Number */}
-                <div style={{
-                  fontSize: 9, fontWeight: 800, textTransform: 'uppercase',
-                  letterSpacing: '0.2em', color: '#FF570F',
+                <div className="text-xs font-bold uppercase tracking-widest" style={{
+                  color: '#FF570F',
                   fontFamily: 'JetBrains Mono', marginBottom: 4,
                 }}>
                   {step.num}
                 </div>
 
                 {/* Title */}
-                <div style={{
-                  fontSize: 13, fontWeight: 700,
+                <div className="text-sm font-bold leading-snug" style={{
                   marginBottom: isActive ? 8 : 0,
                   color: isActive ? '#fff' : 'rgba(255,255,255,0.4)',
                   transition: 'color 0.25s ease',
-                  lineHeight: 1.4,
                 }}>
                   {step.title}
                 </div>
 
                 {/* Body — rendered conditionally to avoid height calculation */}
                 {isActive && (
-                  <div style={{
-                    fontSize: 12.5,
+                  <div className="text-sm leading-relaxed" style={{
                     color: 'rgba(255,255,255,0.36)',
-                    lineHeight: 1.72,
                     animation: 'fadeUp 0.28s ease both',
                   }}>
                     {step.body}
@@ -637,21 +626,19 @@ const ProcessSteps = memo(({ activeStep, setActiveStep }) => {
               borderLeft: '2px solid rgba(255,87,15,0.2)',
             }}
           >
-            <div style={{
-              fontSize: 9, fontWeight: 800, textTransform: 'uppercase',
-              letterSpacing: '0.2em', color: '#FF570F',
+            <div className="text-xs font-bold uppercase tracking-widest" style={{
+              color: '#FF570F',
               fontFamily: 'JetBrains Mono', marginBottom: 4,
             }}>
               {step.num}
             </div>
-            <div style={{
-              fontSize: 13, fontWeight: 700,
-              color: '#fff', marginBottom: 4, lineHeight: 1.4,
+            <div className="text-sm font-bold leading-snug" style={{
+              color: '#fff', marginBottom: 4,
             }}>
               {step.title}
             </div>
-            <div style={{
-              fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.7,
+            <div className="text-sm leading-relaxed" style={{
+              color: 'rgba(255,255,255,0.35)',
             }}>
               {step.body}
             </div>
@@ -676,15 +663,11 @@ const FormField = memo(({ label, name, type = 'text', placeholder, value, onChan
   return (
     <div className="ddw-field" data-filled={String(isFilled)}>
       <label
-        className="ddw-label"
+        className="ddw-label text-xs font-bold uppercase tracking-widest"
         htmlFor={`field-${name}`}
         style={{
           display: 'block',
           marginBottom: 8,
-          fontSize: 9,
-          fontWeight: 800,
-          textTransform: 'uppercase',
-          letterSpacing: '0.16em',
           fontFamily: 'JetBrains Mono, monospace',
           color: 'rgba(255,255,255,0.3)',
           transition: 'color 0.25s ease',
@@ -765,29 +748,27 @@ const ContactForm = memo(({ onSuccess }) => {
         marginBottom: 32, flexWrap: 'wrap',
       }}>
         <div>
-          <p style={{
-            fontSize: 9, fontWeight: 800, textTransform: 'uppercase',
-            letterSpacing: '0.2em', color: 'rgba(255,255,255,0.25)',
+          <p className="text-xs font-bold uppercase tracking-widest" style={{
+            color: 'rgba(255,255,255,0.25)',
             fontFamily: 'JetBrains Mono', marginBottom: 6,
           }}>
             Project Enquiry
           </p>
           <h3
-            className="font-heading"
+            className="text-xl sm:text-2xl font-bold tracking-tight"
             style={{
-              fontSize: 'clamp(1.05rem,1.8vw,1.3rem)',
-              fontWeight: 900, color: '#fff',
-              letterSpacing: '-0.02em', lineHeight: 1.2,
+              
+               color: '#fff',
+               
             }}
           >
             Start a conversation.
           </h3>
         </div>
-        <div style={{
+        <div className="text-xs font-bold uppercase tracking-widest" style={{
           flexShrink: 0, padding: '5px 10px',
           border: '1px solid rgba(255,87,15,0.25)',
-          color: '#FF570F', fontSize: 8.5, fontWeight: 800,
-          textTransform: 'uppercase', letterSpacing: '0.18em',
+          color: '#FF570F',
           fontFamily: 'JetBrains Mono',
           alignSelf: 'flex-start',
         }}>
@@ -834,12 +815,10 @@ const ContactForm = memo(({ onSuccess }) => {
           data-filled={String(isBudgetFilled)}
         >
           <label
-            className="ddw-label"
+            className="ddw-label text-xs font-bold uppercase tracking-widest"
             htmlFor="field-budget"
             style={{
               display: 'block', marginBottom: 8,
-              fontSize: 9, fontWeight: 800,
-              textTransform: 'uppercase', letterSpacing: '0.16em',
               fontFamily: 'JetBrains Mono',
               color: 'rgba(255,255,255,0.3)',
               transition: 'color 0.25s ease',
@@ -887,12 +866,10 @@ const ContactForm = memo(({ onSuccess }) => {
           data-filled={String(formData.message.length > 0)}
         >
           <label
-            className="ddw-label"
+            className="ddw-label text-xs font-bold uppercase tracking-widest"
             htmlFor="field-message"
             style={{
               display: 'block', marginBottom: 8,
-              fontSize: 9, fontWeight: 800,
-              textTransform: 'uppercase', letterSpacing: '0.16em',
               fontFamily: 'JetBrains Mono',
               color: 'rgba(255,255,255,0.3)',
               transition: 'color 0.25s ease',
@@ -916,8 +893,8 @@ const ContactForm = memo(({ onSuccess }) => {
 
         {/* Error message */}
         {error && (
-          <p style={{
-            fontSize: 11, color: '#ff4444',
+          <p className="text-xs" style={{
+            color: '#ff4444',
             fontFamily: 'JetBrains Mono', letterSpacing: '0.06em',
           }}>
             {error}
@@ -947,8 +924,8 @@ const ContactForm = memo(({ onSuccess }) => {
             background: submitting ? 'rgba(255,87,15,0.6)' : '#FF570F',
             color: '#080a0c',
             border: 'none', borderRadius: 0,
-            fontFamily: 'Montserrat, sans-serif', fontWeight: 900,
-            fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.16em',
+            fontFamily: 'Montserrat, sans-serif',
+            textTransform: 'uppercase',
             cursor: submitting ? 'wait' : 'pointer',
             position: 'relative', overflow: 'hidden',
             transition: 'background 0.25s ease, box-shadow 0.25s ease',
@@ -996,10 +973,10 @@ const ContactForm = memo(({ onSuccess }) => {
           </span>
         </button>
 
-        <p style={{
-          textAlign: 'center', fontSize: 10,
+        <p className="text-xs tracking-wider" style={{
+          textAlign: 'center',
           color: 'rgba(255,255,255,0.18)',
-          fontFamily: 'JetBrains Mono', letterSpacing: '0.1em',
+          fontFamily: 'JetBrains Mono',
         }}>
           We respond within 24 hours · No spam, ever
         </p>
@@ -1048,18 +1025,18 @@ const SuccessState = memo(() => {
       </div>
 
       <h3
-        className="font-heading"
+        className="text-xl sm:text-2xl font-bold tracking-tight"
         style={{
-          fontSize: 'clamp(1.3rem,2.5vw,1.6rem)',
-          fontWeight: 900, color: '#fff',
-          letterSpacing: '-0.03em', marginBottom: 10,
+          
+           color: '#fff',
+           marginBottom: 10,
         }}
       >
         Message received.
       </h3>
-      <p style={{
-        fontSize: 13.5, color: 'rgba(255,255,255,0.36)',
-        lineHeight: 1.75, maxWidth: 320, margin: '0 auto 28px',
+      <p className="text-base leading-relaxed" style={{
+        color: 'rgba(255,255,255,0.36)',
+        maxWidth: 320, margin: '0 auto 28px',
         fontFamily: 'Inter',
       }}>
         We'll review your project and respond within 24 business hours.
@@ -1099,15 +1076,14 @@ const ContactInfoBlock = memo(() => (
           gap: 16, flexWrap: 'wrap',
         }}
       >
-        <span style={{
-          fontSize: 9, fontWeight: 800, textTransform: 'uppercase',
-          letterSpacing: '0.18em', color: 'rgba(255,255,255,0.25)',
+        <span className="text-xs font-bold uppercase tracking-widest" style={{
+          color: 'rgba(255,255,255,0.25)',
           fontFamily: 'JetBrains Mono', flexShrink: 0,
         }}>
           {item.label}
         </span>
-        <span style={{
-          fontSize: 12.5, color: 'rgba(255,255,255,0.6)',
+        <span className="text-sm" style={{
+          color: 'rgba(255,255,255,0.6)',
           fontFamily: 'Inter', wordBreak: 'break-word', textAlign: 'right',
         }}>
           {item.value}
@@ -1132,9 +1108,8 @@ const AvailabilityBadge = memo(() => (
       animation: 'nodePulse 2s ease-in-out infinite',
       display: 'inline-block', flexShrink: 0,
     }} />
-    <span style={{
-      fontSize: 9, fontWeight: 800, textTransform: 'uppercase',
-      letterSpacing: '0.2em', color: 'rgba(34,197,94,0.85)',
+    <span className="text-xs font-bold uppercase tracking-widest" style={{
+      color: 'rgba(34,197,94,0.85)',
       fontFamily: 'JetBrains Mono',
     }}>
       Now accepting Q3 projects
@@ -1161,14 +1136,14 @@ const CalendlyLink = memo(({ magnetRef }) => (
       e.currentTarget.style.background  = 'transparent';
       e.currentTarget.style.boxShadow   = 'none';
     }}
-    style={{
+      className="text-xs font-bold uppercase tracking-widest"
+      style={{
       display: 'inline-flex', alignItems: 'center', gap: 10,
       padding: '12px 22px', minHeight: 46,
       background: 'transparent',
       border: '1px solid rgba(255,87,15,0.35)',
       color: '#FF570F',
-      fontFamily: 'Montserrat, sans-serif', fontWeight: 800,
-      fontSize: 10.5, textTransform: 'uppercase', letterSpacing: '0.14em',
+      fontFamily: 'Montserrat, sans-serif',
       textDecoration: 'none',
       transition: 'border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease',
     }}
@@ -1257,20 +1232,18 @@ const ContactPage = () => {
   const headingLines = useMemo(() => [
     <span
       key="line1"
-      className="font-heading"
+      className="font-heading text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight"
       style={{
-        fontSize: 'clamp(2rem,4.5vw,3.2rem)',
-        fontWeight: 900, color: '#fff', letterSpacing: '-0.03em',
+        fontWeight: 700, color: '#fff',
       }}
     >
       Tell us what
     </span>,
     <span
       key="line2"
-      className="font-heading"
+      className="font-heading text-4xl md:text-5xl lg:text-6xl leading-[1.1] tracking-tight"
       style={{
-        fontSize: 'clamp(2rem,4.5vw,3.2rem)',
-        fontWeight: 900, letterSpacing: '-0.03em',
+        fontWeight: 700,
         background: 'linear-gradient(135deg, #FF570F 0%, #FDE87A 100%)',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
@@ -1336,10 +1309,9 @@ const ContactPage = () => {
               <AnimatedHeading lines={headingLines} />
             </div>
 
-            <p style={{
-              fontSize: 'clamp(13.5px,1.3vw,15px)',
+            <p className="text-base leading-relaxed" style={{
               color: 'rgba(255,255,255,0.42)',
-              lineHeight: 1.8, maxWidth: 420,
+              maxWidth: 420,
               marginBottom: 'clamp(32px,4vw,48px)',
               fontFamily: 'Inter',
             }}>
@@ -1350,9 +1322,8 @@ const ContactPage = () => {
             <ContactInfoBlock />
 
             <div style={{ marginBottom: 36 }}>
-              <p style={{
-                fontSize: 9, fontWeight: 800, textTransform: 'uppercase',
-                letterSpacing: '0.2em', color: 'rgba(255,255,255,0.22)',
+              <p className="text-xs font-bold uppercase tracking-widest" style={{
+                color: 'rgba(255,255,255,0.22)',
                 fontFamily: 'JetBrains Mono', marginBottom: 20,
               }}>
                 Our Process
@@ -1393,23 +1364,11 @@ const ContactPage = () => {
                 }}
               />
 
-              {/* Watermark */}
-              <div
-                aria-hidden="true"
-                className="font-heading"
-                style={{
-                  position: 'absolute', bottom: -16, right: -8,
-                  fontSize: 'clamp(80px,10vw,150px)',
-                  fontWeight: 900, lineHeight: 1,
-                  color: '#FF570F', opacity: 0.025,
-                  pointerEvents: 'none', userSelect: 'none',
-                }}
-              >
-                DDW
-              </div>
+
 
               <div style={{
                 position: 'relative', zIndex: 2,
+                fontSize: 'clamp(16px, 2vw, 18px)',
                 padding: 'clamp(28px,4vw,44px)',
               }}>
                 {submitted
@@ -1426,10 +1385,10 @@ const ContactPage = () => {
               padding: '0 4px',
             }}>
               <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.05)' }} />
-              <p style={{
-                fontSize: 9, color: 'rgba(255,255,255,0.18)',
-                fontFamily: 'JetBrains Mono', textTransform: 'uppercase',
-                letterSpacing: '0.16em', whiteSpace: 'nowrap',
+              <p className="text-xs uppercase tracking-widest" style={{
+                color: 'rgba(255,255,255,0.18)',
+                fontFamily: 'JetBrains Mono',
+                whiteSpace: 'nowrap',
               }}>
                 Retainer-only · US & EU · Est. 2015
               </p>

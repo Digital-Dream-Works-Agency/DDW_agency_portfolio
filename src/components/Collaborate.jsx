@@ -396,7 +396,7 @@ const StatPill = memo(({ value, label, delay, pos }) => {
       <div
         style={{
           fontSize: 'clamp(16px, 2vw, 22px)',
-          fontWeight: 900,
+          fontWeight: 700,
           color: B.orange,
           letterSpacing: '-0.03em',
           lineHeight: 1,
@@ -566,18 +566,18 @@ const AgendaCard = memo(({ item, index }) => {
 
         <div>
           <h3
-            className="font-bold mb-1.5 group-hover:text-white transition-colors duration-300"
+            className="mb-1.5 group-hover: transition-colors duration-300 text-xl sm:text-2xl font-bold tracking-tight"
             style={{
-              fontSize: 'clamp(13px, 1.4vw, 15px)',
+              
               color: 'rgba(255,255,255,0.85)',
-              letterSpacing: '-0.01em',
+              
             }}
           >
             {item.title}
           </h3>
-          <p
+          <p className=" text-base leading-relaxed"
             style={{
-              fontSize: 'clamp(12px, 1.2vw, 13px)',
+              fontSize: 'clamp(16px, 1.2vw, 18px)',
               color: 'rgba(255,255,255,0.42)',
               lineHeight: 1.7,
             }}
@@ -986,10 +986,10 @@ const Collaborate = () => {
               style={{ perspective: '1000px' }}
             >
               <h2
-                className="font-black leading-[1.08] text-white"
+                className=".08 text-3xl md:text-4xl font-bold leading-[1.1] tracking-[-0.035em]"
                 style={{
-                  fontSize: 'clamp(28px, 4.5vw, 58px)',
-                  letterSpacing: '-0.03em',
+                  
+                  
                 }}
               >
                 {/* FIX #7: stable ref callbacks via getWordRef */}
@@ -1004,10 +1004,8 @@ const Collaborate = () => {
 
             {/* Heading line 2 — gradient */}
             <h2
-              ref={heading2Ref}
-              className="font-black leading-[1.08] mb-8"
+              className=".08 mb-8 text-3xl md:text-4xl font-bold leading-[1.1] tracking-[-0.035em]"
               style={{
-                fontSize: 'clamp(28px, 4.5vw, 58px)',
                 letterSpacing: '-0.03em',
                 background: `linear-gradient(135deg, ${B.orange} 0%, ${B.accent} 100%)`,
                 WebkitBackgroundClip: 'text',
@@ -1019,10 +1017,10 @@ const Collaborate = () => {
             </h2>
 
             {/* Sub copy */}
-            <p
+            <p className=" text-base leading-relaxed"
               ref={sub1Ref}
               style={{
-                fontSize: 'clamp(14px, 1.5vw, 17px)',
+                fontSize: 'clamp(16px, 1.5vw, 18px)',
                 lineHeight: 1.78,
                 color: 'rgba(255,255,255,0.52)',
                 maxWidth: 520,
@@ -1036,9 +1034,9 @@ const Collaborate = () => {
             </p>
             <p
               ref={sub2Ref}
-              className="font-bold"
+              className="font-bold text-base leading-relaxed"
               style={{
-                fontSize: 'clamp(12px, 1.2vw, 14px)',
+                fontSize: 'clamp(16px, 1.2vw, 18px)',
                 lineHeight: 1.7,
                 color: 'rgba(255,255,255,0.38)',
                 maxWidth: 500,
@@ -1111,18 +1109,7 @@ const Collaborate = () => {
                 />
                 <AbstractCTAVisual />
 
-                <div
-                  aria-hidden="true"
-                  className="absolute bottom-2 left-1/2 -translate-x-1/2 font-black pointer-events-none select-none whitespace-nowrap"
-                  style={{
-                    fontSize: 'clamp(40px, 6vw, 90px)',
-                    color: B.orange,
-                    opacity: 0.04,
-                    letterSpacing: '-0.04em',
-                  }}
-                >
-                  DDW
-                </div>
+
               </div>
             </BrowserMockup>
 

@@ -1,9 +1,11 @@
 /**
  * LoadingScreen.jsx
- * DDW Agency — Production-optimized loading screen
+ * Portfolio — Agency loading screen (optimized build)
  *
- * Key architectural decisions:
- * - GlobalStyles component deleted — fonts in index.html, keyframes in index.css
+ * Merged from agency's production-optimized version into portfolio's
+ * pure React (no Next.js / TypeScript / next/image) environment.
+ *
+ * Key improvements over old portfolio loading screen:
  * - Zero React state for visual transitions — all GSAP-driven via refs
  * - background-position animation replaced with transform-based equivalent
  * - 'left' property animation replaced with translateX (compositor-safe)
@@ -13,21 +15,77 @@
  * - Pill refs consolidated into single useRef([]) array
  * - CornerDeco uses lookup map instead of 4 conditional branches
  * - Mounted guard prevents setState/callback on unmounted component
+ * - Taglines updated via direct DOM mutation — no React re-renders
+ * - Logo animated via GSAP ref — no React state needed
  */
 
 import React, { useEffect, useRef, useMemo, useCallback } from 'react';
 import { gsap } from 'gsap';
 
-// ─── Brand constants (module-level — allocated once, never GC'd) ───────────
+// ─── Brand constants (module-level) ──────────────────────────────────────────
 const ORANGE      = '#FF570F';
 const ORANGE_SOFT = '#EE7D1D';
 const ACCENT      = '#FDE87A';
 const BG          = '#080a0c';
 
-// ─── Particle data shape — duration included here, NOT in render ───────────
-// FIXED: Math.random() was inside Particle's style prop — caused animation
-// restarts on every AmbientParticles re-render.
-// Now fully pre-computed in the factory, memoized in AmbientParticles.
+// ─── CSS keyframes (injected once) ───────────────────────────────────────────
+const GLOBAL_CSS = `
+  @keyframes ddwCorePulse {
+    0%,100% { box-shadow: 0 0 10px rgba(255,87,15,0.3), 0 0 20px rgba(255,87,15,0.1); }
+    50%      { box-shadow: 0 0 20px rgba(255,87,15,0.6), 0 0 40px rgba(255,87,15,0.2), 0 0 60px rgba(255,87,15,0.1); }
+  }
+  @keyframes ddwGlowPulse {
+    0%,100% { opacity: 0.35; transform: scale(1) translateZ(0); }
+    50%      { opacity: 0.7;  transform: scale(1.25) translateZ(0); }
+  }
+  @keyframes ddwScanLine {
+    0%   { transform: translateY(-100%); opacity: 0; }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { transform: translateY(400%); opacity: 0; }
+  }
+  @keyframes ddwParticleFloat {
+    0%   { transform: translateY(0px) translateX(0px) translateZ(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translateY(-120px) translateX(var(--px, 0px)) translateZ(0); opacity: 0; }
+  }
+  @keyframes ddwShimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+  }
+  @keyframes ddwBlinkCursor {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0; }
+  }
+  @keyframes ddwBarRise {
+    0%,100% { transform: scaleY(0.2) translateZ(0); opacity: 0.2; }
+    50%      { transform: scaleY(1) translateZ(0);   opacity: 1;   }
+  }
+  @keyframes ddwAuroraFloat {
+    0%   { transform: translate(0,0) scale(1) translateZ(0); }
+    50%  { transform: translate(-30px,20px) scale(1.12) translateZ(0); }
+    100% { transform: translate(0,0) scale(1) translateZ(0); }
+  }
+  @keyframes ddwProgressGlow {
+    0%,100% { opacity: 0.8; }
+    50%      { opacity: 1; }
+  }
+  @keyframes ddwTaglineReveal {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0);   }
+  }
+`;
+
+// Inject styles once into <head>
+if (typeof document !== 'undefined' && !document.getElementById('ddw-loading-css')) {
+  const style = document.createElement('style');
+  style.id = 'ddw-loading-css';
+  style.textContent = GLOBAL_CSS;
+  document.head.appendChild(style);
+}
+
+// ─── Particle data — duration pre-computed, NOT in render ─────────────────────
 const createParticles = (count) =>
   Array.from({ length: count }, (_, i) => ({
     id:       i,
@@ -36,35 +94,29 @@ const createParticles = (count) =>
     size:     `${1.5 + Math.random() * 2.5}px`,
     delay:    Math.random() * 3,
     drift:    (Math.random() - 0.5) * 60,
-    // FIXED: duration pre-computed here so Particle render is pure/stable
     duration: 2.8 + Math.random(),
   }));
 
-// ─── OrbitRings static data (module-level) ────────────────────────────────
-// FIXED: Was re-allocated inside component body on every render.
-const RING_SIZES    = [260, 190, 128];
-const RING_RADII    = [122, 87, 56];
-const RING_STROKES  = [
+// ─── Static module-level data ─────────────────────────────────────────────────
+const RING_SIZES   = [260, 190, 128];
+const RING_RADII   = [122, 87, 56];
+const RING_STROKES = [
   'rgba(255,87,15,0.22)',
   'rgba(253,232,122,0.12)',
   'rgba(255,87,15,0.07)',
 ];
-const RING_DASHES   = ['5 14', '3 10', '2 7'];
-const NODE_COLORS   = [ORANGE, ACCENT, ORANGE];
-const NODE_SIZES    = [5, 4, 3];
+const RING_DASHES  = ['5 14', '3 10', '2 7'];
+const NODE_COLORS  = [ORANGE, ACCENT, ORANGE];
+const NODE_SIZES   = [5, 4, 3];
 
-// ─── DataBars heights (module-level) ─────────────────────────────────────
-// FIXED: Was re-allocated inside DataBars component body.
 const BAR_HEIGHTS = [0.45, 0.7, 1, 0.82, 0.6, 0.9, 0.5, 0.75, 0.88, 0.55, 0.92, 0.65];
 
-// ─── Pill data (module-level) ─────────────────────────────────────────────
 const PILLS = Object.freeze([
-  { label: '600% ROAS',   color: ORANGE      },
+  { label: '600% ROAS',    color: ORANGE      },
   { label: '$2.7M Amazon', color: ACCENT      },
-  { label: '54K SEO/mo',  color: ORANGE_SOFT },
+  { label: '54K SEO/mo',   color: ORANGE_SOFT },
 ]);
 
-// ─── Taglines (module-level) ──────────────────────────────────────────────
 const TAGLINES = Object.freeze([
   'Initializing systems...',
   'Loading campaigns...',
@@ -72,16 +124,13 @@ const TAGLINES = Object.freeze([
   'Ready.',
 ]);
 
-// ─── CornerDeco path lookup (module-level) ────────────────────────────────
-// FIXED: Was 4 conditional branches evaluated on every render.
-// Now: O(1) lookup, computed once.
+// ─── CornerDeco lookup maps (O(1), allocated once) ────────────────────────────
 const CORNER_LINES = {
   tl: [{ x1:  0, y1:  0, x2: 18, y2:  0 }, { x1:  0, y1:  0, x2:  0, y2: 18 }],
   tr: [{ x1: 28, y1:  0, x2: 10, y2:  0 }, { x1: 28, y1:  0, x2: 28, y2: 18 }],
   bl: [{ x1:  0, y1: 28, x2: 18, y2: 28 }, { x1:  0, y1: 28, x2:  0, y2: 10 }],
   br: [{ x1: 28, y1: 28, x2: 10, y2: 28 }, { x1: 28, y1: 28, x2: 28, y2: 10 }],
 };
-
 const CORNER_POSITIONS = {
   tl: { top:    'clamp(12px,2vw,20px)', left:  'clamp(12px,2vw,20px)' },
   tr: { top:    'clamp(12px,2vw,20px)', right: 'clamp(12px,2vw,20px)' },
@@ -89,36 +138,30 @@ const CORNER_POSITIONS = {
   br: { bottom: 'clamp(12px,2vw,20px)', right: 'clamp(12px,2vw,20px)' },
 };
 
-// ─── Particle ────────────────────────────────────────────────────────────
-// FIXED: duration now comes from props (pre-computed in createParticles)
-// so this component is fully pure — same props always produce same output.
+// ─── Particle ─────────────────────────────────────────────────────────────────
 const Particle = React.memo(({ x, y, size, delay, drift, duration }) => (
   <div
     style={{
-      position:     'absolute',
-      left:         x,
-      top:          y,
-      width:        size,
-      height:       size,
-      borderRadius: '50%',
-      background:   `radial-gradient(circle, ${ORANGE} 0%, ${ACCENT} 60%, transparent 100%)`,
-      '--px':       `${drift}px`,
-      // FIXED: duration from props — stable across re-renders
-      animation:    `ddwParticleFloat ${duration}s ease-in ${delay}s infinite`,
-      pointerEvents:'none',
-      zIndex:       1,
-      willChange:   'transform, opacity',
+      position:      'absolute',
+      left:          x,
+      top:           y,
+      width:         size,
+      height:        size,
+      borderRadius:  '50%',
+      background:    `radial-gradient(circle, ${ORANGE} 0%, ${ACCENT} 60%, transparent 100%)`,
+      '--px':        `${drift}px`,
+      animation:     `ddwParticleFloat ${duration}s ease-in ${delay}s infinite`,
+      pointerEvents: 'none',
+      zIndex:        1,
+      willChange:    'transform, opacity',
     }}
   />
 ));
 Particle.displayName = 'Particle';
 
-// ─── AmbientParticles ────────────────────────────────────────────────────
+// ─── AmbientParticles ─────────────────────────────────────────────────────────
 const AmbientParticles = React.memo(() => {
-  // FIXED: createParticles called once, result memoized.
-  // Particles include all random values — no randomness escapes useMemo.
   const particles = useMemo(() => createParticles(18), []);
-
   return (
     <div
       style={{
@@ -137,11 +180,8 @@ const AmbientParticles = React.memo(() => {
 });
 AmbientParticles.displayName = 'AmbientParticles';
 
-// ─── AuroraOrbs ──────────────────────────────────────────────────────────
-// FIXED: Removed ddwDotGrid animation (background-position = non-compositable
-// = full repaint 60×/sec). Replaced with a static dot grid — visually
-// identical at rest, zero CPU cost.
-// The ddwAuroraFloat animation on the orbs uses transform — compositor-safe.
+// ─── AuroraOrbs ───────────────────────────────────────────────────────────────
+// Dot grid uses static background — no background-position animation (avoids repaint).
 const AuroraOrbs = React.memo(() => (
   <div
     style={{
@@ -152,7 +192,6 @@ const AuroraOrbs = React.memo(() => (
       zIndex:        0,
     }}
   >
-    {/* Primary orange orb */}
     <div
       style={{
         position:     'absolute',
@@ -168,7 +207,6 @@ const AuroraOrbs = React.memo(() => (
         willChange:   'transform',
       }}
     />
-    {/* Accent yellow orb */}
     <div
       style={{
         position:     'absolute',
@@ -184,7 +222,6 @@ const AuroraOrbs = React.memo(() => (
         willChange:   'transform',
       }}
     />
-    {/* Center glow pulse */}
     <div
       style={{
         position:     'absolute',
@@ -198,16 +235,10 @@ const AuroraOrbs = React.memo(() => (
         left:         '50%',
         transform:    'translate(-50%,-50%)',
         animation:    'ddwGlowPulse 3s ease-in-out infinite',
-        // willChange covers both transform (translate) and opacity — compositor-safe
         willChange:   'transform, opacity',
       }}
     />
-    {/*
-      FIXED: Static dot grid — no animation.
-      ddwDotGrid animated background-position which is non-compositable.
-      That caused 60 full repaints/sec on the busiest frame of the page load.
-      A static grid is visually equivalent and costs zero CPU after first paint.
-    */}
+    {/* Static dot grid — no animation = zero repaint cost */}
     <div
       style={{
         position:          'absolute',
@@ -223,20 +254,16 @@ const AuroraOrbs = React.memo(() => (
 ));
 AuroraOrbs.displayName = 'AuroraOrbs';
 
-// ─── OrbitRings ──────────────────────────────────────────────────────────
-// FIXED: All constant arrays hoisted to module scope.
-// gsap.context() correctly scopes and cleans up all 3 infinite tweens.
+// ─── OrbitRings ───────────────────────────────────────────────────────────────
 const OrbitRings = React.memo(() => {
-  // Single ref array instead of 3 separate named refs
   const ringsRef = useRef([]);
 
   useEffect(() => {
-    // Guard: ensure all 3 refs are populated before animating
     if (ringsRef.current.some((r) => !r)) return;
 
     const ctx = gsap.context(() => {
-      const durations = [16, 26, 40];
-      const directions = [360, -360, 360];
+      const durations   = [16, 26, 40];
+      const directions  = [360, -360, 360];
 
       ringsRef.current.forEach((ring, i) => {
         gsap.to(ring, {
@@ -272,12 +299,7 @@ const OrbitRings = React.memo(() => {
           <div
             key={i}
             ref={(el) => { ringsRef.current[i] = el; }}
-            style={{
-              position:   'absolute',
-              width:      S,
-              height:     S,
-              willChange: 'transform',
-            }}
+            style={{ position: 'absolute', width: S, height: S, willChange: 'transform' }}
           >
             <svg
               width={S}
@@ -307,10 +329,7 @@ const OrbitRings = React.memo(() => {
 });
 OrbitRings.displayName = 'OrbitRings';
 
-// ─── DataBars ────────────────────────────────────────────────────────────
-// FIXED: heights array at module scope.
-// FIXED: visibility now GSAP-controlled via ref — no React state.
-// The ref is forwarded from LoadingScreen so GSAP can set initial opacity.
+// ─── DataBars ─────────────────────────────────────────────────────────────────
 const DataBars = React.memo(({ barsRef }) => (
   <div
     ref={barsRef}
@@ -318,7 +337,7 @@ const DataBars = React.memo(({ barsRef }) => (
       display:    'flex',
       alignItems: 'flex-end',
       gap:        3,
-      opacity:    0, // GSAP will animate this in — no React state needed
+      opacity:    0, // GSAP animates in
     }}
   >
     {BAR_HEIGHTS.map((h, i) => (
@@ -339,9 +358,7 @@ const DataBars = React.memo(({ barsRef }) => (
 ));
 DataBars.displayName = 'DataBars';
 
-// ─── LogoMark ────────────────────────────────────────────────────────────
-// FIXED: No React state. Receives a ref forwarded from LoadingScreen.
-// GSAP animates opacity/scale directly on the DOM node.
+// ─── LogoMark ─────────────────────────────────────────────────────────────────
 const LogoMark = React.memo(({ logoRef }) => (
   <div
     ref={logoRef}
@@ -356,34 +373,30 @@ const LogoMark = React.memo(({ logoRef }) => (
       border:         `1.5px solid rgba(255,87,15,0.5)`,
       animation:      'ddwCorePulse 2.6s ease-in-out infinite',
       flexShrink:     0,
-      opacity:        0,    // GSAP starts from 0
-      transform:      'scale(0.8)', // GSAP starts from scale(0.8)
+      opacity:        0,           // GSAP animates in
+      transform:      'scale(0.8)', // GSAP animates to scale(1)
       willChange:     'box-shadow, transform, opacity',
     }}
   >
-    <div
+    <img
+      src="/logo.jpeg"
+      alt="DDW Agency Logo"
       style={{
-        fontFamily:    'Montserrat, sans-serif',
-        fontSize:      11,
-        fontWeight:    900,
-        letterSpacing: '-0.02em',
-        color:         ORANGE,
-        lineHeight:    1,
+        width:        '100%',
+        height:       '100%',
+        objectFit:    'cover',
+        borderRadius: '50%',
+        display:      'block',
       }}
-    >
-      DDW
-    </div>
+    />
   </div>
 ));
 LogoMark.displayName = 'LogoMark';
 
-// ─── CornerDeco ──────────────────────────────────────────────────────────
-// FIXED: O(1) lookup map replaces 4 conditional branches.
-// position prop is a string literal — React.memo correctly bails out.
+// ─── CornerDeco ───────────────────────────────────────────────────────────────
 const CornerDeco = React.memo(({ position }) => {
   const lines    = CORNER_LINES[position];
   const posStyle = CORNER_POSITIONS[position];
-
   return (
     <div
       style={{
@@ -403,7 +416,7 @@ const CornerDeco = React.memo(({ position }) => {
 });
 CornerDeco.displayName = 'CornerDeco';
 
-// ─── LoadingScreen ───────────────────────────────────────────────────────
+// ─── LoadingScreen ────────────────────────────────────────────────────────────
 const LoadingScreen = ({ onComplete }) => {
   const curtainRef     = useRef(null);
   const contentRef     = useRef(null);
@@ -414,17 +427,13 @@ const LoadingScreen = ({ onComplete }) => {
   const logoRef        = useRef(null);
   const bars1Ref       = useRef(null);
   const bars2Ref       = useRef(null);
-
-  // FIXED: Single ref array for all pills — no pill1Ref/pill2Ref/pill3Ref
   const pillRefs       = useRef([]);
 
-  // Stable callback reference — won't change between renders
   const handleComplete = useCallback(() => {
     if (onComplete) onComplete();
   }, [onComplete]);
 
   useEffect(() => {
-    // Null-guard all critical refs before touching the DOM
     if (
       !curtainRef.current     ||
       !contentRef.current     ||
@@ -434,17 +443,13 @@ const LoadingScreen = ({ onComplete }) => {
       !logoRef.current
     ) return;
 
-    // Prevent body scroll during loading
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     window.scrollTo(0, 0);
 
-    // Mounted guard — prevents callbacks firing on unmounted component
     let mounted = true;
 
-    // ── Phase 1: Entrance animations ──────────────────────────────────────
-    // FIXED: React state replaced with direct GSAP DOM mutation.
-    // Logo and bars now animate in via GSAP — zero React re-renders.
+    // ── Phase 1: Entrance ──────────────────────────────────────────────────
     gsap.to(logoRef.current, {
       opacity:  1,
       scale:    1,
@@ -459,25 +464,20 @@ const LoadingScreen = ({ onComplete }) => {
       ease:     'power2.out',
     });
 
-    // ── Phase 2: Tagline cycling — direct DOM, no setState ────────────────
-    // FIXED: setTaglineIdx caused 3 full React re-renders.
-    // Now: direct textContent mutation — microseconds vs milliseconds.
+    // ── Phase 2: Tagline cycling — direct DOM mutation, zero re-renders ────
     const taglineTimers = TAGLINES.map((text, i) => {
-      if (i === 0) return null; // first tagline is the initial content
+      if (i === 0) return null;
       const delays = [400, 900, 1400];
       return setTimeout(() => {
         if (!mounted || !taglineRef.current) return;
-        // Trigger the CSS animation by cloning the node
-        // (force animation restart on same element)
         taglineRef.current.textContent = text;
         taglineRef.current.style.animation = 'none';
-        // Reflow to restart animation
-        void taglineRef.current.offsetWidth;
+        void taglineRef.current.offsetWidth; // reflow to restart animation
         taglineRef.current.style.animation = 'ddwTaglineReveal 0.35s ease both';
       }, delays[i - 1]);
     }).filter(Boolean);
 
-    // ── Phase 3: Master progress timeline ─────────────────────────────────
+    // ── Phase 3: Master timeline ───────────────────────────────────────────
     const progressState = { val: 0 };
 
     const tl = gsap.timeline({
@@ -488,7 +488,7 @@ const LoadingScreen = ({ onComplete }) => {
       },
     });
 
-    // Counter — direct DOM mutation, no React state
+    // Counter
     tl.to(progressState, {
       val:      100,
       duration: 1.8,
@@ -501,7 +501,7 @@ const LoadingScreen = ({ onComplete }) => {
       },
     }, 0);
 
-    // Progress bar — transform: scaleX (compositor-safe)
+    // Progress bar fill — scaleX (compositor-safe)
     tl.to(progressBarRef.current, {
       scaleX:   1,
       duration: 1.8,
@@ -509,20 +509,15 @@ const LoadingScreen = ({ onComplete }) => {
       force3D:  true,
     }, 0);
 
-    /*
-     * FIXED: Glow dot previously animated `left` CSS property.
-     * `left` triggers layout reflow every frame — the definition of jank.
-     *
-     * Solution: animate `xPercent` (maps to translateX) instead.
-     * The dot starts at x:0 (left edge after centering) and moves to
-     * the right edge of the bar using xPercent: 100 relative to bar width.
-     *
-     * We use a wrapper div for the dot positioned at left:0, then
-     * translateX it to match the bar's width. GSAP's `x` property
-     * uses transform — runs entirely on the compositor thread.
-     */
+    // Glow dot — animate via x (pixels) from 0 to bar's full width.
+    // We use a lazy getter so we read offsetWidth AFTER layout, not before.
+    // x in pixels = no conflict with any CSS transform.
+    const barEl = progressBarRef.current?.parentElement ?? progressBarRef.current;
+    const barW  = barEl ? barEl.offsetWidth : 300;
+
+    gsap.set(glowDotRef.current, { x: 0 });
     tl.to(glowDotRef.current, {
-      x:        '100%',  // compositor-safe: transform: translateX(100%)
+      x:        barW,
       duration: 1.8,
       ease:     'power3.inOut',
       force3D:  true,
@@ -538,10 +533,8 @@ const LoadingScreen = ({ onComplete }) => {
       force3D:  true,
     }, 0.5);
 
-    // Pause before exit
+    // Pause → content fade out → curtain slide up
     tl.to({}, { duration: 0.28 });
-
-    // Content fade out
     tl.to(contentRef.current, {
       opacity:  0,
       y:        -16,
@@ -549,8 +542,6 @@ const LoadingScreen = ({ onComplete }) => {
       ease:     'power2.in',
       force3D:  true,
     });
-
-    // Curtain slide up — exit
     tl.to(curtainRef.current, {
       yPercent: -100,
       duration: 0.9,
@@ -567,11 +558,6 @@ const LoadingScreen = ({ onComplete }) => {
   }, [handleComplete]);
 
   return (
-    /*
-      NOTE: No <GlobalStyles> here — it has been deleted.
-      All keyframes are in index.css (parsed once at app load).
-      Fonts are in index.html <link> tags (preloaded before JS executes).
-    */
     <div
       ref={curtainRef}
       style={{
@@ -621,48 +607,44 @@ const LoadingScreen = ({ onComplete }) => {
 
         <OrbitRings />
 
-        {/* Main content card */}
+        {/* Main content */}
         <div
           ref={contentRef}
           style={{
-            position:  'relative',
-            zIndex:    10,
-            display:   'flex',
+            position:      'relative',
+            zIndex:        10,
+            display:       'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            gap:        'clamp(20px,3.5vw,32px)',
-            padding:    '0 clamp(16px,4vw,32px)',
-            width:      '100%',
-            maxWidth:   480,
+            alignItems:    'center',
+            gap:           'clamp(20px,3.5vw,32px)',
+            padding:       '0 clamp(16px,4vw,32px)',
+            width:         '100%',
+            maxWidth:      480,
           }}
         >
           {/* Logo + brand row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(10px,2vw,16px)' }}>
-            {/*
-              FIXED: LogoMark no longer uses React state for visibility.
-              logoRef is passed in and GSAP animates it directly.
-            */}
             <LogoMark logoRef={logoRef} />
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <h2
                 style={{
                   fontFamily:    'Montserrat, sans-serif',
-                  fontSize:      'clamp(22px,4.5vw,34px)',
-                  fontWeight:    900,
-                  letterSpacing: '0.15em',
+                  fontSize:      'clamp(18px,3vw,24px)',
+                  fontWeight:    700,
                   textTransform: 'uppercase',
-                  lineHeight:    1,
+                  letterSpacing: '0.12em',
                   color:         '#fff',
+                  margin:        0,
+                  lineHeight:    1.2,
                 }}
               >
                 DDW{' '}
                 <span
                   style={{
-                    background:            `linear-gradient(135deg, ${ORANGE} 0%, ${ACCENT} 100%)`,
-                    WebkitBackgroundClip:  'text',
-                    WebkitTextFillColor:   'transparent',
-                    backgroundClip:        'text',
+                    background:           `linear-gradient(135deg, ${ORANGE} 0%, ${ACCENT} 100%)`,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor:  'transparent',
+                    backgroundClip:       'text',
                   }}
                 >
                   Agency
@@ -690,7 +672,7 @@ const LoadingScreen = ({ onComplete }) => {
             }}
           />
 
-          {/* Data visualization row */}
+          {/* Data viz row */}
           <div
             style={{
               display:        'flex',
@@ -700,25 +682,21 @@ const LoadingScreen = ({ onComplete }) => {
               width:          '100%',
             }}
           >
-            {/*
-              FIXED: DataBars receives a ref for GSAP control — no visible/state prop.
-              Both sets of bars animate in together via GSAP in the main useEffect.
-            */}
             <DataBars barsRef={bars1Ref} />
 
             <div
               style={{
-                display:   'flex',
+                display:       'flex',
                 flexDirection: 'column',
-                alignItems: 'center',
-                gap:        2,
+                alignItems:    'center',
+                gap:           2,
               }}
             >
               <span
                 style={{
                   fontFamily:           'Montserrat, sans-serif',
                   fontSize:             'clamp(28px,5vw,40px)',
-                  fontWeight:           900,
+                  fontWeight:           700,
                   lineHeight:           1,
                   letterSpacing:        '-0.03em',
                   background:           `linear-gradient(135deg, ${ORANGE}, ${ACCENT})`,
@@ -758,7 +736,7 @@ const LoadingScreen = ({ onComplete }) => {
           {/* Progress section */}
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-            {/* Status row: tagline + counter */}
+            {/* Status row */}
             <div
               style={{
                 display:        'flex',
@@ -777,17 +755,12 @@ const LoadingScreen = ({ onComplete }) => {
                     animation:    'ddwGlowPulse 1.6s ease-in-out infinite',
                   }}
                 />
-                {/*
-                  FIXED: taglineRef used for direct DOM text mutation.
-                  No key={taglineIdx} forcing React reconciliation.
-                  No useState causing re-renders.
-                  CSS animation restarted via offsetWidth reflow trick (one-time, cheap).
-                */}
+                {/* Direct DOM text mutation via ref — no React re-renders */}
                 <span
                   ref={taglineRef}
                   style={{
                     fontFamily:    'Inter, sans-serif',
-                    fontSize:      'clamp(9px,1.6vw,11px)',
+                    fontSize:      'clamp(12px,1.6vw,13px)',
                     fontWeight:    500,
                     color:         'rgba(255,255,255,0.38)',
                     letterSpacing: '0.1em',
@@ -808,18 +781,17 @@ const LoadingScreen = ({ onComplete }) => {
                 />
               </div>
 
-              {/* Counter — GSAP mutates textContent directly */}
               <div
                 ref={counterRef}
                 style={{
-                  fontFamily:        'Montserrat, sans-serif',
-                  fontSize:          'clamp(11px,2vw,13px)',
-                  fontWeight:        700,
-                  color:             'rgba(255,255,255,0.45)',
-                  letterSpacing:     '0.12em',
-                  fontVariantNumeric:'tabular-nums',
-                  minWidth:          36,
-                  textAlign:         'right',
+                  fontFamily:         'Montserrat, sans-serif',
+                  fontSize:           'clamp(12px,2vw,13px)',
+                  fontWeight:         700,
+                  color:              'rgba(255,255,255,0.45)',
+                  letterSpacing:      '0.12em',
+                  fontVariantNumeric: 'tabular-nums',
+                  minWidth:           36,
+                  textAlign:          'right',
                 }}
               >
                 00%
@@ -837,7 +809,7 @@ const LoadingScreen = ({ onComplete }) => {
                 position:     'relative',
               }}
             >
-              {/* Fill bar — scaleX animation, compositor-safe */}
+              {/* Fill — scaleX (compositor-safe) */}
               <div
                 ref={progressBarRef}
                 style={{
@@ -856,10 +828,12 @@ const LoadingScreen = ({ onComplete }) => {
               />
 
               {/*
-                FIXED: Glow dot no longer animates `left` (layout-triggering).
-                Initial position: left:0, transform: translateX(-50%) translateY(-50%)
-                GSAP animates `x` (translateX) — pure compositor.
-                The dot starts at the left edge of the bar.
+                Glow dot — NO CSS transform on this element.
+                If CSS transform and GSAP x are both set, GSAP overwrites the
+                CSS transform entirely, freezing the centering offset.
+                Fix: center via marginTop (static offset, not transform),
+                marginLeft shifts it half-width left of its track position.
+                GSAP only touches `x` (translateX) — nothing conflicts.
               */}
               <div
                 ref={glowDotRef}
@@ -867,9 +841,8 @@ const LoadingScreen = ({ onComplete }) => {
                   position:     'absolute',
                   top:          '50%',
                   left:         0,
-                  // translateX(-50%) centers the dot on its left edge
-                  // translateY(-50%) centers vertically
-                  transform:    'translateX(-50%) translateY(-50%)',
+                  marginTop:    -4,   // half of height:8 — vertical center
+                  marginLeft:   -4,   // half of width:8  — starts flush at left edge
                   width:        8,
                   height:       8,
                   borderRadius: '50%',
@@ -909,28 +882,21 @@ const LoadingScreen = ({ onComplete }) => {
                 flexWrap:       'wrap',
               }}
             >
-              {/*
-                FIXED: Single pillRefs array replaces pill1Ref/pill2Ref/pill3Ref.
-                Stable key uses pill.label (unique string) instead of index.
-              */}
-              {PILLS.map((pill) => (
+              {PILLS.map((pill, idx) => (
                 <div
                   key={pill.label}
-                  ref={(el) => {
-                    const idx = PILLS.indexOf(pill);
-                    pillRefs.current[idx] = el;
-                  }}
+                  ref={(el) => { pillRefs.current[idx] = el; }}
                   style={{
-                    display:     'inline-flex',
-                    alignItems:  'center',
-                    gap:         5,
-                    padding:     '3px 10px',
+                    display:      'inline-flex',
+                    alignItems:   'center',
+                    gap:          5,
+                    padding:      '3px 10px',
                     borderRadius: 99,
-                    background:  `${pill.color}10`,
-                    border:      `1px solid ${pill.color}28`,
-                    opacity:     0,
-                    transform:   'translateY(6px)',
-                    willChange:  'transform, opacity',
+                    background:   `${pill.color}10`,
+                    border:       `1px solid ${pill.color}28`,
+                    opacity:      0,
+                    transform:    'translateY(6px)',
+                    willChange:   'transform, opacity',
                   }}
                 >
                   <div
@@ -946,7 +912,7 @@ const LoadingScreen = ({ onComplete }) => {
                     style={{
                       fontFamily:    'Montserrat, sans-serif',
                       fontSize:      8,
-                      fontWeight:    800,
+                      fontWeight:    700,
                       textTransform: 'uppercase',
                       letterSpacing: '0.16em',
                       color:         pill.color,

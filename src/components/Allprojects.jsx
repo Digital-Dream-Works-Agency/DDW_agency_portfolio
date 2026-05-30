@@ -350,7 +350,7 @@ const STYLES = `
 
   /* CTA text */
   .ddw-card-btn-text {
-    font-size: 10px; font-weight: 900; text-transform: uppercase;
+    font-size: 12px; font-weight: 900; text-transform: uppercase;
     letter-spacing: 0.18em;
     color: rgba(255,255,255,0.22);
     transition: color 0.3s ease;
@@ -387,7 +387,7 @@ const STYLES = `
     position: relative;
     display: inline-flex; align-items: center; gap: 6px;
     padding: 8px 16px; min-height: 44px; border-radius: 99px;
-    font-size: 10px; font-weight: 900;
+    font-size: 12px; font-weight: 900;
     text-transform: uppercase; letter-spacing: 0.18em;
     cursor: pointer;
     transition: all 0.25s ease;
@@ -406,7 +406,7 @@ const STYLES = `
     display: inline-flex; align-items: center; gap: 10px;
     padding: 14px 32px; min-height: 52px; border-radius: 99px;
     background: linear-gradient(135deg, #FF570F 0%, #EE7D1D 100%);
-    color: #000; font-weight: 900; font-size: 11px;
+    color: #000; font-weight: 900; font-size: 12px;
     text-transform: uppercase; letter-spacing: 0.2em;
     text-decoration: none;
     box-shadow: 0 0 24px #FF570F35;
@@ -614,10 +614,10 @@ const Marquee = memo(() => (
       {MARQUEE_TRACK.map((t, i) => (
         <span
           key={i}
+          className="text-xs font-bold uppercase tracking-widest"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 10,
-            fontSize: 10, fontWeight: 900, textTransform: 'uppercase',
-            letterSpacing: '0.2em', color: 'rgba(255,255,255,0.22)',
+            color: 'rgba(255,255,255,0.22)',
             fontFamily: 'Montserrat, sans-serif',
           }}
         >
@@ -679,26 +679,25 @@ const StatsBar = memo(() => {
         >
           <div
             aria-hidden="true"
+            className="text-4xl font-bold"
             style={{
               position: 'absolute', top: '50%', left: '50%',
               transform: 'translate(-50%,-50%)',
-              fontSize: 64, fontWeight: 900, color: s.color,
+              color: s.color,
               opacity: 0.04, pointerEvents: 'none',
               fontFamily: 'Montserrat, sans-serif', lineHeight: 1,
             }}
           >
             {s.icon}
           </div>
-          <div style={{
-            fontSize: 'clamp(20px,4vw,28px)', fontWeight: 900,
+          <div className="text-xl md:text-2xl font-bold" style={{
             color: '#fff', letterSpacing: '-0.03em', marginBottom: 4,
             fontFamily: 'Montserrat, sans-serif', position: 'relative',
           }}>
             {s.v}
           </div>
-          <div style={{
-            fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.2em',
-            fontWeight: 700, color: 'rgba(255,255,255,0.25)',
+          <div className="text-xs uppercase tracking-widest font-bold" style={{
+            color: 'rgba(255,255,255,0.25)',
             fontFamily: 'Montserrat, sans-serif', position: 'relative',
           }}>
             {s.l}
@@ -739,8 +738,7 @@ const FilterTab = memo(({ cat, isActive, onClick, count }) => {
     <button
       ref={ref}
       onClick={onClick}
-      className="ddw-filter-btn"
-      style={{
+      className="ddw-filter-btn text-sm font-bold uppercase tracking-widest" style={{
         ...(isActive ? activeStyle : inactiveStyle),
         willChange: 'transform',
         transition: 'all 0.25s ease',
@@ -766,7 +764,7 @@ const FilterTab = memo(({ cat, isActive, onClick, count }) => {
       </span>
       {cat}
       {count != null && (
-        <span style={{ fontSize: 9, opacity: 0.55, fontWeight: 700 }}>
+        <span className="text-xs font-bold" style={{ opacity: 0.55 }}>
           {count}
         </span>
       )}
@@ -922,22 +920,17 @@ const ProjectCard = memo(({ item, index }) => {
               <OrbitalNode accent={accent} />
               <div style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
                 <div
-                  className="ddw-card-metric-primary"
+                  className="ddw-card-metric-primary text-3xl md:text-4xl leading-[1.1] tracking-tight"
                   style={{
-                    fontSize: primaryVal.length > 6
-                      ? 'clamp(28px,6vw,42px)'
-                      : 'clamp(38px,7vw,58px)',
-                    fontWeight: 900, color: accent, lineHeight: 1,
-                    letterSpacing: '-0.04em',
+                    fontWeight: 700, color: accent,
                     textShadow: `0 0 60px ${accent}66`,
                     fontFamily: 'Montserrat, sans-serif',
                   }}
                 >
                   {primaryVal}
                 </div>
-                <div style={{
-                  fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.24em',
-                  fontWeight: 700, color: `${accent}60`, marginTop: 6,
+                <div className="text-xs uppercase tracking-widest font-bold" style={{
+                  color: `${accent}60`, marginTop: 6,
                   fontFamily: 'Montserrat, sans-serif',
                 }}>
                   {primaryKey}
@@ -957,9 +950,8 @@ const ProjectCard = memo(({ item, index }) => {
 
           {/* Category badge */}
           <div style={{ position: 'absolute', top: 12, left: 12, zIndex: 3 }}>
-            <span style={{
-              padding: '5px 11px', fontSize: 9, fontWeight: 900,
-              textTransform: 'uppercase', letterSpacing: '0.18em', borderRadius: 99,
+            <span className="text-xs font-bold uppercase tracking-widest" style={{
+              padding: '5px 11px', borderRadius: 99,
               background: `${accent}1a`, color: accent,
               border: `1px solid ${accent}38`,
               fontFamily: 'Montserrat, sans-serif',
@@ -972,10 +964,9 @@ const ProjectCard = memo(({ item, index }) => {
           {/* Live badge */}
           {isExternal && (
             <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 3 }}>
-              <span style={{
+              <span className="text-xs font-bold uppercase tracking-widest" style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
-                padding: '5px 10px', fontSize: 9, fontWeight: 900,
-                textTransform: 'uppercase', letterSpacing: '0.15em',
+                padding: '5px 10px',
                 borderRadius: 99, backdropFilter: 'blur(10px)',
                 background: 'rgba(0,0,0,0.58)',
                 color: 'rgba(255,255,255,0.6)',
@@ -1010,22 +1001,20 @@ const ProjectCard = memo(({ item, index }) => {
           flex: 1, display: 'flex', flexDirection: 'column',
           padding: '18px 20px 20px', position: 'relative', zIndex: 1,
         }}>
-          <h4 className="ddw-card-title">{item.title}</h4>
+          <h4 className="ddw-card-title text-xl sm:text-2xl font-bold tracking-tight">{item.title}</h4>
 
           {/* Metrics */}
           <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', marginBottom: 14 }}>
             {metricPairs.map(([key, val]) => (
               <div key={key} className="ddw-card-metric">
-                <div style={{
-                  fontSize: 'clamp(15px,3vw,19px)', fontWeight: 900,
+                <div className="text-lg font-bold" style={{
                   color: accent, lineHeight: 1, letterSpacing: '-0.02em',
                   fontFamily: 'Montserrat, sans-serif',
                 }}>
                   {val}
                 </div>
-                <div style={{
-                  fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.16em',
-                  color: 'rgba(255,255,255,0.28)', fontWeight: 700, marginTop: 3,
+                <div className="text-xs uppercase tracking-widest font-bold" style={{
+                  color: 'rgba(255,255,255,0.28)', marginTop: 3,
                   fontFamily: 'Montserrat, sans-serif',
                 }}>
                   {key}
@@ -1086,10 +1075,10 @@ const PageBtn = memo(({ onClick, disabled, isActive, children, label }) => {
       disabled={disabled}
       aria-label={label}
       aria-current={isActive ? 'page' : undefined}
+      className="text-xs font-bold"
       style={{
         width: 42, height: 42, borderRadius: 10,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 12, fontWeight: 900,
         cursor: disabled ? 'not-allowed' : 'pointer',
         background: isActive
           ? '#FF570F'
@@ -1132,16 +1121,15 @@ const FloatingPill = memo(({ children, style = {}, duration = 2.4 }) => {
   return (
     <div
       ref={ref}
+      className="text-xs font-bold uppercase tracking-widest"
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 7,
         padding: '6px 14px', borderRadius: 99,
         background: 'rgba(255,255,255,0.04)',
         border: '1px solid rgba(255,255,255,0.09)',
         backdropFilter: 'blur(12px)',
-        fontSize: 10, fontWeight: 700,
         color: 'rgba(255,255,255,0.55)',
         fontFamily: 'Montserrat, sans-serif',
-        letterSpacing: '0.12em', textTransform: 'uppercase',
         ...style,
       }}
     >
@@ -1354,9 +1342,8 @@ const AllProjects = () => {
           }}
         >
           <div style={{ height: 1, width: 36, background: '#FF570F', flexShrink: 0 }} />
-          <span style={{
-            fontSize: 10, fontWeight: 900, textTransform: 'uppercase',
-            letterSpacing: '0.28em', color: '#FF570F',
+          <span className="text-xs font-bold uppercase tracking-widest" style={{
+            color: '#FF570F',
             fontFamily: 'Montserrat, sans-serif',
           }}>
             Real Accounts · Real Numbers · No Projections
@@ -1402,9 +1389,9 @@ const AllProjects = () => {
             }}
           >
             <h2 style={{
-              fontSize: 'clamp(42px,8.5vw,92px)',
-              fontWeight: 900, lineHeight: 0.93,
-              letterSpacing: '-0.03em', margin: 0,
+              
+               
+               margin: 0,
               fontFamily: 'Montserrat, sans-serif',
             }}>
               <span style={{ color: '#fff', display: 'block' }}>Projects</span>
@@ -1417,9 +1404,9 @@ const AllProjects = () => {
               </span>
             </h2>
             <p
-              className="header-desc"
+              className="header-desc text-base leading-relaxed"
               style={{
-                color: 'rgba(255,255,255,0.38)', fontSize: 14, lineHeight: 1.75,
+                color: 'rgba(255,255,255,0.38)',
                 maxWidth: 260, textAlign: 'right', margin: 0,
                 fontFamily: 'Inter, sans-serif',
               }}
@@ -1478,25 +1465,23 @@ const AllProjects = () => {
               height: 16, width: 2.5, borderRadius: 2,
               background: accentColor, transition: 'background 0.35s ease',
             }} />
-            <span style={{
-              fontSize: 10, fontWeight: 900, textTransform: 'uppercase',
-              letterSpacing: '0.2em', color: accentColor,
+            <span className="text-xs font-bold uppercase tracking-widest" style={{
+              color: accentColor,
               transition: 'color 0.35s ease',
               fontFamily: 'Montserrat, sans-serif',
             }}>
               {activeCategory === 'All' ? 'All Projects' : activeCategory}
             </span>
-            <span style={{
-              fontSize: 10, color: 'rgba(255,255,255,0.2)',
-              fontWeight: 700, fontFamily: 'Montserrat, sans-serif',
+            <span className="text-xs font-bold" style={{
+              color: 'rgba(255,255,255,0.2)',
+              fontFamily: 'Montserrat, sans-serif',
             }}>
               — {filtered.length} results
             </span>
           </div>
-          <span style={{
-            fontSize: 10, color: 'rgba(255,255,255,0.18)',
-            textTransform: 'uppercase', letterSpacing: '0.18em',
-            fontWeight: 700, fontFamily: 'Montserrat, sans-serif',
+          <span className="text-xs font-bold uppercase tracking-widest" style={{
+            color: 'rgba(255,255,255,0.18)',
+            fontFamily: 'Montserrat, sans-serif',
           }}>
             {startIndex + 1}–{Math.min(startIndex + ITEMS_PER_PAGE, filtered.length)} of {filtered.length}
           </span>
@@ -1526,17 +1511,17 @@ const AllProjects = () => {
             }}>
               <div
                 aria-hidden="true"
+                className="text-3xl md:text-4xl"
                 style={{
-                  fontSize: 'clamp(48px,8vw,72px)', marginBottom: 16,
+                  marginBottom: 16,
                   opacity: 0.08, fontFamily: 'Montserrat, sans-serif',
                 }}
               >
                 ◈
               </div>
-              <p style={{
-                color: 'rgba(255,255,255,0.18)', fontSize: 11,
-                textTransform: 'uppercase', letterSpacing: '0.25em',
-                fontWeight: 900, fontFamily: 'Montserrat, sans-serif',
+              <p className="text-xs font-bold uppercase tracking-widest leading-relaxed" style={{
+                color: 'rgba(255,255,255,0.18)',
+                fontFamily: 'Montserrat, sans-serif',
               }}>
                 No projects in this category yet
               </p>
@@ -1585,31 +1570,17 @@ const AllProjects = () => {
           border: '1px solid rgba(255,87,15,0.12)',
           position: 'relative', overflow: 'hidden',
         }}>
-          <div
-            aria-hidden="true"
-            style={{
-              position: 'absolute', top: '50%', left: '50%',
-              transform: 'translate(-50%,-50%)',
-              fontSize: 'clamp(80px,12vw,180px)',
-              fontWeight: 900, color: '#fff',
-              opacity: 0.025, pointerEvents: 'none', lineHeight: 1,
-              letterSpacing: '-0.04em', fontFamily: 'Montserrat, sans-serif',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            DDW
-          </div>
 
-          <p style={{
-            fontSize: 10, fontWeight: 900, textTransform: 'uppercase',
-            letterSpacing: '0.28em', color: '#FF570F',
+
+          <p className="text-xs font-bold uppercase tracking-widest leading-relaxed" style={{
+            color: '#FF570F',
             marginBottom: 12, fontFamily: 'Montserrat, sans-serif',
           }}>
             Want results like these?
           </p>
           <h3 style={{
-            fontSize: 'clamp(22px,4vw,36px)', fontWeight: 900,
-            lineHeight: 1.15, letterSpacing: '-0.025em',
+             
+             
             color: '#fff', marginBottom: 24,
             fontFamily: 'Montserrat, sans-serif',
           }}>

@@ -381,20 +381,19 @@ const MetricCard = React.memo(({
             {/* Text */}
             <div>
               <div
-                className="text-xl font-black leading-none tracking-tight"
+                className="text-xl font-bold leading-none tracking-tight"
                 style={{ color: '#FFFFFF', fontFamily: 'var(--font-heading, inherit)' }}
               >
                 {metric}
               </div>
               <div
-                className="text-[11px] font-bold mt-1 uppercase tracking-wider"
-                style={{ color: 'rgba(255,255,255,0.55)' }}
+                className="mt-1 uppercase text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.55)' }}
               >
                 {label}
               </div>
               {sublabel && (
                 <div
-                  className="text-[10px] mt-0.5"
+                  className="text-sm mt-0.5"
                   style={{ color: 'rgba(255,255,255,0.3)' }}
                 >
                   {sublabel}
@@ -512,7 +511,7 @@ const OrbitVisual = React.memo(() => {
       {SERVICES.map((service) => (
         <div
           key={service.name}
-          className="absolute text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full"
+          className="absolute text-xs font-bold uppercase tracking-widest px-2 py-1 rounded-full"
           style={{
             left:            service.x,
             top:             service.y,
@@ -542,7 +541,7 @@ const OrbitVisual = React.memo(() => {
       >
         <div className="text-center">
           <div
-            className="font-black text-xl leading-none"
+            className="font-bold text-xl leading-none"
             style={{
               color:         '#FF570F',
               fontFamily:    'var(--font-heading, inherit)',
@@ -552,7 +551,7 @@ const OrbitVisual = React.memo(() => {
             DDW
           </div>
           <div
-            className="text-[7px] uppercase tracking-[0.2em] mt-1"
+            className="text-xs uppercase tracking-[0.2em] mt-1"
             style={{ color: 'rgba(255,255,255,0.3)' }}
           >
             Agency
@@ -659,7 +658,7 @@ const StatsRow = React.memo(() => (
     {STATS.map((s) => (
       <div key={s.label} className="flex flex-col">
         <span
-          className="text-2xl font-black leading-none tracking-tight"
+          className="text-2xl font-bold leading-none tracking-tight"
           style={{
             fontFamily:           'var(--font-heading, inherit)',
             background:           'linear-gradient(135deg, #FF570F, #FDE87A)',
@@ -671,8 +670,7 @@ const StatsRow = React.memo(() => (
           {s.value}
         </span>
         <span
-          className="text-[11px] font-medium uppercase tracking-widest mt-1"
-          style={{ color: 'rgba(255,255,255,0.4)' }}
+          className="uppercase mt-1 text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}
         >
           {s.label}
         </span>
@@ -687,7 +685,7 @@ StatsRow.displayName = 'StatsRow';
 const ScrollIndicator = React.memo(() => (
   <div className="header-anim absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
     <span
-      className="text-[9px] font-bold uppercase tracking-[0.4em]"
+      className="text-xs font-bold uppercase tracking-[0.4em]"
       style={{ color: 'rgba(255,255,255,0.25)' }}
     >
       Scroll
@@ -786,24 +784,7 @@ const PageHeader = ({ title, breadcrumb, subtitle }) => {
 
       <AuroraBackground />
 
-      {/* Watermark */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-        <span
-          ref={prlx1Ref}
-          style={{
-            fontSize:      'clamp(80px, 20vw, 220px)',
-            fontFamily:    'var(--font-heading, inherit)',
-            fontWeight:    900,
-            color:         'rgba(255,255,255,0.012)',
-            textTransform: 'uppercase',
-            letterSpacing: '-0.05em',
-            userSelect:    'none',
-            whiteSpace:    'nowrap',
-          }}
-        >
-          {breadcrumb}
-        </span>
-      </div>
+
 
       {/* Parallax decorative element 2 (background use) */}
       <div ref={prlx2Ref} className="absolute inset-0 pointer-events-none" aria-hidden="true" />
@@ -843,7 +824,7 @@ const PageHeader = ({ title, breadcrumb, subtitle }) => {
                 <path d="M9 5l7 7-7 7" />
               </svg>
               <span
-                className="text-xs font-semibold uppercase tracking-[0.25em]"
+                className="text-sm font-semibold uppercase tracking-[0.25em]"
                 style={{ color: '#FF570F' }}
               >
                 {breadcrumb}
@@ -852,13 +833,13 @@ const PageHeader = ({ title, breadcrumb, subtitle }) => {
 
             {/* Heading */}
             <h1
-              className="overflow-hidden mb-6"
+              className="overflow-hidden mb-6 text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-[-0.035em]"
               style={{
-                fontSize:      'clamp(48px, 6vw, 88px)',
+                
                 fontFamily:    'var(--font-heading, inherit)',
-                fontWeight:    900,
-                lineHeight:    1.0,
-                letterSpacing: '-0.03em',
+                
+                
+                
                 perspective:   '1000px',
               }}
             >
@@ -883,7 +864,7 @@ const PageHeader = ({ title, breadcrumb, subtitle }) => {
             {/* Subtitle */}
             {subtitle && (
               <p
-                className="header-anim text-base leading-relaxed max-w-md"
+                className="header-anim max-w-md text-base leading-relaxed"
                 style={{
                   color:      'rgba(255,255,255,0.5)',
                   fontFamily: 'var(--font-body, inherit)',
@@ -942,7 +923,7 @@ const PageHeader = ({ title, breadcrumb, subtitle }) => {
                   style={{ backgroundColor: '#FF570F' }}
                 />
                 <span
-                  className="text-[10px] font-bold uppercase tracking-widest"
+                  className="text-sm font-bold uppercase tracking-widest"
                   style={{ color: 'rgba(255,255,255,0.45)' }}
                 >
                   Florida LLC · US + EU Markets

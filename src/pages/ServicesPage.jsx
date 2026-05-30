@@ -363,7 +363,7 @@ const STYLES = `
     display: inline-flex; align-items: center; gap: 10px;
     padding: 14px 32px; border-radius: 999px;
     font-family: Montserrat, sans-serif; font-weight: 900;
-    font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.18em;
     text-decoration: none; min-height: 52px;
     background: #FF570F; color: #000;
     box-shadow: 0 8px 40px rgba(255,87,15,0.38);
@@ -381,7 +381,7 @@ const STYLES = `
     display: inline-flex; align-items: center; gap: 8px;
     padding: 14px 32px; border-radius: 999px;
     font-family: Montserrat, sans-serif; font-weight: 900;
-    font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.18em;
     text-decoration: none; min-height: 52px;
     color: rgba(255,255,255,0.4);
     border: 1px solid rgba(255,255,255,0.07);
@@ -619,14 +619,12 @@ BorderBeamCard.displayName = 'BorderBeamCard';
 
 // ─── Eyebrow ─────────────────────────────────────────────────────────────────
 const Eyebrow = memo(({ children, color = '#FF570F' }) => (
-  <span style={{
+  <span className="text-xs font-bold uppercase tracking-widest" style={{
     display: 'inline-flex', alignItems: 'center', gap: 8,
     padding: '6px 16px', borderRadius: 999,
     background: `${color}0f`,
     border: `1px solid ${color}28`,
     color,
-    fontSize: 9, fontWeight: 800,
-    letterSpacing: '0.26em', textTransform: 'uppercase',
     fontFamily: 'JetBrains Mono, monospace',
   }}>
     <span style={{
@@ -670,17 +668,16 @@ const AnimatedStat = memo(({ value, label }) => {
       style={{ opacity: 0, textAlign: 'center', padding: '12px 20px', position: 'relative' }}
     >
       <div
-        className="font-heading"
+        className="font-heading text-xl md:text-2xl"
         style={{
-          fontSize: 'clamp(1.1rem,2vw,1.4rem)', fontWeight: 900,
+          fontWeight: 700,
           color: '#fff', letterSpacing: '-0.03em', marginBottom: 4,
         }}
       >
         {value}
       </div>
-      <div style={{
-        fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.22em',
-        color: 'rgba(255,255,255,0.28)', fontWeight: 700,
+      <div className="text-xs uppercase tracking-widest font-bold" style={{
+        color: 'rgba(255,255,255,0.28)',
         fontFamily: 'JetBrains Mono, monospace',
       }}>
         {label}
@@ -720,9 +717,9 @@ const LogoMarquee = memo(() => (
       {CLIENTS_DOUBLED.map((c, i) => (
         <span
           key={i}
+          className="text-xs font-bold uppercase tracking-widest"
           style={{
-            color: 'rgba(255,255,255,0.13)', fontSize: 11, fontWeight: 900,
-            textTransform: 'uppercase', letterSpacing: '0.2em',
+            color: 'rgba(255,255,255,0.13)',
             whiteSpace: 'nowrap', userSelect: 'none',
             fontFamily: 'JetBrains Mono, monospace',
           }}
@@ -826,20 +823,7 @@ const ServiceCard = memo(({ service }) => {
                   padding: 'clamp(20px,4vw,40px)',
                   position: 'relative', overflow: 'hidden',
                 }}>
-                  {/* Watermark — CSS drives transform on hover */}
-                  <div
-                    className="font-heading ddw-service-watermark"
-                    aria-hidden="true"
-                    style={{
-                      position: 'absolute', bottom: -10, right: 0,
-                      fontSize: 'clamp(80px,10vw,160px)',
-                      fontWeight: 900, lineHeight: 1,
-                      color: accent, opacity: 0.045,
-                      pointerEvents: 'none', userSelect: 'none',
-                    }}
-                  >
-                    {service.number}
-                  </div>
+
 
                   <div style={{ position: 'relative', zIndex: 2 }}>
                     {/* Badge row */}
@@ -855,9 +839,7 @@ const ServiceCard = memo(({ service }) => {
                         color: accent, opacity: 0.9,
                       }}>
                         <Icon />
-                        <span style={{
-                          fontSize: 9, fontWeight: 900,
-                          letterSpacing: '0.2em', textTransform: 'uppercase',
+                        <span className="text-xs font-bold uppercase tracking-widest" style={{
                           fontFamily: 'JetBrains Mono, monospace',
                         }}>
                           {service.number}
@@ -871,11 +853,11 @@ const ServiceCard = memo(({ service }) => {
 
                     {/* Title */}
                     <h3
-                      className="font-heading"
+                      className="text-xl sm:text-2xl font-bold tracking-tight"
                       style={{
-                        fontSize: 'clamp(1.2rem,2.8vw,1.85rem)',
-                        fontWeight: 900, color: '#fff',
-                        letterSpacing: '-0.03em', lineHeight: 1.15,
+                        
+                         color: '#fff',
+                         
                         marginBottom: 6,
                       }}
                     >
@@ -883,9 +865,7 @@ const ServiceCard = memo(({ service }) => {
                     </h3>
 
                     {/* Tagline */}
-                    <p style={{
-                      fontSize: 10, fontWeight: 800,
-                      textTransform: 'uppercase', letterSpacing: '0.22em',
+                    <p className="text-xs font-bold uppercase tracking-widest" style={{
                       color: accent, marginBottom: 18,
                       fontFamily: 'JetBrains Mono, monospace',
                     }}>
@@ -893,9 +873,9 @@ const ServiceCard = memo(({ service }) => {
                     </p>
 
                     {/* Description */}
-                    <p style={{
-                      color: 'rgba(255,255,255,0.45)', fontSize: 14,
-                      lineHeight: 1.75, marginBottom: 24,
+                    <p className="text-base leading-relaxed" style={{
+                      color: 'rgba(255,255,255,0.45)',
+                      marginBottom: 24,
                       maxWidth: 560, fontFamily: 'Inter, sans-serif',
                     }}>
                       {service.desc}
@@ -939,17 +919,15 @@ const ServiceCard = memo(({ service }) => {
                       { label: 'Timeline',    value: service.timeline    },
                     ].map(item => (
                       <div key={item.label}>
-                        <span style={{
+                        <span className="text-xs font-bold uppercase tracking-widest" style={{
                           display: 'block', marginBottom: 5,
-                          fontSize: 9, fontWeight: 800, textTransform: 'uppercase',
-                          letterSpacing: '0.25em', color: `${accent}70`,
+                          color: `${accent}70`,
                           fontFamily: 'JetBrains Mono, monospace',
                         }}>
                           {item.label}
                         </span>
-                        <span style={{
+                        <span className="text-sm font-bold" style={{
                           color: 'rgba(255,255,255,0.78)',
-                          fontSize: 13, fontWeight: 700,
                           fontFamily: 'Inter, sans-serif',
                         }}>
                           {item.value}
@@ -1070,14 +1048,12 @@ const SectionIntro = memo(() => {
         <Eyebrow>What We Do</Eyebrow>
       </div>
 
-      {/* Heading */}
       <h2
         ref={el => { itemRefs.current[1] = el; }}
-        className="font-heading"
+        className="font-heading text-3xl md:text-4xl leading-[1.1] tracking-tight"
         style={{
           opacity: 0,
-          fontSize: 'clamp(1.9rem,6vw,4rem)',
-          fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.06,
+          fontWeight: 700,
           color: '#fff', marginBottom: 16,
         }}
       >
@@ -1093,11 +1069,10 @@ const SectionIntro = memo(() => {
       </h2>
 
       {/* Subtext */}
-      <p
+      <p className="text-base leading-relaxed"
         ref={el => { itemRefs.current[2] = el; }}
         style={{
           opacity: 0, color: 'rgba(255,255,255,0.35)',
-          fontSize: 'clamp(0.875rem,1.5vw,1rem)', lineHeight: 1.75,
           maxWidth: 480, margin: '0 auto 36px',
           fontFamily: 'Inter, sans-serif',
         }}
@@ -1180,7 +1155,7 @@ const BentoStrip = memo(() => {
             ref={el => { pillRefs.current[i] = el; }}
             className="ddw-bento-pill"
           >
-            <span style={{ color: '#FF570F', fontSize: 11 }} aria-hidden="true">✓</span>
+            <span className="text-xs" style={{ color: '#FF570F' }} aria-hidden="true">✓</span>
             {item}
           </div>
         ))}
@@ -1280,10 +1255,9 @@ const BottomCTA = memo(() => {
           }}
         >
           <div style={{ width: 28, height: 1, background: 'rgba(255,87,15,0.4)' }} />
-          <span style={{
-            color: '#FF570F', fontSize: 9,
+          <span className="text-xs uppercase tracking-widest font-bold" style={{
+            color: '#FF570F',
             fontFamily: 'JetBrains Mono, monospace',
-            letterSpacing: '0.3em', textTransform: 'uppercase', fontWeight: 800,
           }}>
             Next Step
           </span>
@@ -1293,11 +1267,10 @@ const BottomCTA = memo(() => {
         {/* Heading */}
         <h3
           ref={el => { itemRefs.current[1] = el; }}
-          className="font-heading"
+          className="font-heading text-3xl md:text-4xl leading-[1.1] tracking-tight"
           style={{
             opacity: 0,
-            fontSize: 'clamp(1.9rem,5vw,3.6rem)',
-            fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.08,
+            fontWeight: 700,
             color: '#fff', marginBottom: 16,
           }}
         >
@@ -1313,11 +1286,10 @@ const BottomCTA = memo(() => {
         </h3>
 
         {/* Subtext */}
-        <p
+        <p className="text-base leading-relaxed"
           ref={el => { itemRefs.current[2] = el; }}
           style={{
             opacity: 0, color: 'rgba(255,255,255,0.3)',
-            fontSize: 'clamp(0.8rem,1.4vw,0.9rem)', lineHeight: 1.75,
             maxWidth: 420, margin: '0 auto 36px',
             fontFamily: 'Inter, sans-serif',
           }}
@@ -1360,13 +1332,12 @@ const BottomCTA = memo(() => {
         </div>
 
         {/* Footer note */}
-        <p
+        <p className="text-xs uppercase tracking-widest font-bold"
           ref={el => { itemRefs.current[4] = el; }}
           style={{
             opacity: 0, marginTop: 24,
-            color: 'rgba(255,255,255,0.12)', fontSize: 9,
-            textTransform: 'uppercase', letterSpacing: '0.24em',
-            fontFamily: 'JetBrains Mono, monospace', fontWeight: 700,
+            color: 'rgba(255,255,255,0.12)',
+            fontFamily: 'JetBrains Mono, monospace',
           }}
         >
           Response within 24 hours · No pitch · No fluff
@@ -1438,10 +1409,9 @@ const ServicesPage = () => (
 
     {/* Logo Marquee */}
     <div style={{ position: 'relative', zIndex: 10, maxWidth: 1160, margin: '0 auto' }}>
-      <p style={{
+      <p className="text-xs font-bold uppercase tracking-widest" style={{
         textAlign: 'center', marginBottom: 12,
-        fontSize: 9, fontWeight: 800, textTransform: 'uppercase',
-        letterSpacing: '0.28em', color: 'rgba(255,255,255,0.13)',
+        color: 'rgba(255,255,255,0.13)',
         fontFamily: 'JetBrains Mono, monospace',
       }}>
         Trusted by teams at

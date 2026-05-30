@@ -323,7 +323,7 @@ const ChannelBar = memo(({ label, pct, accent, delay }) => {
   return (
     <div ref={containerRef} className="flex items-center gap-3 mb-3">
       <span
-        className="text-[10px] font-bold uppercase w-20 flex-shrink-0"
+        className="text-sm font-bold uppercase w-20 flex-shrink-0"
         style={{
           color: accent,
           letterSpacing: '0.18em',
@@ -343,7 +343,7 @@ const ChannelBar = memo(({ label, pct, accent, delay }) => {
           }}
         />
       </div>
-      <span className="text-[10px] text-white/30">{pct}%</span>
+      <span className="text-sm text-white/30">{pct}%</span>
     </div>
   );
 });
@@ -454,18 +454,6 @@ const ResultCard = memo(({ item }) => {
         }}
       />
 
-      {/* Watermark */}
-      <div
-        aria-hidden="true"
-        className="absolute -bottom-4 -right-3 font-black pointer-events-none select-none leading-none"
-        style={{
-          fontSize: 'clamp(60px, 8vw, 120px)',
-          color: item.accent, opacity: 0.04,
-          letterSpacing: '-0.04em',
-        }}
-      >
-        {item.value}
-      </div>
 
       {/* Top accent line */}
       <div
@@ -503,7 +491,7 @@ const ResultCard = memo(({ item }) => {
             fontSize: 10,
             fontWeight: 700,
             textTransform: 'uppercase',
-            letterSpacing: '0.2em',
+            letterSpacing: '0.08em',
           }}
         >
           <span aria-hidden="true">{item.icon}</span>
@@ -512,10 +500,8 @@ const ResultCard = memo(({ item }) => {
 
         {/* Stat value */}
         <div
-          className="font-black leading-none mb-2"
+          className="font-bold mb-2 text-3xl md:text-4xl leading-[1.1] tracking-tight"
           style={{
-            fontSize: 'clamp(36px, 4vw, 52px)',
-            letterSpacing: '-0.03em',
             color: item.accent,
           }}
         >
@@ -524,7 +510,7 @@ const ResultCard = memo(({ item }) => {
 
         {/* Label */}
         <div className="text-white font-bold text-xs uppercase mb-4"
-          style={{ letterSpacing: '0.18em' }}>
+          style={{ letterSpacing: '0.08em' }}>
           {item.label}
         </div>
 
@@ -535,12 +521,12 @@ const ResultCard = memo(({ item }) => {
         />
 
         {/* Context */}
-        <p className="text-white/45 text-xs leading-relaxed mb-2">
+        <p className="text-white/45 text-base mb-2 leading-relaxed">
           {item.context}
         </p>
 
         {/* Client */}
-        <p className="text-white/25 text-[11px] leading-relaxed">
+        <p className="/25 ] text-base leading-relaxed">
           {item.client}
         </p>
       </div>
@@ -831,7 +817,7 @@ const Testimonial = () => {
                   }}
                 />
                 <span
-                  className="text-[10px] font-bold uppercase"
+                  className="text-sm font-bold uppercase"
                   style={{ color: BRAND.orange, letterSpacing: '0.22em' }}
                 >
                   Verified Results — Six Channels
@@ -846,10 +832,9 @@ const Testimonial = () => {
               {/* Heading */}
               <h2
                 ref={headingRef}
-                className="font-black mb-5 leading-[1.05]"
+                className="mb-5 text-3xl md:text-4xl font-bold leading-[1.1] tracking-[-0.035em]"
                 style={{
-                  fontSize: 'clamp(34px, 5vw, 64px)',
-                  letterSpacing: '-0.03em',
+                  fontFamily: 'var(--font-agrandir, Montserrat, sans-serif)',
                   color: '#fff',
                 }}
               >
@@ -867,7 +852,7 @@ const Testimonial = () => {
               {/* Subtitle */}
               <p
                 ref={subtitleRef}
-                className="leading-relaxed text-sm md:text-base"
+                className="text-sm md:text-base leading-relaxed"
                 style={{
                   color: 'rgba(255,255,255,0.45)',
                   maxWidth: '540px',
@@ -904,7 +889,7 @@ const Testimonial = () => {
               />
               <div className="relative z-10 w-full px-6 py-4">
                 <p
-                  className="text-[9px] font-bold uppercase mb-4"
+                  className="] font-bold uppercase mb-4 text-base leading-relaxed"
                   style={{ color: `${BRAND.orange}80`, letterSpacing: '0.22em' }}
                 >
                   Channel Performance
@@ -961,12 +946,12 @@ const Testimonial = () => {
                     boxShadow: `0 0 8px ${BRAND.orange}`,
                   }}
                 />
-                <p className="font-bold text-sm text-white">
+                <p className="font-bold text-base text-white leading-relaxed">
                   All results are from active retainer clients.
                 </p>
               </div>
               <p
-                className="text-xs leading-relaxed"
+                className="text-base leading-relaxed"
                 style={{
                   color: 'rgba(255,255,255,0.38)',
                   paddingLeft: '18px',
@@ -981,13 +966,13 @@ const Testimonial = () => {
                 {FOOTER_STATS.map((s, i) => (
                   <div key={s.lbl} className="flex items-center gap-2">
                     <span
-                      className="font-black text-sm"
+                      className="font-bold text-sm"
                       style={{ color: BRAND.orange, letterSpacing: '-0.02em' }}
                     >
                       {s.val}
                     </span>
                     <span
-                      className="text-[10px] uppercase tracking-widest"
+                      className="text-sm uppercase tracking-widest"
                       style={{ color: 'rgba(255,255,255,0.28)' }}
                     >
                       {s.lbl}
@@ -1018,7 +1003,7 @@ const Testimonial = () => {
                 <ArrowIcon />
               </MagneticButton>
               <p
-                className="text-center text-[10px] mt-2.5 uppercase tracking-widest"
+                className="text-center text-sm mt-2.5 uppercase tracking-widest leading-relaxed"
                 style={{ color: 'rgba(255,255,255,0.22)' }}
               >
                 No commitment · 20 minutes

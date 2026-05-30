@@ -19,6 +19,7 @@
 
 /* ─── Design Tokens ──────────────────────────────────────────────────────── */
 :root {
+  --font-agrandir: 'Agrandir', 'Montserrat', sans-serif;
   --brand-primary:   #FF570F;
   --brand-secondary: #EE7D1D;
   --brand-accent:    #FDE87A;
@@ -421,12 +422,6 @@ html.lenis                              { height: auto; }
 /* These should already exist from the AboutSection review.
    Only additions specific to LoadingScreen are listed below.
    ddwDotGrid is intentionally NOT included — see review point #3. */
-
-/* Glow dot progress — use transform instead of 'left' */
-@keyframes ddwProgressGlow {
-  0%, 100% { opacity: 0.8; }
-  50%       { opacity: 1;   }
-}
 /* ─── PageHeader / AuroraBackground ──────────────────────────────────────────
    FIXED: Removed from inline <style> tags in AuroraBackground and PageHeader.
    Parsed once at app load. Never re-injected on mount/unmount.
@@ -461,15 +456,5 @@ html.lenis                              { height: auto; }
 .page-header-breadcrumb-link:hover {
   color: #FF570F;
 }
-@keyframes ddwTaglineReveal {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0);   }
-}
-
-/* Scan line */
-@keyframes ddwScanLine {
-  0%   { transform: translateY(-100%); opacity: 0; }
-  20%  { opacity: 1; }
-  80%  { opacity: 1; }
-  100% { transform: translateY(400%);  opacity: 0; }
-}
+/* NOTE: ddwTaglineReveal and ddwScanLine are defined above (lines ~179 and ~139).
+   Duplicate declarations removed — browser now parses each keyframe exactly once. */

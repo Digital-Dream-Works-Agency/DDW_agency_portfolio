@@ -320,7 +320,7 @@ const STYLES = `
   .ddw-expand-btn {
     display: inline-flex; align-items: center; gap: 7px;
     background: none; border: none; cursor: pointer;
-    font-size: 10px; font-weight: 900;
+    font-size: 12px; font-weight: 900;
     text-transform: uppercase; letter-spacing: 0.2em;
     padding: 6px 0; min-height: 44px;
     font-family: Montserrat, sans-serif;
@@ -337,7 +337,7 @@ const STYLES = `
     display: inline-flex; align-items: center; gap: 12px;
     padding: 16px 36px; min-height: 56px; border-radius: 99px;
     background: linear-gradient(135deg,#FF570F 0%,#EE7D1D 100%);
-    color: #000; font-weight: 900; font-size: 11px;
+    color: #000; font-weight: 900; font-size: 12px;
     text-transform: uppercase; letter-spacing: 0.2em;
     text-decoration: none;
     box-shadow: 0 0 28px rgba(255,87,15,0.35), 0 8px 24px rgba(255,87,15,0.25);
@@ -632,10 +632,10 @@ const Ticker = memo(() => (
       {TICKER_TRACK.map((item, i) => (
         <span
           key={i}
+          className="text-xs font-bold uppercase tracking-widest"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 10,
-            fontSize: 10, fontWeight: 900, textTransform: 'uppercase',
-            letterSpacing: '0.22em', color: 'rgba(255,255,255,0.22)',
+            color: 'rgba(255,255,255,0.22)',
             fontFamily: 'Montserrat, sans-serif',
           }}
         >
@@ -711,17 +711,15 @@ const SummaryBar = memo(() => {
             background: s.color, filter: 'blur(24px)', opacity: 0.12,
             pointerEvents: 'none',
           }} />
-          <div style={{
-            fontSize: 'clamp(20px,3.5vw,28px)', fontWeight: 900,
+          <div className="text-xl md:text-2xl font-bold" style={{
             color: '#fff', letterSpacing: '-0.025em', marginBottom: 4,
             fontFamily: 'Montserrat, sans-serif', position: 'relative',
           }}>
             {s.value}
           </div>
-          <div style={{
-            color: 'rgba(255,255,255,0.28)', fontSize: 9,
-            textTransform: 'uppercase', letterSpacing: '0.18em',
-            fontWeight: 700, fontFamily: 'Montserrat, sans-serif',
+          <div className="text-xs uppercase tracking-widest font-bold" style={{
+            color: 'rgba(255,255,255,0.28)',
+            fontFamily: 'Montserrat, sans-serif',
             position: 'relative',
           }}>
             {s.label}
@@ -771,11 +769,10 @@ const SectionHeader = memo(() => {
         ref={el => { itemRefs.current[0] = el; }}
         style={{ opacity: 0, display: 'inline-block', marginBottom: 20 }}
       >
-        <span style={{
+        <span className="text-xs font-bold uppercase tracking-widest" style={{
           padding: '7px 20px', borderRadius: 99,
           border: '1px solid rgba(255,87,15,0.3)',
-          color: '#FF570F', fontSize: 10, fontWeight: 900,
-          textTransform: 'uppercase', letterSpacing: '0.26em',
+          color: '#FF570F',
           background: 'rgba(255,87,15,0.08)',
           display: 'inline-flex', alignItems: 'center', gap: 8,
           fontFamily: 'Montserrat, sans-serif',
@@ -790,14 +787,12 @@ const SectionHeader = memo(() => {
         </span>
       </div>
 
-      {/* Headline */}
-      <h2
+      <h2 className="text-3xl md:text-4xl font-bold leading-[1.1] tracking-[-0.035em]"
         ref={el => { itemRefs.current[1] = el; }}
         style={{
           opacity: 0,
-          fontSize: 'clamp(34px,5.5vw,62px)',
-          fontWeight: 900, lineHeight: 1.05,
-          letterSpacing: '-0.03em', color: '#fff',
+          fontWeight: 700,
+          color: '#fff',
           marginBottom: 14, fontFamily: 'Montserrat, sans-serif',
         }}
       >
@@ -812,11 +807,10 @@ const SectionHeader = memo(() => {
       </h2>
 
       {/* Subtext */}
-      <p
+      <p className="text-base leading-relaxed"
         ref={el => { itemRefs.current[2] = el; }}
         style={{
           opacity: 0, color: 'rgba(255,255,255,0.38)',
-          fontSize: 'clamp(13px,1.8vw,15px)', lineHeight: 1.7,
           fontFamily: 'Inter, sans-serif',
         }}
       >
@@ -846,22 +840,20 @@ const ResultCell = memo(({ result, accent }) => (
       e.currentTarget.style.background  = 'rgba(255,255,255,0.022)';
     }}
   >
-    <div style={{
-      fontSize: 'clamp(16px,2.2vw,24px)', fontWeight: 900,
+    <div className="text-lg md:text-xl font-bold" style={{
       color: accent, marginBottom: 4, letterSpacing: '-0.02em',
       fontFamily: 'Montserrat, sans-serif',
     }}>
       <GSAPCounter display={result.display} />
     </div>
-    <div style={{
-      color: 'rgba(255,255,255,0.62)', fontSize: 9, fontWeight: 800,
-      textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 3,
+    <div className="text-xs font-bold uppercase tracking-widest" style={{
+      color: 'rgba(255,255,255,0.62)', marginBottom: 3,
       fontFamily: 'Montserrat, sans-serif',
     }}>
       {result.label}
     </div>
-    <div style={{
-      color: 'rgba(255,255,255,0.24)', fontSize: 9,
+    <div className="text-xs" style={{
+      color: 'rgba(255,255,255,0.24)',
       fontFamily: 'Inter, sans-serif',
     }}>
       {result.sub}
@@ -1010,17 +1002,7 @@ const CaseStudyCard = memo(({ study, index }) => {
           {/* Accent top bar */}
           <div className="ddw-top-bar" style={topBarStyle} />
 
-          {/* Watermark number */}
-          <div style={{
-            position: 'absolute', top: -20, right: 24,
-            fontSize: 'clamp(100px,14vw,200px)',
-            fontWeight: 900, lineHeight: 1,
-            color: `${study.accent}06`,
-            pointerEvents: 'none', userSelect: 'none', zIndex: 0,
-            letterSpacing: '-0.05em', fontFamily: 'Montserrat, sans-serif',
-          }}>
-            {study.number}
-          </div>
+
 
           <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(20px,3vw,32px)' }}>
             {/* ── Header Row ── */}
@@ -1038,9 +1020,8 @@ const CaseStudyCard = memo(({ study, index }) => {
                   display: 'flex', alignItems: 'center',
                   gap: 8, marginBottom: 10, flexWrap: 'wrap',
                 }}>
-                  <span style={{
-                    padding: '4px 11px', fontSize: 9, fontWeight: 900,
-                    textTransform: 'uppercase', letterSpacing: '0.2em',
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{
+                    padding: '4px 11px',
                     borderRadius: 99,
                     border: `1px solid ${study.accent}45`,
                     color: study.accent, background: `${study.accent}14`,
@@ -1048,29 +1029,27 @@ const CaseStudyCard = memo(({ study, index }) => {
                   }}>
                     {study.location}
                   </span>
-                  <span style={{ color: 'rgba(255,255,255,0.18)', fontSize: 11 }}>—</span>
-                  <span style={{
-                    color: 'rgba(255,255,255,0.38)', fontSize: 10,
-                    fontWeight: 700, textTransform: 'uppercase',
-                    letterSpacing: '0.14em', fontFamily: 'Montserrat, sans-serif',
+                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.18)' }}>—</span>
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{
+                    color: 'rgba(255,255,255,0.38)',
+                    fontFamily: 'Montserrat, sans-serif',
                   }}>
                     {study.client}
                   </span>
                 </div>
 
-                <p style={{
-                  color: 'rgba(255,255,255,0.22)', fontSize: 9.5,
-                  textTransform: 'uppercase', letterSpacing: '0.14em',
-                  fontWeight: 700, marginBottom: 10,
+                <p className="text-xs uppercase tracking-widest font-bold leading-relaxed" style={{
+                  color: 'rgba(255,255,255,0.22)',
+                  marginBottom: 10,
                   fontFamily: 'Montserrat, sans-serif',
                 }}>
                   {study.industry}
                 </p>
 
-                <h3 className="ddw-card-title" style={{
-                  fontSize: 'clamp(16px,2.2vw,23px)',
-                  fontWeight: 900, lineHeight: 1.28,
-                  maxWidth: 540, letterSpacing: '-0.02em',
+                <h3 className="ddw-card-title text-xl sm:text-2xl font-bold tracking-tight" style={{
+                  
+                   
+                  maxWidth: 540, 
                   fontFamily: 'Montserrat, sans-serif',
                 }}>
                   {study.title}
@@ -1085,21 +1064,19 @@ const CaseStudyCard = memo(({ study, index }) => {
                     style={{ background: study.accent }}
                   />
                   <div
-                    className="ddw-hero-num"
+                    className="ddw-hero-num text-3xl md:text-4xl leading-[1.1] tracking-tight"
                     style={{
                       position: 'relative',
-                      fontSize: 'clamp(40px,5.5vw,72px)',
-                      fontWeight: 900, lineHeight: 1,
-                      letterSpacing: '-0.035em', color: study.accent,
+                      fontWeight: 700,
+                      color: study.accent,
                       fontFamily: 'Montserrat, sans-serif',
                     }}
                   >
                     <GSAPCounter display={study.heroStat} />
                   </div>
-                  <div style={{
-                    color: 'rgba(255,255,255,0.3)', fontSize: 9,
-                    textTransform: 'uppercase', letterSpacing: '0.22em',
-                    fontWeight: 800, textAlign: 'right', marginTop: 4,
+                  <div className="text-xs uppercase tracking-widest font-bold" style={{
+                    color: 'rgba(255,255,255,0.3)',
+                    textAlign: 'right', marginTop: 4,
                     fontFamily: 'Montserrat, sans-serif',
                   }}>
                     {study.heroLabel}
@@ -1128,9 +1105,7 @@ const CaseStudyCard = memo(({ study, index }) => {
             {/* ── Expand Toggle ── */}
             <div>
               <button
-                className="ddw-expand-btn"
-                onClick={toggleExpand}
-                style={{ color: study.accent }}
+                className="ddw-expand-btn text-sm font-bold uppercase tracking-widest" style={{ color: study.accent }}
                 aria-expanded={expanded}
                 aria-controls={`expand-${study.client}`}
               >
@@ -1167,17 +1142,15 @@ const CaseStudyCard = memo(({ study, index }) => {
                 >
                   {/* Challenge */}
                   <div>
-                    <p style={{
-                      fontSize: 9, fontWeight: 900,
-                      textTransform: 'uppercase', letterSpacing: '0.22em',
+                    <p className="text-xs font-bold uppercase tracking-widest leading-relaxed" style={{
                       color: study.accent, marginBottom: 12,
                       fontFamily: 'Montserrat, sans-serif',
                     }}>
                       The Challenge
                     </p>
-                    <p style={{
-                      color: 'rgba(255,255,255,0.52)', fontSize: 13,
-                      lineHeight: 1.75, fontFamily: 'Inter, sans-serif',
+                    <p className="text-base leading-relaxed" style={{
+                      color: 'rgba(255,255,255,0.52)',
+                      fontFamily: 'Inter, sans-serif',
                     }}>
                       {study.challenge}
                     </p>
@@ -1185,9 +1158,7 @@ const CaseStudyCard = memo(({ study, index }) => {
 
                   {/* Solution */}
                   <div>
-                    <p style={{
-                      fontSize: 9, fontWeight: 900,
-                      textTransform: 'uppercase', letterSpacing: '0.22em',
+                    <p className="text-xs font-bold uppercase tracking-widest leading-relaxed" style={{
                       color: study.accent, marginBottom: 12,
                       fontFamily: 'Montserrat, sans-serif',
                     }}>
@@ -1201,7 +1172,6 @@ const CaseStudyCard = memo(({ study, index }) => {
                             display: 'flex', alignItems: 'flex-start',
                             gap: 10, marginBottom: 10,
                             color: 'rgba(255,255,255,0.52)',
-                            fontSize: 13, lineHeight: 1.65,
                             fontFamily: 'Inter, sans-serif',
                           }}
                         >
@@ -1237,10 +1207,9 @@ const CaseStudyCard = memo(({ study, index }) => {
                   <span
                     key={tag}
                     style={{
-                      padding: '4px 11px', fontSize: 9, fontWeight: 700,
+                      padding: '4px 11px',
                       borderRadius: 99, color: 'rgba(255,255,255,0.32)',
                       border: '1px solid rgba(255,255,255,0.08)',
-                      textTransform: 'uppercase', letterSpacing: '0.12em',
                       fontFamily: 'Montserrat, sans-serif',
                     }}
                   >
@@ -1252,15 +1221,13 @@ const CaseStudyCard = memo(({ study, index }) => {
               {/* CTA anchor */}
               <a
                 ref={ctaRef}
-                className="ddw-cta-anchor"
+                className="ddw-cta-anchor text-xs font-bold uppercase tracking-widest"
                 href={CALENDLY_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   padding: '10px 22px', minHeight: 44, borderRadius: 99,
-                  fontSize: 10, fontWeight: 900,
-                  textTransform: 'uppercase', letterSpacing: '0.18em',
                   background: `${study.accent}18`, color: study.accent,
                   border: `1px solid ${study.accent}38`,
                   textDecoration: 'none', flexShrink: 0,
@@ -1431,16 +1398,15 @@ const CaseStudies = () => {
       <div className="ddw-floating-pills" aria-hidden="true">
         <div
           ref={pillRef1}
-          className="ddw-pill-item"
-          style={{
+          className="ddw-pill-item text-xs font-bold uppercase tracking-widest" style={{
             position: 'absolute', top: '8%',
             right: 'clamp(16px,5vw,60px)',
             display: 'inline-flex', alignItems: 'center', gap: 8,
             padding: '7px 16px', borderRadius: 99,
             background: 'rgba(255,87,15,0.08)',
             border: '1px solid rgba(255,87,15,0.2)',
-            fontSize: 10, fontWeight: 900, color: '#FF570F',
-            textTransform: 'uppercase', letterSpacing: '0.14em',
+              color: '#FF570F',
+             
             pointerEvents: 'none', fontFamily: 'Montserrat, sans-serif',
             zIndex: 2,
           }}
@@ -1454,16 +1420,15 @@ const CaseStudies = () => {
 
         <div
           ref={pillRef2}
-          className="ddw-pill-item"
-          style={{
+          className="ddw-pill-item text-xs font-bold uppercase tracking-widest" style={{
             position: 'absolute', top: '14%',
             right: 'clamp(16px,5vw,60px)',
             display: 'inline-flex', alignItems: 'center', gap: 7,
             padding: '6px 14px', borderRadius: 99,
             background: 'rgba(255,255,255,0.035)',
             border: '1px solid rgba(255,255,255,0.08)',
-            fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.42)',
-            textTransform: 'uppercase', letterSpacing: '0.12em',
+              color: 'rgba(255,255,255,0.42)',
+             
             pointerEvents: 'none', fontFamily: 'Montserrat, sans-serif',
             zIndex: 2,
           }}
@@ -1502,20 +1467,7 @@ const CaseStudies = () => {
           }}
         >
           {/* Watermark */}
-          <div
-            aria-hidden="true"
-            style={{
-              position: 'absolute', top: '50%', left: '50%',
-              transform: 'translate(-50%,-50%)',
-              fontSize: 'clamp(80px,14vw,200px)',
-              fontWeight: 900, color: '#fff',
-              opacity: 0.025, pointerEvents: 'none', lineHeight: 1,
-              letterSpacing: '-0.05em', whiteSpace: 'nowrap',
-              fontFamily: 'Montserrat, sans-serif',
-            }}
-          >
-            DDW
-          </div>
+
 
           {/* Data visual */}
           <div
@@ -1526,17 +1478,16 @@ const CaseStudies = () => {
           </div>
 
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <p style={{
-              fontSize: 10, fontWeight: 900, textTransform: 'uppercase',
-              letterSpacing: '0.3em', color: '#FF570F', marginBottom: 14,
+            <p className="text-xs font-bold uppercase tracking-widest leading-relaxed" style={{
+              color: '#FF570F', marginBottom: 14,
               fontFamily: 'Montserrat, sans-serif',
             }}>
               Ready to be the next case study?
             </p>
 
             <h3 style={{
-              fontSize: 'clamp(24px,4vw,42px)', fontWeight: 900,
-              lineHeight: 1.15, letterSpacing: '-0.025em',
+               
+               
               color: '#fff', marginBottom: 8,
               fontFamily: 'Montserrat, sans-serif',
             }}>
@@ -1550,8 +1501,8 @@ const CaseStudies = () => {
               </span>
             </h3>
 
-            <p style={{
-              color: 'rgba(255,255,255,0.3)', fontSize: 13, lineHeight: 1.65,
+            <p className="text-base leading-relaxed" style={{
+              color: 'rgba(255,255,255,0.3)',
               marginBottom: 32, fontFamily: 'Inter, sans-serif',
             }}>
               Platform dashboards. Real numbers. No projections.
@@ -1559,8 +1510,8 @@ const CaseStudies = () => {
 
             <CtaButton />
 
-            <p style={{
-              color: 'rgba(255,255,255,0.18)', fontSize: 11,
+            <p className="text-xs leading-relaxed" style={{
+              color: 'rgba(255,255,255,0.18)',
               marginTop: 16, fontFamily: 'Inter, sans-serif',
               letterSpacing: '0.04em',
             }}>
